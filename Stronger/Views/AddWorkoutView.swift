@@ -8,20 +8,57 @@
 import SwiftUI
 
 struct AddWorkoutView: View {
+    @ObservedObject var workoutViewModel: WorkoutViewModel
+    
+    @State private var selectedDay: String = ""
+    @State private var exerciseName: String = ""
+    @State private var sets: String = ""
+    @State private var reps: String = ""
+    @State private var weight: String = ""
+    @State private var newDayName: String = ""
+    
+    @State private var showAlert = false
+    @State private var showDeleteDayAlert = false
+    
     var body: some View {
         Form {
-            // Picker do wyboru dnia treningowego
-            Section(header: Text("Select Day")) {
-                Picker("Day", selection: $selectedDay) {
-                    Text("Pull").tag("Pull")
-                    Text("Push").tag("Push")
-                    Text("Legs").tag("Legs")
-                    Text("FBW").tag("FBW")
-                }
-                .pickerStyle(SegmentedPickerStyle())  // Picker w formie przycisków
+            Section(header: Text("Create New Day")) {
+                TextField("Enter New Day Name", text: $newDayName)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(8)
+                
+                Button("Add New Day") {
+                    if !newDayName.isEmpty {
+                        workoutViewModel.addDay(dayName: newDayName)
+                        selectedDay = newDayName
+                        newDayName = ""
+                        }
+                    }
+                    .disabled(newDayName.isEmpty)
             }
             
-            // Pola do wprowadzania danych o nowym ćwiczeniu
+            if !workoutViewModel.workoutDays.isEmpty {
+                Section(header: Text("Select Day")) {
+                    Picker("Day", selection: $selectedDay) {
+                        ForEach(workoutViewModel.workoutDays) { day in
+                            Text(day.dayName).tag(day.dayName)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                }
+            }
+            
+            Button("Remove Selected Day") {
+                showDeleteDayAlert = true
+            }
+            .foregroundColor(.red)
+            .disabled(selectedDay.isEmpty)
+            .showConfirmationAlert(isPresented: $showDeleteDayAlert) {
+                workoutViewModel.removeDay(dayName: selectedDay)
+                selectedDay = workoutViewModel.workoutDays.first?.dayName ?? ""
+            }
+            
             Section(header: Text("Exercise Details")) {
                 TextField("Exercise Name", text: $exerciseName)
                 TextField("Sets", text: $sets)
@@ -29,38 +66,42 @@ struct AddWorkoutView: View {
                 TextField("Weight", text: $weight)
             }
             
-            // Przycisk do dodania ćwiczenia
-            Button(action: {
-                addExercise()
-            }) {
-                Text("Add Exercise")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+            Button("Add Exercise") {
+                if [exerciseName, sets, reps, weight].contains(where: \.isEmpty) {
+                    showAlert = true
+                } else {
+                    workoutViewModel.addExercise(dayName: selectedDay, exerciseName: exerciseName, sets: sets, reps: reps, weight: weight)
+                    clearFields()
+                    hideKeyboard()
+                }
             }
+            .font(.headline)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(10)
         }
+        .scrollContentBackground(.hidden)
+        .applyGradientBackground()
         .navigationTitle("Add Workout")
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Incomplete Fields"), message: Text("Please fill all fields."))
+        }
     }
     
-    // Logika dodawania ćwiczenia
-    private func addExercise() {
-        let newExercise = Exercise(name: exerciseName, sets: sets, reps: reps, weight: weight, info: "")
-        
-        // Sprawdzamy, czy wybrany dzień treningowy już istnieje
-        if let index = viewModel.workoutDays.firstIndex(where: { $0.dayName == selectedDay }) {
-            // Jeśli dzień istnieje, dodajemy do niego ćwiczenie
-            viewModel.workoutDays[index].exercises.append(newExercise)
-        } else {
-            // Jeśli dzień nie istnieje, tworzymy nowy dzień treningowy
-            let newDay = WorkoutDay(dayName: selectedDay, exercises: [newExercise])
-            viewModel.workoutDays.append(newDay)
-        }
+    private func clearFields() {
+        exerciseName = ""
+        sets = ""
+        reps = ""
+        weight = ""
+    }
+    
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
 #Preview {
-    AddWorkoutView()
+    AddWorkoutView(workoutViewModel: WorkoutViewModel())  // Przekazujemy AddWorkoutViewModel
 }

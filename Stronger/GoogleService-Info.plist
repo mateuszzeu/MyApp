@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyBxtfWC-0H9kB6Bx2iOr0Yj_bobNCtNXTY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>143225803844</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.mateuszzeu.Stronger</string>
+	<key>PROJECT_ID</key>
+	<string>stronger-a8133</string>
+	<key>STORAGE_BUCKET</key>
+	<string>stronger-a8133.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:143225803844:ios:f0b654fc919a1a15789811</string>
+</dict>
+</plist>
