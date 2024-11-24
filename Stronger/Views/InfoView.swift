@@ -50,3 +50,4 @@ struct InfoView: View {
     InfoView(exercise: Exercise(name: "Squat", sets: "3", reps: "10", weight: "100", info: "Sample info"), viewModel: WorkoutViewModel(), dayName: "Push")
 }
 
+// ZMIANAAA TESTOWAAA
