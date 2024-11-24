@@ -34,9 +34,9 @@ struct GradientBackground: ViewModifier {
     func body(content: Content) -> some View {
         ZStack {
             LinearGradient(
-                colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.6)],
-                startPoint: .top,
-                endPoint: .bottom
+                colors: [Color.blue.opacity(0.2), Color.yellow.opacity(0.15), Color.white.opacity(0.9)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
             

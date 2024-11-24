@@ -14,10 +14,10 @@ struct ProgressView: View {
     @State private var glassVolume: CGFloat = 0.2
     @State private var dailyLimit: CGFloat = 3.0
     @State private var startAnimation: CGFloat = 0
-
+    
     let glassOptions: [CGFloat] = Array(stride(from: 0.1, through: 0.5, by: 0.05)) //.map? { $0 }
     let limitOptions: [CGFloat] = [2.0, 2.5, 3.0, 3.5, 4.0]
-
+    
     var body: some View {
         VStack {
             GeometryReader { proxy in
@@ -28,12 +28,18 @@ struct ProgressView: View {
                         .resizable()
                         .renderingMode(.template)
                         .aspectRatio(contentMode: .fit)
-                        .foregroundColor(.white.opacity(0.2))
+                        .foregroundColor(.black.opacity(0.2))
                         .scaleEffect(x: 1.1, y: 1)
                         .offset(y: -1)
                     
                     WaterWave(progress: progress, waveHeight: 0.1, offset: startAnimation)
-                        .fill(Color.blue)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.blue, Color.cyan],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
                         .mask {
                             Image(systemName: "drop.fill")
                                 .resizable()
@@ -58,7 +64,7 @@ struct ProgressView: View {
             VStack(spacing: 20) {
                 HStack {
                     Text("Pojemność szklanki:")
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.gray.opacity(0.8))
                         .font(.headline)
                     
                     Picker("Pojemność", selection: $glassVolume) {
@@ -72,7 +78,7 @@ struct ProgressView: View {
                 
                 HStack {
                     Text("Limit dzienny:")
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.gray.opacity(0.8))
                         .font(.headline)
                     
                     Picker("Limit", selection: $dailyLimit) {
