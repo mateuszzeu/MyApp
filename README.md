@@ -14,6 +14,8 @@ Features
 - Progress Tracking:
   - Interactive visualizations for monitoring progress.
   - Responsive, user-friendly design built entirely with SwiftUI.
+- Water Intake Tracking:
+  - Keep track of your daily hydration goals with an intuitive and visually engaging interface.
 
 Getting Started
 
