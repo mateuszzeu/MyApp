@@ -1,6 +1,6 @@
 Stronger
 
-Stronger is a fitness app built with SwiftUI, inspired by the personal need for a streamlined workout planner for myself and my close friends. 
+Stronger is a fitness app that I am currently developing in my free time with SwiftUI, inspired by the personal need for a streamlined workout planner for myself and my close friends.
 The app helps users create, manage, and track workout routines while seamlessly storing data in the cloud using Firebase.
 
 Features
