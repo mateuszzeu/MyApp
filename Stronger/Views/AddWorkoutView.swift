@@ -16,77 +16,92 @@ struct AddWorkoutView: View {
     @State private var reps: String = ""
     @State private var weight: String = ""
     @State private var newDayName: String = ""
-    
-    @State private var showAlert = false
     @State private var showDeleteDayAlert = false
     
     var body: some View {
-        Form {
-            Section(header: Text("Create New Day")) {
-                TextField("Enter New Day Name", text: $newDayName)
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(8)
-                
-                Button("Add New Day") {
-                    if !newDayName.isEmpty {
+        ZStack {
+            Color.clear
+                .applyGradientBackground()
+            
+            VStack(spacing: 20) {
+                VStack(spacing: 10) {
+                    TextField("Enter New Day Name", text: $newDayName)
+                        .padding()
+                        .background(RoundedRectangle(cornerRadius: 10).fill(Color.white))
+                        .shadow(color: .gray.opacity(0.2), radius: 4)
+
+                    Button(action: {
                         workoutViewModel.addDay(dayName: newDayName)
                         selectedDay = newDayName
                         newDayName = ""
-                        }
+                        hideKeyboard()
+                    }) {
+                        Text("Add New Day")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(newDayName.isEmpty ? Color.gray.opacity(0.5) : Color.teal)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
                     }
                     .disabled(newDayName.isEmpty)
-            }
-            
-            if !workoutViewModel.workoutDays.isEmpty {
-                Section(header: Text("Select Day")) {
-                    Picker("Day", selection: $selectedDay) {
-                        ForEach(workoutViewModel.workoutDays) { day in
-                            Text(day.dayName).tag(day.dayName)
+                }
+                .padding()
+
+                if !workoutViewModel.workoutDays.isEmpty {
+                    VStack(spacing: 10) {
+                        Picker("Day", selection: $selectedDay) {
+                            ForEach(workoutViewModel.workoutDays) { day in
+                                Text(day.dayName).tag(day.dayName)
+                            }
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        
+                        Button("Remove Selected Day") {
+                            showDeleteDayAlert = true
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(selectedDay.isEmpty ? Color.gray.opacity(0.5) : Color.red.opacity(0.8))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .disabled(selectedDay.isEmpty)
+                        .showConfirmationAlert(
+                            isPresented: $showDeleteDayAlert,
+                            title: "Delete Day",
+                            message: "Are you sure you want to delete \(selectedDay)?"
+                        ) {
+                            workoutViewModel.removeDay(dayName: selectedDay)
+                            selectedDay = workoutViewModel.workoutDays.first?.dayName ?? ""
                         }
                     }
-                    .pickerStyle(SegmentedPickerStyle())
+                    .padding()
                 }
-            }
-            
-            Button("Remove Selected Day") {
-                showDeleteDayAlert = true
-            }
-            .foregroundColor(.red)
-            .disabled(selectedDay.isEmpty)
-            .showConfirmationAlert(isPresented: $showDeleteDayAlert) {
-                workoutViewModel.removeDay(dayName: selectedDay)
-                selectedDay = workoutViewModel.workoutDays.first?.dayName ?? ""
-            }
-            
-            Section(header: Text("Exercise Details")) {
-                TextField("Exercise Name", text: $exerciseName)
-                TextField("Sets", text: $sets)
-                TextField("Reps", text: $reps)
-                TextField("Weight", text: $weight)
-            }
-            
-            Button("Add Exercise") {
-                if [exerciseName, sets, reps, weight].contains(where: \.isEmpty) {
-                    showAlert = true
-                } else {
-                    workoutViewModel.addExercise(dayName: selectedDay, exerciseName: exerciseName, sets: sets, reps: reps, weight: weight)
-                    clearFields()
-                    hideKeyboard()
+                
+                VStack(spacing: 10) {
+                    CustomTextField(placeholder: "Exercise Name", text: $exerciseName)
+                    CustomTextField(placeholder: "Sets", text: $sets)
+                    CustomTextField(placeholder: "Reps", text: $reps)
+                    CustomTextField(placeholder: "Weight", text: $weight)
+                    
+                    Button(action: {
+                        workoutViewModel.addExercise(dayName: selectedDay, exerciseName: exerciseName, sets: sets, reps: reps, weight: weight)
+                        clearFields()
+                        hideKeyboard()
+                    }) {
+                        Text("Add Exercise")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.teal)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
+                    .disabled([exerciseName, sets, reps, weight].contains(where: \.isEmpty))
                 }
+                .padding()
+
+                Spacer()
             }
-            .font(.headline)
-            .frame(maxWidth: .infinity)
             .padding()
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(10)
-        }
-        .scrollContentBackground(.hidden)
-        .applyGradientBackground()
-        .navigationTitle("Add Workout")
-        .alert(isPresented: $showAlert) {
-            Alert(title: Text("Incomplete Fields"), message: Text("Please fill all fields."))
         }
     }
     
@@ -103,5 +118,5 @@ struct AddWorkoutView: View {
 }
 
 #Preview {
-    AddWorkoutView(workoutViewModel: WorkoutViewModel())  // Przekazujemy AddWorkoutViewModel
+    AddWorkoutView(workoutViewModel: WorkoutViewModel())
 }

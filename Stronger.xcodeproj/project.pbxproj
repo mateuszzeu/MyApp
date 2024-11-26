@@ -24,10 +24,12 @@
 		61F086D52CC79D3D000F9844 /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = 61F086D42CC79D3D000F9844 /* FirebasePerformance */; };
 		61F086D72CC79D3D000F9844 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 61F086D62CC79D3D000F9844 /* FirebaseStorage */; };
 		61F086D92CC79D3D000F9844 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 61F086D82CC79D3D000F9844 /* FirebaseStorageCombine-Community */; };
+		6E582C602CF3A0CB005982A4 /* StrongerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E582C452CF3A0CB005982A4 /* StrongerApp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		61F086732CC2C036000F9844 /* Stronger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stronger.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6E582C452CF3A0CB005982A4 /* StrongerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrongerApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +71,7 @@
 		61F0866A2CC2C036000F9844 = {
 			isa = PBXGroup;
 			children = (
+				6E582C452CF3A0CB005982A4 /* StrongerApp.swift */,
 				61F086742CC2C036000F9844 /* Products */,
 				61F086752CC2C036000F9844 /* Stronger */,
 			);
@@ -176,6 +179,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6E582C602CF3A0CB005982A4 /* StrongerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

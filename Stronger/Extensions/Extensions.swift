@@ -44,3 +44,15 @@ struct GradientBackground: ViewModifier {
         }
     }
 }
+
+struct CustomTextField: View {
+    let placeholder: String
+    @Binding var text: String
+    
+    var body: some View {
+        TextField(placeholder, text: $text)
+            .padding()
+            .background(RoundedRectangle(cornerRadius: 10).fill(Color.white))
+            .shadow(color: .gray.opacity(0.2), radius: 4)
+    }
+}

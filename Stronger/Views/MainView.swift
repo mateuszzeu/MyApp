@@ -26,14 +26,14 @@ struct MainView: View {
                             Label("Add Workout", systemImage: "square.and.pencil")
                         }
                     
+                    ProgressView()
+                        .tabItem {
+                            Label("Hydration", systemImage: "heart")
+                        }
+                    
                     SettingsView(showSignInView: $showSignInView)
                         .tabItem {
                             Label("Settings", systemImage: "gear")
-                        }
-                    
-                    ProgressView()
-                        .tabItem {
-                            Label("Progress", systemImage: "heart")
                         }
                 }
             }
