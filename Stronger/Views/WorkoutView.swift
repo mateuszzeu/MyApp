@@ -24,13 +24,23 @@ struct WorkoutView: View {
                             .foregroundColor(.white)
                             .padding()
                     } else {
-                        Picker("Select Day", selection: $selectedDay) {
-                            ForEach(viewModel.workoutDays) { day in
-                                Text(day.dayName).tag(day.dayName)
+                        HStack(spacing: 8) {
+                            ForEach(viewModel.workoutDays, id: \.id) { day in
+                                Text(day.dayName)
+                                    .font(.system(size: 14, weight: .medium))
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 10)
+                                    .background(selectedDay == day.dayName ? Color.blue.opacity(0.2) : Color.clear)
+                                    .cornerRadius(8)
+                                    .onTapGesture {
+                                        selectedDay = day.dayName
+                                    }
+                                    .foregroundColor(.black)
                             }
                         }
-                        .pickerStyle(SegmentedPickerStyle())
-                        .padding()
+                        .padding(.horizontal)
 
                         ScrollView {
                             if let workoutDay = viewModel.workoutDays.first(where: { $0.dayName == selectedDay }) {
@@ -46,10 +56,13 @@ struct WorkoutView: View {
                                         }
                                     }
                                     .padding(.horizontal)
+                                } else {
+                                    Text("No exercises for this day")
+                                        .foregroundColor(.gray)
+                                        .padding()
                                 }
                             }
                         }
-                        .scrollContentBackground(.hidden)
                     }
                 }
             }
