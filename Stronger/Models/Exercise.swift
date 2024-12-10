@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Exercise: Identifiable {
+struct Exercise: Identifiable, Equatable {
     let id = UUID()
     var name: String
     var sets: String

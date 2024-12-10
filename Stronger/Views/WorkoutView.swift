@@ -21,46 +21,14 @@ struct WorkoutView: View {
                     if viewModel.workoutDays.isEmpty {
                         Text("No workouts yet")
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                             .padding()
                     } else {
-                        HStack(spacing: 8) {
-                            ForEach(viewModel.workoutDays, id: \.id) { day in
-                                Text(day.dayName)
-                                    .font(.system(size: 14, weight: .medium))
-                                    .lineLimit(1)
-                                    .truncationMode(.tail)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 10)
-                                    .background(selectedDay == day.dayName ? Color.blue.opacity(0.2) : Color.clear)
-                                    .cornerRadius(8)
-                                    .onTapGesture {
-                                        selectedDay = day.dayName
-                                    }
-                                    .foregroundColor(.black)
-                            }
-                        }
-                        .padding(.horizontal)
+                        WorkoutDaysScrollView(viewModel: viewModel, selectedDay: $selectedDay)
 
                         ScrollView {
                             if let workoutDay = viewModel.workoutDays.first(where: { $0.dayName == selectedDay }) {
-                                if !workoutDay.exercises.isEmpty {
-                                    VStack {
-                                        ForEach(Array(workoutDay.exercises.enumerated()), id: \.element.id) { index, exercise in
-                                            ExerciseRowView(
-                                                viewModel: viewModel,
-                                                exercise: exercise,
-                                                dayName: workoutDay.dayName,
-                                                index: index
-                                            )
-                                        }
-                                    }
-                                    .padding(.horizontal)
-                                } else {
-                                    Text("No exercises for this day")
-                                        .foregroundColor(.gray)
-                                        .padding()
-                                }
+                                WorkoutDayExercisesView(viewModel: viewModel, workoutDay: workoutDay)
                             }
                         }
                     }
