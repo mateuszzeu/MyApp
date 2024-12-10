@@ -15,25 +15,28 @@ class WorkoutViewModel: ObservableObject {
     private var db = Firestore.firestore()
     
     func addExercise(dayName: String, exerciseName: String, sets: String, reps: String, weight: String) {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
-        
         let newExercise = Exercise(name: exerciseName, sets: sets, reps: reps, weight: weight, info: "")
         
         if let index = workoutDays.firstIndex(where: { $0.dayName == dayName }) {
             workoutDays[index].exercises.append(newExercise)
         } else {
-            let newDay = WorkoutDay(dayName: dayName, exercises: [newExercise])
+            let newDay = WorkoutDay(dayName: dayName, dateAdded: Date(), exercises: [newExercise])
             workoutDays.append(newDay)
+            saveWorkoutDayToFirestore(newDay)
+            return
         }
         
-        saveWorkoutDayToFirestore(userId: userId, dayName: dayName)
+        if let day = workoutDays.first(where: { $0.dayName == dayName }) {
+            saveWorkoutDayToFirestore(day)
+        }
     }
-    
-    private func saveWorkoutDayToFirestore(userId: String, dayName: String) { //ZMIENIC NAZWE NA BARDZIEJ DOPASOWANA DO RESZTY
-        guard let workoutDay = workoutDays.first(where: { $0.dayName == dayName }) else { return }
-        
+
+    private func saveWorkoutDayToFirestore(_ workoutDay: WorkoutDay) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+
         let workoutDayData: [String: Any] = [
             "dayName": workoutDay.dayName,
+            "dateAdded": workoutDay.dateAdded,
             "exercises": workoutDay.exercises.map { [
                 "name": $0.name,
                 "sets": $0.sets,
@@ -45,69 +48,38 @@ class WorkoutViewModel: ObservableObject {
         
         db.collection("users").document(userId).collection("workouts").document(workoutDay.dayName).setData(workoutDayData) { error in
             if let error = error {
-                print("Błąd zapisu: \(error.localizedDescription)")
+                print("Błąd zapisu dnia treningowego: \(error.localizedDescription)")
             } else {
                 print("Dzień treningowy zapisany poprawnie")
             }
         }
     }
-    
+
     func deleteExercise(dayName: String, exerciseId: UUID) {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
         guard let dayIndex = workoutDays.firstIndex(where: { $0.dayName == dayName }) else { return }
 
         if let exerciseIndex = workoutDays[dayIndex].exercises.firstIndex(where: { $0.id == exerciseId }) {
-            
             workoutDays[dayIndex].exercises.remove(at: exerciseIndex)
 
             if workoutDays[dayIndex].exercises.isEmpty {
-                let dayToDelete = workoutDays[dayIndex]
-                workoutDays.remove(at: dayIndex)
-                
-                db.collection("users").document(userId).collection("workouts").document(dayToDelete.dayName).delete { error in
-                    if let error = error {
-                        print("Błąd usunięcia dnia treningowego: \(error.localizedDescription)")
-                    } else {
-                        print("Dzień treningowy usunięty poprawnie")
-                    }
-                }
+                removeDay(dayName: dayName)
             } else {
-                let workoutDay = workoutDays[dayIndex]
-                let workoutDayData: [String: Any] = [
-                    "dayName": workoutDay.dayName,
-                    "exercises": workoutDay.exercises.map { [
-                        "name": $0.name,
-                        "sets": $0.sets,
-                        "reps": $0.reps,
-                        "weight": $0.weight,
-                        "info": $0.info
-                    ]}
-                ]
-                
-                db.collection("users").document(userId).collection("workouts").document(workoutDay.dayName).setData(workoutDayData) { error in
-                    if let error = error {
-                        print("Błąd aktualizacji dnia treningowego: \(error.localizedDescription)")
-                    } else {
-                        print("Dzień treningowy zaktualizowany poprawnie")
-                    }
-                }
+                saveWorkoutDayToFirestore(workoutDays[dayIndex])
             }
-        } else {
-            print("Nie znaleziono ćwiczenia o podanym ID.")
         }
     }
 
-    
+
     func updateExercise(dayName: String, exercise: Exercise) {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
-        
         guard let dayIndex = workoutDays.firstIndex(where: { $0.dayName == dayName }) else { return }
+
         if let exerciseIndex = workoutDays[dayIndex].exercises.firstIndex(where: { $0.id == exercise.id }) {
             workoutDays[dayIndex].exercises[exerciseIndex] = exercise
-            saveWorkoutDayToFirestore(userId: userId, dayName: dayName)
+            saveWorkoutDayToFirestore(workoutDays[dayIndex])
         }
     }
-    
+
+
     func loadWorkoutDaysFromFirestore() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
@@ -124,7 +96,11 @@ class WorkoutViewModel: ObservableObject {
             for document in documents {
                 let data = document.data()
                 guard let dayName = data["dayName"] as? String,
-                      let exercisesData = data["exercises"] as? [[String: Any]] else { continue }
+                      let exercisesData = data["exercises"] as? [[String: Any]],
+                      let timestamp = data["dateAdded"] as? Timestamp
+                else { continue }
+                
+                let dateAdded = timestamp.dateValue()
                 
                 var exercises: [Exercise] = []
                 for exerciseData in exercisesData {
@@ -138,7 +114,7 @@ class WorkoutViewModel: ObservableObject {
                     }
                 }
                 
-                let workoutDay = WorkoutDay(dayName: dayName, exercises: exercises)
+                let workoutDay = WorkoutDay(dayName: dayName, dateAdded: dateAdded, exercises: exercises)
                 fetchedWorkoutDays.append(workoutDay)
             }
             
@@ -147,9 +123,9 @@ class WorkoutViewModel: ObservableObject {
             }
         }
     }
-    
+
+
     func moveExercise(dayName: String, fromIndex: Int, directionUp: Bool) {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
         guard let dayIndex = workoutDays.firstIndex(where: { $0.dayName == dayName }) else { return }
         let targetIndex = directionUp ? fromIndex - 1 : fromIndex + 1
         guard targetIndex >= 0 && targetIndex < workoutDays[dayIndex].exercises.count else { return }
@@ -158,54 +134,30 @@ class WorkoutViewModel: ObservableObject {
             workoutDays[dayIndex].exercises.swapAt(fromIndex, targetIndex)
         }
         
-        let workoutDay = workoutDays[dayIndex]
-        let workoutDayData: [String: Any] = [
-            "dayName": workoutDay.dayName,
-            "exercises": workoutDay.exercises.map { [
-                "name": $0.name,
-                "sets": $0.sets,
-                "reps": $0.reps,
-                "weight": $0.weight,
-                "info": $0.info
-            ]}
-        ]
-        
-        db.collection("users").document(userId).collection("workouts").document(dayName).setData(workoutDayData) { error in
-            if let error = error {
-                print("Błąd zapisu kolejności ćwiczeń: \(error.localizedDescription)")
-            } else {
-                print("Nowa kolejność ćwiczeń zapisana poprawnie")
-            }
-        }
+        saveWorkoutDayToFirestore(workoutDays[dayIndex])
     }
+
     
     func addDay(dayName: String) {
         guard !dayName.isEmpty else { return }
-        let newDay = WorkoutDay(dayName: dayName, exercises: [])
+        let newDay = WorkoutDay(dayName: dayName, dateAdded: Date(), exercises: [])
         workoutDays.append(newDay)
-        saveWorkoutDayToFirestore(userId: Auth.auth().currentUser?.uid ?? "", dayName: dayName)
+        saveWorkoutDayToFirestore(newDay)
     }
     
     func removeDay(dayName: String) {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
         if let dayIndex = workoutDays.firstIndex(where: { $0.dayName == dayName }) {
-            workoutDays[dayIndex].exercises.forEach { exercise in
-                db.collection("users").document(userId).collection("workouts").document(dayName).collection("exercises").document(exercise.id.uuidString).delete { error in
-                    if let error = error {
-                        print("Błąd usunięcia ćwiczenia: \(error.localizedDescription)")
-                    }
-                }
-            }
-            
+            let dayToDelete = workoutDays[dayIndex]
             workoutDays.remove(at: dayIndex)
-        }
-        
-        db.collection("users").document(userId).collection("workouts").document(dayName).delete { error in
-            if let error = error {
-                print("Błąd usunięcia dnia: \(error.localizedDescription)")
-            } else {
-                print("Dzień treningowy usunięty poprawnie")
+            
+            db.collection("users").document(userId).collection("workouts").document(dayToDelete.dayName).delete { error in
+                if let error = error {
+                    print("Błąd usunięcia dnia: \(error.localizedDescription)")
+                } else {
+                    print("Dzień treningowy usunięty poprawnie")
+                }
             }
         }
     }

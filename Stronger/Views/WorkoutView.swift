@@ -82,11 +82,11 @@ struct WorkoutView: View {
     let viewModel = WorkoutViewModel()
     
     viewModel.workoutDays = [
-        WorkoutDay(dayName: "Push", exercises: [
+        WorkoutDay(dayName: "Push", dateAdded: Date().addingTimeInterval(-3600), exercises: [
             Exercise(name: "Bench Press", sets: "3", reps: "10", weight: "100kg", info: ""),
             Exercise(name: "Incline Dumbbell Press", sets: "3", reps: "12", weight: "80kg", info: "")
         ]),
-        WorkoutDay(dayName: "Pull", exercises: [
+        WorkoutDay(dayName: "Pull", dateAdded: Date(), exercises: [
             Exercise(name: "Deadlift", sets: "4", reps: "8", weight: "150kg", info: ""),
             Exercise(name: "Pull-up", sets: "4", reps: "10", weight: "Bodyweight", info: "")
         ])
@@ -94,3 +94,4 @@ struct WorkoutView: View {
     
     return WorkoutView(viewModel: viewModel)
 }
+

@@ -10,5 +10,6 @@ import Foundation
 struct WorkoutDay: Identifiable {
     let id = UUID()
     var dayName: String
+    var dateAdded: Date
     var exercises: [Exercise]
 }
