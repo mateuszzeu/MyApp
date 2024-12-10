@@ -83,7 +83,7 @@ class WorkoutViewModel: ObservableObject {
     func loadWorkoutDaysFromFirestore() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
-        db.collection("users").document(userId).collection("workouts").getDocuments { snapshot, error in
+        db.collection("users").document(userId).collection("workouts").order(by: "dateAdded").getDocuments { snapshot, error in
             if let error {
                 print("Błąd podczas pobierania danych: \(error.localizedDescription)")
                 return
