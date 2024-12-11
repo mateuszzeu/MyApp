@@ -140,9 +140,7 @@ class WorkoutViewModel: ObservableObject {
         let toIndex = directionLeft ? fromIndex - 1 : fromIndex + 1
         guard toIndex >= 0 && toIndex < workoutDays.count else { return }
         
-        withAnimation(.easeInOut(duration: 0.3)) {
-            workoutDays.swapAt(fromIndex, toIndex)
-        }
+        workoutDays.swapAt(fromIndex, toIndex)
         
         workoutDays.enumerated().forEach { index, day in
                 workoutDays[index].order = index
