@@ -14,7 +14,7 @@ struct WorkoutDaysScrollView: View {
     var body: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 8) {
-                ForEach(viewModel.workoutDays) { day in
+                ForEach(viewModel.workoutDays, id: \.id) { day in
                     Text(day.dayName)
                         .font(.system(size: 14, weight: .medium))
                         .lineLimit(1)
@@ -27,9 +27,30 @@ struct WorkoutDaysScrollView: View {
                             selectedDay = day.dayName
                         }
                         .foregroundColor(.black)
+                        .contextMenu {
+                            if let index = viewModel.workoutDays.firstIndex(where: { $0.id == day.id }) {
+                                if index > 0 {
+                                    Button("Move Left") {
+                                        viewModel.moveDay(fromIndex: index, directionLeft: true)
+                                    }
+                                }
+                                if index < viewModel.workoutDays.count - 1 {
+                                    Button("Move Right") {
+                                        viewModel.moveDay(fromIndex: index, directionLeft: false)
+                                    }
+                                }
+                            }
+                        }
                 }
             }
         }
         .padding(.horizontal)
     }
+}
+
+#Preview {
+    WorkoutDaysScrollView(
+        viewModel: WorkoutViewModel(),
+        selectedDay: .constant("")
+    )
 }
