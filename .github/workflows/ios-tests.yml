@@ -17,20 +17,35 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Ustaw Xcode
+      # 2. Zainstaluj zależności
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      # 3. Resetuj symulatory
+      - name: Reset simulators
+        run: xcrun simctl shutdown all && xcrun simctl erase all
+
+      # 4. Ustaw Xcode
       - name: Set up Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: 16.1
 
-      # 3. Debuguj schematy
-      - name: Debug schemes in CI
-        run: xcodebuild -list -project Stronger.xcodeproj
+      # 5. Debuguj konfigurację
+      - name: Debug environment
+        run: |
+          echo "Xcode version:"
+          xcodebuild -version
+          echo "Available simulators:"
+          xcrun simctl list devices
 
-      # 4. Uruchom testy
+      # 6. Uruchom testy
       - name: Run tests
         run: |
           xcodebuild test \
             -project Stronger.xcodeproj \
             -scheme Stronger \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest'
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=16.4' \
+            -verbose

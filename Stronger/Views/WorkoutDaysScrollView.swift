@@ -12,7 +12,7 @@ struct WorkoutDaysScrollView: View {
     @Binding var selectedDay: String
 
     var body: some View {
-        VStack /*(spacing: 0)*/ {
+        VStack {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(viewModel.workoutDays) { day in

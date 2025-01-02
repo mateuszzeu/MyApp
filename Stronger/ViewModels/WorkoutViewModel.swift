@@ -12,6 +12,7 @@ import FirebaseAuth
 
 class WorkoutViewModel: ObservableObject {
     @Published var workoutDays: [WorkoutDay] = []
+    var isTesting = false
     private var db = Firestore.firestore()
     
     func addExercise(dayName: String, exerciseName: String, sets: String, reps: String, weight: String) {
@@ -139,15 +140,25 @@ class WorkoutViewModel: ObservableObject {
     func moveDay(fromIndex: Int, directionLeft: Bool) {
         let toIndex = directionLeft ? fromIndex - 1 : fromIndex + 1
         guard toIndex >= 0 && toIndex < workoutDays.count else { return }
-        
-        workoutDays.swapAt(fromIndex, toIndex)
-        
-        workoutDays.enumerated().forEach { index, day in
-                workoutDays[index].order = index
+
+        withAnimation(.easeInOut(duration: 0.3)) {
+            workoutDays.swapAt(fromIndex, toIndex)
+        }
+
+        if isTesting {
+            self.workoutDays.enumerated().forEach { index, day in
+                self.workoutDays[index].order = index
             }
-        
-        saveWorkoutDaysOrder()
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.workoutDays.enumerated().forEach { index, day in
+                    self.workoutDays[index].order = index
+                }
+                self.saveWorkoutDaysOrder()
+            }
+        }
     }
+
 
     
     func saveWorkoutDaysOrder() {
