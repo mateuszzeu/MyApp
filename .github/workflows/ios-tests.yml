@@ -1,0 +1,36 @@
+name: iOS Tests
+
+on:
+  push:
+    branches:
+      - main # Uruchamiaj testy po każdym commicie na branchu main
+  pull_request:
+    branches:
+      - main # Uruchamiaj testy dla każdego pull requesta na branch main
+
+jobs:
+  test:
+    runs-on: macos-latest
+
+    steps:
+      # 1. Pobierz kod z repozytorium
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Ustaw Xcode
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v2
+        with:
+          xcode-version: latest
+
+      # 3. Instaluj zależności (jeśli używasz Swift Package Manager)
+      - name: Install dependencies
+        run: swift package resolve
+
+      # 4. Uruchom testy
+      - name: Run tests
+        run: xcodebuild test \
+          -workspace Stronger.xcworkspace \ # Zmień na .xcodeproj, jeśli nie używasz workspace
+          -scheme Stronger \
+          -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
+
