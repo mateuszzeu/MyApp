@@ -120,3 +120,7 @@ struct AddWorkoutView: View {
 #Preview {
     AddWorkoutView(workoutViewModel: WorkoutViewModel())
 }
+
+
+
+// ZMIANA TESTOWA
