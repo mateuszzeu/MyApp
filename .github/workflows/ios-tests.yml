@@ -27,6 +27,6 @@ jobs:
       - name: Run tests
         run: |
           xcodebuild test \
-            -workspace Stronger.xcworkspace \
+            -workspace Stronger.xcodeproj \
             -scheme Stronger \
             -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
