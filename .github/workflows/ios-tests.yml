@@ -23,11 +23,7 @@ jobs:
         with:
           xcode-version: latest
 
-      # 3. Instaluj zależności (jeśli używasz Swift Package Manager)
-      - name: Install dependencies
-        run: swift package resolve
-
-      # 4. Uruchom testy
+      # 3. Uruchom testy
       - name: Run tests
         run: |
           xcodebuild test \
