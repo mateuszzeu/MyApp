@@ -29,8 +29,9 @@ jobs:
 
       # 4. Uruchom testy
       - name: Run tests
-        run: xcodebuild test \
-          -workspace Stronger.xcworkspace \ # Zmień na .xcodeproj, jeśli nie używasz workspace
-          -scheme Stronger \
-          -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
+        run: |
+            xcodebuild test \
+                -workspace Stronger.xcodeproj \ 
+                -scheme Stronger \
+                -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
 
