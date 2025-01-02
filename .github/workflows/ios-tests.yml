@@ -23,7 +23,11 @@ jobs:
         with:
           xcode-version: 16.1
 
-      # 3. Uruchom testy
+      # 3. Debuguj schematy
+      - name: Debug schemes in CI
+        run: xcodebuild -list -project Stronger.xcodeproj
+
+      # 4. Uruchom testy
       - name: Run tests
         run: |
           xcodebuild test \
