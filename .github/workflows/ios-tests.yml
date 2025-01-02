@@ -3,10 +3,10 @@ name: iOS Tests
 on:
   push:
     branches:
-      - main # Uruchamiaj testy po każdym commicie na branchu main
+      - main
   pull_request:
     branches:
-      - main # Uruchamiaj testy dla każdego pull requesta na branch main
+      - main
 
 jobs:
   test:
@@ -19,7 +19,7 @@ jobs:
 
       # 2. Ustaw Xcode
       - name: Set up Xcode
-        uses: maxim-lobanov/setup-xcode@v2
+        uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest
 
@@ -30,8 +30,7 @@ jobs:
       # 4. Uruchom testy
       - name: Run tests
         run: |
-            xcodebuild test \
-                -workspace Stronger.xcodeproj \ 
-                -scheme Stronger \
-                -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
-
+          xcodebuild test \
+            -workspace Stronger.xcworkspace \
+            -scheme Stronger \
+            -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
