@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AddWorkoutView: View {
     @ObservedObject var workoutViewModel: WorkoutViewModel
-    
+
     @State private var selectedDay: String = ""
     @State private var exerciseName: String = ""
     @State private var sets: String = ""
@@ -17,12 +17,12 @@ struct AddWorkoutView: View {
     @State private var weight: String = ""
     @State private var newDayName: String = ""
     @State private var showDeleteDayAlert = false
-    
+
     var body: some View {
         ZStack {
             Color.clear
                 .applyGradientBackground()
-            
+
             VStack(spacing: 20) {
                 VStack(spacing: 10) {
                     TextField("Enter New Day Name", text: $newDayName)
@@ -37,12 +37,10 @@ struct AddWorkoutView: View {
                         hideKeyboard()
                     }) {
                         Text("Add New Day")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(newDayName.isEmpty ? Color.gray.opacity(0.5) : Color.teal)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
                     }
+                    .buttonStyle(CustomButtonStyle(
+                        backgroundColor: newDayName.isEmpty ? Color.gray.opacity(0.5) : Color.teal
+                    ))
                     .disabled(newDayName.isEmpty)
                 }
                 .padding()
@@ -55,15 +53,13 @@ struct AddWorkoutView: View {
                             }
                         }
                         .pickerStyle(SegmentedPickerStyle())
-                        
+
                         Button("Remove Selected Day") {
                             showDeleteDayAlert = true
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(selectedDay.isEmpty ? Color.gray.opacity(0.5) : Color.red.opacity(0.8))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                        .buttonStyle(CustomButtonStyle(
+                            backgroundColor: selectedDay.isEmpty ? Color.gray.opacity(0.5) : Color.red.opacity(0.8)
+                        ))
                         .disabled(selectedDay.isEmpty)
                         .showConfirmationAlert(
                             isPresented: $showDeleteDayAlert,
@@ -76,26 +72,24 @@ struct AddWorkoutView: View {
                     }
                     .padding()
                 }
-                
+
                 VStack(spacing: 10) {
                     CustomTextField(placeholder: "Exercise Name", text: $exerciseName)
                     CustomTextField(placeholder: "Sets", text: $sets)
                     CustomTextField(placeholder: "Reps", text: $reps)
                     CustomTextField(placeholder: "Weight", text: $weight)
-                    
+
                     Button(action: {
                         workoutViewModel.addExercise(dayName: selectedDay, exerciseName: exerciseName, sets: sets, reps: reps, weight: weight)
                         clearFields()
                         hideKeyboard()
                     }) {
                         Text("Add Exercise")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(Color.teal)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
                     }
-                    .disabled([exerciseName, sets, reps, weight].contains(where: \.isEmpty))
+                    .buttonStyle(CustomButtonStyle(
+                        backgroundColor: [exerciseName, sets, reps, weight].contains(where: \ .isEmpty) ? Color.gray.opacity(0.5) : Color.teal
+                    ))
+                    .disabled([exerciseName, sets, reps, weight].contains(where: \ .isEmpty))
                 }
                 .padding()
 
@@ -104,14 +98,14 @@ struct AddWorkoutView: View {
             .padding()
         }
     }
-    
+
     private func clearFields() {
         exerciseName = ""
         sets = ""
         reps = ""
         weight = ""
     }
-    
+
     private func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
@@ -121,6 +115,3 @@ struct AddWorkoutView: View {
     AddWorkoutView(workoutViewModel: WorkoutViewModel())
 }
 
-
-
-// ZMIANA TESTOWA
