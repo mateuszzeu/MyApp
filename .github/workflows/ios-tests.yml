@@ -21,7 +21,7 @@ jobs:
       - name: Set up Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest
+          xcode-version: 16.1
 
       # 3. Uruchom testy
       - name: Run tests
@@ -29,4 +29,4 @@ jobs:
           xcodebuild test \
             -project Stronger.xcodeproj \
             -scheme Stronger \
-            -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest'
