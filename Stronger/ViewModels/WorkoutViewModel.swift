@@ -12,6 +12,8 @@ import FirebaseAuth
 
 class WorkoutViewModel: ObservableObject {
     @Published var workoutDays: [WorkoutDay] = []
+    @Published var hydrationData: HydrationData = HydrationData()
+    
     var isTesting = false
     private var db = Firestore.firestore()
     
@@ -217,4 +219,39 @@ class WorkoutViewModel: ObservableObject {
         }
     }
 
+    
+    func loadHydrationData() {
+            guard let userId = Auth.auth().currentUser?.uid else { return }
+            
+            db.collection("users").document(userId).getDocument { document, error in
+                if let error = error {
+                    print("Błąd podczas ładowania danych nawodnienia: \(error.localizedDescription)")
+                    return
+                }
+                
+                if let data = document?.data()?["hydration"] as? [String: Any] {
+                    DispatchQueue.main.async {
+                        self.hydrationData.glassVolume = data["glassVolume"] as? Double ?? 0.2
+                        self.hydrationData.dailyLimit = data["dailyLimit"] as? Double ?? 3.0
+                        self.hydrationData.glassCount = data["glassCount"] as? Int ?? 0
+                    }
+                }
+            }
+        }
+    
+    func saveHydrationData() {
+            guard let userId = Auth.auth().currentUser?.uid else { return }
+            
+            let hydrationDict: [String: Any] = [
+                "glassVolume": hydrationData.glassVolume,
+                "dailyLimit": hydrationData.dailyLimit,
+                "glassCount": hydrationData.glassCount
+            ]
+            
+            db.collection("users").document(userId).setData(["hydration": hydrationDict], merge: true) { error in
+                if let error = error {
+                    print("Błąd podczas zapisu danych nawodnienia: \(error.localizedDescription)")
+                }
+            }
+        }
 }

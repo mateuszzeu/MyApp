@@ -4,19 +4,12 @@
 //
 //  Created by Liza on 13/11/2024.
 //
-
-import SwiftUI
 import SwiftUI
 
-struct ProgressView: View {
+struct HydrationView: View {
+    @ObservedObject var viewModel: WorkoutViewModel
     @State private var progress: CGFloat = 0.0
-    @State private var glassCount: Int = 0
-    @State private var glassVolume: CGFloat = 0.2
-    @State private var dailyLimit: CGFloat = 3.0
     @State private var startAnimation: CGFloat = 0
-    
-    let glassOptions: [CGFloat] = Array(stride(from: 0.1, through: 0.5, by: 0.05)) //.map? { $0 }
-    let limitOptions: [CGFloat] = [2.0, 2.5, 3.0, 3.5, 4.0]
     
     var body: some View {
         VStack {
@@ -32,22 +25,26 @@ struct ProgressView: View {
                         .scaleEffect(x: 1.1, y: 1)
                         .offset(y: -1)
                     
-                    WaterWave(progress: progress, waveHeight: 0.1, offset: startAnimation)
-                        .fill(
-                            LinearGradient(
-                                colors: [Color.blue, Color.cyan],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
+                    WaterWave(
+                        progress: CGFloat(viewModel.hydrationData.glassCount) * viewModel.hydrationData.glassVolume / viewModel.hydrationData.dailyLimit,
+                        waveHeight: 0.1,
+                        offset: startAnimation
+                    )
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.blue, Color.cyan],
+                            startPoint: .top,
+                            endPoint: .bottom
                         )
-                        .mask {
-                            Image(systemName: "drop.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .padding()
-                        }
+                    )
+                    .mask {
+                        Image(systemName: "drop.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .padding()
+                    }
                     
-                    Text("\(Int(progress * 100))%")
+                    Text("\(Int((CGFloat(viewModel.hydrationData.glassCount) * viewModel.hydrationData.glassVolume / viewModel.hydrationData.dailyLimit) * 100))%")
                         .font(.largeTitle.weight(.bold))
                         .foregroundColor(.white)
                         .opacity(0.8)
@@ -67,13 +64,16 @@ struct ProgressView: View {
                         .foregroundColor(Color.gray.opacity(0.8))
                         .font(.headline)
                     
-                    Picker("Pojemność", selection: $glassVolume) {
-                        ForEach(glassOptions, id: \.self) { volume in
+                    Picker("Pojemność", selection: $viewModel.hydrationData.glassVolume) {
+                        ForEach(Array(stride(from: 0.1, through: 0.5, by: 0.05)), id: \.self) { volume in
                             Text("\(Int(volume * 1000)) ml")
                                 .tag(volume)
                         }
                     }
-                    .pickerStyle(MenuPickerStyle())
+                    .pickerStyle(.wheel)
+                    .onChange(of: viewModel.hydrationData.glassVolume) {
+                        viewModel.saveHydrationData()
+                    }
                 }
                 
                 HStack {
@@ -81,13 +81,17 @@ struct ProgressView: View {
                         .foregroundColor(Color.gray.opacity(0.8))
                         .font(.headline)
                     
-                    Picker("Limit", selection: $dailyLimit) {
-                        ForEach(limitOptions, id: \.self) { limit in
+                    Picker("Limit", selection: $viewModel.hydrationData.dailyLimit) {
+                        ForEach([2.0, 2.5, 3.0, 3.5, 4.0], id: \.self) { limit in
                             Text("\(Int(limit * 1000)) ml")
                                 .tag(limit)
                         }
                     }
                     .pickerStyle(MenuPickerStyle())
+                    .onChange(of: viewModel.hydrationData.dailyLimit) {
+                        viewModel.saveHydrationData()
+                    }
+                    
                 }
             }
             .padding()
@@ -97,9 +101,9 @@ struct ProgressView: View {
             
             HStack(spacing: 20) {
                 Button(action: {
-                    if glassCount > 0 {
-                        glassCount -= 1
-                        updateProgress()
+                    if viewModel.hydrationData.glassCount > 0 {
+                        viewModel.hydrationData.glassCount -= 1
+                        viewModel.saveHydrationData()
                     }
                 }) {
                     Image(systemName: "minus")
@@ -109,13 +113,13 @@ struct ProgressView: View {
                         .background(Color.blue.opacity(0.8), in: Circle())
                 }
                 
-                Text("\(glassCount) szklanek")
+                Text("\(viewModel.hydrationData.glassCount) szklanek")
                     .font(.title2)
                     .foregroundColor(.white)
                 
                 Button(action: {
-                    glassCount += 1
-                    updateProgress()
+                    viewModel.hydrationData.glassCount += 1
+                    viewModel.saveHydrationData()
                 }) {
                     Image(systemName: "plus")
                         .font(.system(size: 40, weight: .black))
@@ -127,16 +131,14 @@ struct ProgressView: View {
             .padding(.top, 20)
         }
         .applyGradientBackground()
-    }
-    
-    private func updateProgress() {
-        let totalWater = CGFloat(glassCount) * glassVolume
-        progress = totalWater / dailyLimit
+        .onAppear {
+            viewModel.loadHydrationData()
+        }
     }
 }
 
 #Preview {
-    ProgressView()
+    HydrationView(viewModel: WorkoutViewModel())
 }
 
 struct WaterWave: Shape {
@@ -168,6 +170,7 @@ struct WaterWave: Shape {
         }
     }
 }
+
 
 
 

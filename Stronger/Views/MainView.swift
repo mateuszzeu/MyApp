@@ -26,7 +26,7 @@ struct MainView: View {
                             Label("Add Workout", systemImage: "square.and.pencil")
                         }
                     
-                    ProgressView()
+                    HydrationView(viewModel: viewModel)
                         .tabItem {
                             Label("Hydration", systemImage: "heart")
                         }
