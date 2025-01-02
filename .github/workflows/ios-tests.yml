@@ -25,9 +25,8 @@ jobs:
 
       # 3. Uruchom testy
       - name: Run tests
-          run: |
-            xcodebuild test \
-              -project Stronger.xcodeproj \
-              -scheme Stronger \
-              -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
-
+        run: |
+          xcodebuild test \
+            -project Stronger.xcodeproj \
+            -scheme Stronger \
+            -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
