@@ -11,11 +11,11 @@ struct HydrationView: View {
     @ObservedObject var viewModel: WorkoutViewModel
     @State private var startAnimation: CGFloat = 0
     @State private var isPulsating = false
-
+    
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
-
+            
             ZStack(alignment: .center) {
                 GeometryReader { proxy in
                     let size = proxy.size
@@ -26,7 +26,7 @@ struct HydrationView: View {
                             .aspectRatio(contentMode: .fit)
                             .foregroundColor(.black.opacity(0.2))
                             .offset(y: -1)
-
+                        
                         WaterWave(
                             progress: waveProgress,
                             waveHeight: 0.1,
@@ -45,8 +45,7 @@ struct HydrationView: View {
                                 .aspectRatio(contentMode: .fit)
                                 .padding()
                         }
-
-                        // Display "Tap to Add" if waveProgress is 0
+                        
                         if waveProgress == 0 {
                             Text("Tap to Add")
                                 .font(.headline.weight(.bold))
@@ -61,12 +60,21 @@ struct HydrationView: View {
                                     isPulsating = true
                                 }
                         } else {
-                            // Display percentage when waveProgress > 0
                             Text("\(Int(waveProgress * 100))%")
                                 .font(.largeTitle.weight(.bold))
                                 .foregroundColor(.white)
                                 .opacity(0.8)
                         }
+                        
+                        Button(action: {
+                            viewModel.hydrationData.drinks.append(viewModel.hydrationData.glassVolume)
+                            viewModel.saveHydrationData()
+                            isPulsating = false
+                        }) {
+                            Color.clear
+                        }
+                        .frame(width: size.width, height: size.height)
+                        .contentShape(Circle())
                     }
                     .frame(width: size.width, height: size.height)
                     .onAppear {
@@ -74,17 +82,12 @@ struct HydrationView: View {
                             startAnimation = 360
                         }
                     }
-                    .onTapGesture {
-                        viewModel.hydrationData.drinks.append(viewModel.hydrationData.glassVolume)
-                        viewModel.saveHydrationData()
-                        isPulsating = false
-                    }
                 }
             }
             .frame(width: 330, height: 500)
-
+            
             Spacer()
-
+            
             VStack(spacing: 12) {
                 HStack {
                     Text("Glass Volume:")
@@ -105,7 +108,7 @@ struct HydrationView: View {
                         viewModel.saveHydrationData()
                     }
                 }
-
+                
                 HStack {
                     Text("Daily Limit:")
                         .foregroundColor(.gray)
@@ -124,7 +127,7 @@ struct HydrationView: View {
                         viewModel.saveHydrationData()
                     }
                 }
-
+                
                 HStack {
                     Button {
                         if !viewModel.hydrationData.drinks.isEmpty {
@@ -139,11 +142,11 @@ struct HydrationView: View {
                         .frame(maxWidth: .infinity)
                         .padding()
                     }
-
+                    
                     Divider()
                         .frame(width: 1, height: 44)
                         .background(Color.white.opacity(0.5))
-
+                    
                     Button {
                         viewModel.hydrationData.drinks.removeAll()
                         viewModel.saveHydrationData()
@@ -171,7 +174,7 @@ struct HydrationView: View {
             viewModel.loadHydrationData()
         }
     }
-
+    
     private var waveProgress: CGFloat {
         let totalConsumed = viewModel.hydrationData.drinks.reduce(0, +)
         let limit = viewModel.hydrationData.dailyLimit
