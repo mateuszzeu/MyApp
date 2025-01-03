@@ -33,10 +33,10 @@ class WorkoutViewModel: ObservableObject {
             saveWorkoutDayToFirestore(day)
         }
     }
-
+    
     private func saveWorkoutDayToFirestore(_ workoutDay: WorkoutDay) {
         guard let userId = Auth.auth().currentUser?.uid else { return }
-
+        
         let workoutDayData: [String: Any] = [
             "dayName": workoutDay.dayName,
             "order": workoutDay.order,
@@ -57,13 +57,13 @@ class WorkoutViewModel: ObservableObject {
             }
         }
     }
-
+    
     func deleteExercise(dayName: String, exerciseId: UUID) {
         guard let dayIndex = workoutDays.firstIndex(where: { $0.dayName == dayName }) else { return }
-
+        
         if let exerciseIndex = workoutDays[dayIndex].exercises.firstIndex(where: { $0.id == exerciseId }) {
             workoutDays[dayIndex].exercises.remove(at: exerciseIndex)
-
+            
             if workoutDays[dayIndex].exercises.isEmpty {
                 removeDay(dayName: dayName)
             } else {
@@ -71,18 +71,18 @@ class WorkoutViewModel: ObservableObject {
             }
         }
     }
-
-
+    
+    
     func updateExercise(dayName: String, exercise: Exercise) {
         guard let dayIndex = workoutDays.firstIndex(where: { $0.dayName == dayName }) else { return }
-
+        
         if let exerciseIndex = workoutDays[dayIndex].exercises.firstIndex(where: { $0.id == exercise.id }) {
             workoutDays[dayIndex].exercises[exerciseIndex] = exercise
             saveWorkoutDayToFirestore(workoutDays[dayIndex])
         }
     }
-
-
+    
+    
     func loadWorkoutDaysFromFirestore() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
@@ -124,9 +124,9 @@ class WorkoutViewModel: ObservableObject {
             }
         }
     }
-
-
-
+    
+    
+    
     func moveExercise(dayName: String, fromIndex: Int, directionUp: Bool) {
         guard let dayIndex = workoutDays.firstIndex(where: { $0.dayName == dayName }) else { return }
         let targetIndex = directionUp ? fromIndex - 1 : fromIndex + 1
@@ -142,11 +142,11 @@ class WorkoutViewModel: ObservableObject {
     func moveDay(fromIndex: Int, directionLeft: Bool) {
         let toIndex = directionLeft ? fromIndex - 1 : fromIndex + 1
         guard toIndex >= 0 && toIndex < workoutDays.count else { return }
-
+        
         withAnimation(.easeInOut(duration: 0.3)) {
             workoutDays.swapAt(fromIndex, toIndex)
         }
-
+        
         if isTesting {
             self.workoutDays.enumerated().forEach { index, day in
                 self.workoutDays[index].order = index
@@ -160,12 +160,12 @@ class WorkoutViewModel: ObservableObject {
             }
         }
     }
-
-
+    
+    
     
     func saveWorkoutDaysOrder() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
-
+        
         for day in workoutDays {
             let workoutDayData: [String: Any] = [
                 "dayName": day.dayName,
@@ -178,7 +178,7 @@ class WorkoutViewModel: ObservableObject {
                     "info": $0.info
                 ]}
             ]
-
+            
             db.collection("users").document(userId).collection("workouts").document(day.dayName).setData(workoutDayData) { error in
                 if let error = error {
                     print("Błąd zapisu dnia treningowego: \(error.localizedDescription)")
@@ -186,8 +186,8 @@ class WorkoutViewModel: ObservableObject {
             }
         }
     }
-
-
+    
+    
     
     func addDay(dayName: String) {
         guard !dayName.isEmpty else { return }
@@ -218,40 +218,46 @@ class WorkoutViewModel: ObservableObject {
             }
         }
     }
-
+    
     
     func loadHydrationData() {
-            guard let userId = Auth.auth().currentUser?.uid else { return }
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        db.collection("users").document(userId).getDocument { document, error in
+            if let error = error {
+                print("Błąd podczas ładowania danych nawodnienia: \(error.localizedDescription)")
+                return
+            }
             
-            db.collection("users").document(userId).getDocument { document, error in
-                if let error = error {
-                    print("Błąd podczas ładowania danych nawodnienia: \(error.localizedDescription)")
-                    return
-                }
-                
-                if let data = document?.data()?["hydration"] as? [String: Any] {
-                    DispatchQueue.main.async {
-                        self.hydrationData.glassVolume = data["glassVolume"] as? Double ?? 0.2
-                        self.hydrationData.dailyLimit = data["dailyLimit"] as? Double ?? 3.0
-                        self.hydrationData.glassCount = data["glassCount"] as? Int ?? 0
+            if let data = document?.data()?["hydration"] as? [String: Any] {
+                DispatchQueue.main.async {
+                    if let drinksArray = data["drinks"] as? [Double] {
+                        self.hydrationData.drinks = drinksArray
+                    }
+                    if let glassVolume = data["glassVolume"] as? Double {
+                        self.hydrationData.glassVolume = glassVolume
+                    }
+                    if let limit = data["dailyLimit"] as? Double {
+                        self.hydrationData.dailyLimit = limit
                     }
                 }
             }
         }
+    }
     
     func saveHydrationData() {
-            guard let userId = Auth.auth().currentUser?.uid else { return }
-            
-            let hydrationDict: [String: Any] = [
-                "glassVolume": hydrationData.glassVolume,
-                "dailyLimit": hydrationData.dailyLimit,
-                "glassCount": hydrationData.glassCount
-            ]
-            
-            db.collection("users").document(userId).setData(["hydration": hydrationDict], merge: true) { error in
-                if let error = error {
-                    print("Błąd podczas zapisu danych nawodnienia: \(error.localizedDescription)")
-                }
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let hydrationDict: [String: Any] = [
+            "drinks": hydrationData.drinks,
+            "glassVolume": hydrationData.glassVolume,
+            "dailyLimit": hydrationData.dailyLimit
+        ]
+        
+        db.collection("users").document(userId).setData(["hydration": hydrationDict], merge: true) { error in
+            if let error = error {
+                print("Błąd podczas zapisu danych nawodnienia: \(error.localizedDescription)")
             }
         }
+    }
 }
