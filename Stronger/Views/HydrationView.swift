@@ -4,11 +4,13 @@
 //
 //  Created by Liza on 13/11/2024.
 //
+
 import SwiftUI
 
 struct HydrationView: View {
     @ObservedObject var viewModel: WorkoutViewModel
     @State private var startAnimation: CGFloat = 0
+    @State private var isPulsating = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -24,7 +26,7 @@ struct HydrationView: View {
                             .aspectRatio(contentMode: .fit)
                             .foregroundColor(.black.opacity(0.2))
                             .offset(y: -1)
-                        
+
                         WaterWave(
                             progress: waveProgress,
                             waveHeight: 0.1,
@@ -44,10 +46,27 @@ struct HydrationView: View {
                                 .padding()
                         }
 
-                        Text("\(Int(waveProgress * 100))%")
-                            .font(.largeTitle.weight(.bold))
-                            .foregroundColor(.white)
-                            .opacity(0.8)
+                        // Display "Tap to Add" if waveProgress is 0
+                        if waveProgress == 0 {
+                            Text("Tap to Add")
+                                .font(.headline.weight(.bold))
+                                .foregroundColor(.gray.opacity(0.7))
+                                .scaleEffect(isPulsating ? 1.2 : 1.0)
+                                .opacity(isPulsating ? 0.4 : 1.0)
+                                .animation(
+                                    .easeInOut(duration: 1).repeatForever(autoreverses: true),
+                                    value: isPulsating
+                                )
+                                .onAppear {
+                                    isPulsating = true
+                                }
+                        } else {
+                            // Display percentage when waveProgress > 0
+                            Text("\(Int(waveProgress * 100))%")
+                                .font(.largeTitle.weight(.bold))
+                                .foregroundColor(.white)
+                                .opacity(0.8)
+                        }
                     }
                     .frame(width: size.width, height: size.height)
                     .onAppear {
@@ -58,30 +77,29 @@ struct HydrationView: View {
                     .onTapGesture {
                         viewModel.hydrationData.drinks.append(viewModel.hydrationData.glassVolume)
                         viewModel.saveHydrationData()
+                        isPulsating = false
                     }
                 }
             }
             .frame(width: 330, height: 500)
 
-            Text("\(viewModel.hydrationData.drinks.count) szklanek")
-                .font(.title3)
-                .foregroundColor(.white)
-                .padding(.vertical, 8)
-
             Spacer()
 
             VStack(spacing: 12) {
                 HStack {
-                    Text("Pojemność szklanki:")
+                    Text("Glass Volume:")
                         .foregroundColor(.gray)
                     Spacer()
-                    Picker("Pojemność", selection: $viewModel.hydrationData.glassVolume) {
-                        ForEach(Array(stride(from: 0.1, through: 0.5, by: 0.05)), id: \.self) { volume in
+                    Picker("Volume", selection: $viewModel.hydrationData.glassVolume) {
+                        ForEach([0.1, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5], id: \.self) { volume in
                             Text("\(Int(volume * 1000)) ml")
+                                .font(.footnote)
+                                .bold()
                                 .tag(volume)
                         }
                     }
-                    .pickerStyle(.menu)
+                    .frame(width: UIScreen.main.bounds.width * 0.4)
+                    .pickerStyle(.wheel)
                     .tint(.black)
                     .onChange(of: viewModel.hydrationData.glassVolume) {
                         viewModel.saveHydrationData()
@@ -89,23 +107,25 @@ struct HydrationView: View {
                 }
 
                 HStack {
-                    Text("Limit dzienny:")
+                    Text("Daily Limit:")
                         .foregroundColor(.gray)
                     Spacer()
                     Picker("Limit", selection: $viewModel.hydrationData.dailyLimit) {
                         ForEach([1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0], id: \.self) { limit in
                             Text("\(Int(limit * 1000)) ml")
+                                .font(.footnote)
                                 .tag(limit)
                         }
                     }
-                    .pickerStyle(.menu)
+                    .frame(width: UIScreen.main.bounds.width * 0.4)
+                    .pickerStyle(.wheel)
                     .tint(.black)
                     .onChange(of: viewModel.hydrationData.dailyLimit) {
                         viewModel.saveHydrationData()
                     }
                 }
 
-                HStack(spacing: 0) {
+                HStack {
                     Button {
                         if !viewModel.hydrationData.drinks.isEmpty {
                             viewModel.hydrationData.drinks.removeLast()
@@ -114,7 +134,7 @@ struct HydrationView: View {
                     } label: {
                         HStack {
                             Image(systemName: "minus.circle")
-                            Text("Odejmij")
+                            Text("Remove")
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -158,7 +178,6 @@ struct HydrationView: View {
         return limit > 0 ? CGFloat(totalConsumed / limit) : 0
     }
 }
-
 
 #Preview {
     HydrationView(viewModel: WorkoutViewModel())
