@@ -59,11 +59,27 @@ struct HydrationView: View {
                                 .onAppear {
                                     isPulsating = true
                                 }
+                                .offset(y: 60)
                         } else {
                             Text("\(Int(waveProgress * 100))%")
                                 .font(.largeTitle.weight(.bold))
                                 .foregroundColor(.white)
                                 .opacity(0.8)
+                            
+                            if viewModel.hydrationData.drinks.count < 2 {
+                                Text("Long press for more")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray.opacity(0.5))
+                                    .offset(y: 40)
+                                    .opacity(isPulsating ? 0.2 : 1.0)
+                                    .animation(
+                                        .easeInOut(duration: 1.5).repeatForever(autoreverses: true),
+                                        value: isPulsating
+                                    )
+                                    .onAppear {
+                                        isPulsating = true
+                                    }
+                            }
                         }
                         
                         Button(action: {
@@ -75,6 +91,18 @@ struct HydrationView: View {
                         }
                         .frame(width: size.width, height: size.height)
                         .contentShape(Circle())
+                        .contextMenu {
+                                Button("Remove") {
+                                    if !viewModel.hydrationData.drinks.isEmpty {
+                                        viewModel.hydrationData.drinks.removeLast()
+                                        viewModel.saveHydrationData()
+                                    }
+                                }
+                                Button("Reset") {
+                                    viewModel.hydrationData.drinks.removeAll()
+                                    viewModel.saveHydrationData()
+                                }
+                            }
                     }
                     .frame(width: size.width, height: size.height)
                     .onAppear {
@@ -127,42 +155,6 @@ struct HydrationView: View {
                         viewModel.saveHydrationData()
                     }
                 }
-                
-                HStack {
-                    Button {
-                        if !viewModel.hydrationData.drinks.isEmpty {
-                            viewModel.hydrationData.drinks.removeLast()
-                            viewModel.saveHydrationData()
-                        }
-                    } label: {
-                        HStack {
-                            Image(systemName: "minus.circle")
-                            Text("Remove")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                    }
-                    
-                    Divider()
-                        .frame(width: 1, height: 44)
-                        .background(Color.white.opacity(0.5))
-                    
-                    Button {
-                        viewModel.hydrationData.drinks.removeAll()
-                        viewModel.saveHydrationData()
-                    } label: {
-                        HStack {
-                            Image(systemName: "arrow.uturn.backward")
-                            Text("Reset")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                    }
-                    .tint(.red)
-                }
-                .background(Color.white.opacity(0.2))
-                .cornerRadius(8)
-                .buttonStyle(.plain)
             }
             .padding()
             .background(Color.white.opacity(0.2))
