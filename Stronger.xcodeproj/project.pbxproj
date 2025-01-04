@@ -25,6 +25,7 @@
 		61F086D72CC79D3D000F9844 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 61F086D62CC79D3D000F9844 /* FirebaseStorage */; };
 		61F086D92CC79D3D000F9844 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 61F086D82CC79D3D000F9844 /* FirebaseStorageCombine-Community */; };
 		6E582C602CF3A0CB005982A4 /* StrongerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E582C452CF3A0CB005982A4 /* StrongerApp.swift */; };
+		6EA848EC2D299FBF003D33B2 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 6EA848EB2D299FBF003D33B2 /* Lottie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,15 +38,41 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		6EA848F02D299FBF003D33B2 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		61F086732CC2C036000F9844 /* Stronger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stronger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E3D4A4F2D268BD400259C04 /* StrongerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StrongerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E582C452CF3A0CB005982A4 /* StrongerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrongerApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6EA848F52D299FE6003D33B2 /* Exceptions for "Stronger" folder in "StrongerTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Lottie/LottieView.swift,
+			);
+			target = 6E3D4A4E2D268BD400259C04 /* StrongerTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		61F086752CC2C036000F9844 /* Stronger */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6EA848F52D299FE6003D33B2 /* Exceptions for "Stronger" folder in "StrongerTests" target */,
+			);
 			path = Stronger;
 			sourceTree = "<group>";
 		};
@@ -72,6 +99,7 @@
 				61F086CB2CC79D3D000F9844 /* FirebaseFirestore in Frameworks */,
 				61F086B92CC79D3D000F9844 /* FirebaseAnalytics in Frameworks */,
 				61F086CD2CC79D3D000F9844 /* FirebaseFirestoreCombine-Community in Frameworks */,
+				6EA848EC2D299FBF003D33B2 /* Lottie in Frameworks */,
 				61F086C52CC79D3D000F9844 /* FirebaseCore in Frameworks */,
 				61F086D12CC79D3D000F9844 /* FirebaseFunctionsCombine-Community in Frameworks */,
 				61F086C72CC79D3D000F9844 /* FirebaseCrashlytics in Frameworks */,
@@ -98,6 +126,7 @@
 				6E3D4A502D268BD400259C04 /* StrongerTests */,
 				61F086742CC2C036000F9844 /* Products */,
 				61F086752CC2C036000F9844 /* Stronger */,
+				6EA848EA2D299FBF003D33B2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -110,6 +139,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		6EA848EA2D299FBF003D33B2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -120,6 +156,7 @@
 				61F0866F2CC2C036000F9844 /* Sources */,
 				61F086702CC2C036000F9844 /* Frameworks */,
 				61F086712CC2C036000F9844 /* Resources */,
+				6EA848F02D299FBF003D33B2 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -147,6 +184,7 @@
 				61F086D42CC79D3D000F9844 /* FirebasePerformance */,
 				61F086D62CC79D3D000F9844 /* FirebaseStorage */,
 				61F086D82CC79D3D000F9844 /* FirebaseStorageCombine-Community */,
+				6EA848EB2D299FBF003D33B2 /* Lottie */,
 			);
 			productName = Stronger;
 			productReference = 61F086732CC2C036000F9844 /* Stronger.app */;
@@ -205,6 +243,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				61F086B72CC79D3D000F9844 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				6EA848E92D299FB0003D33B2 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 61F086742CC2C036000F9844 /* Products */;
@@ -517,6 +556,14 @@
 				minimumVersion = 11.4.0;
 			};
 		};
+		6EA848E92D299FB0003D33B2 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -604,6 +651,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 61F086B72CC79D3D000F9844 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseStorageCombine-Community";
+		};
+		6EA848EB2D299FBF003D33B2 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6EA848E92D299FB0003D33B2 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

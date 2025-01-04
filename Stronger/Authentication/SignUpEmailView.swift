@@ -77,7 +77,7 @@ struct SignUpEmailView: View {
             )
         }
         .navigationDestination(isPresented: $isNavigatedToSignInView) {
-            SignInEmailView(showSignInView: $showSignInView)
+            AuthenticationView(showSignInView: $showSignInView)
         }
     }
 }
