@@ -40,10 +40,12 @@ struct HydrationView: View {
                             )
                         )
                         .mask {
-                            Image(systemName: "drop.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .padding()
+                            if waveProgress > 0 {
+                                    Image(systemName: "drop.fill")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .padding()
+                                }
                         }
                         
                         if waveProgress == 0 {
@@ -92,7 +94,7 @@ struct HydrationView: View {
                         .frame(width: size.width, height: size.height)
                         .contentShape(Circle())
                         .contextMenu {
-                                Button("Remove") {
+                                Button("Remove last glass") {
                                     if !viewModel.hydrationData.drinks.isEmpty {
                                         viewModel.hydrationData.drinks.removeLast()
                                         viewModel.saveHydrationData()

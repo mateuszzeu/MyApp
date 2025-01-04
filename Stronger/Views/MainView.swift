@@ -28,7 +28,7 @@ struct MainView: View {
                     
                     HydrationView(viewModel: viewModel)
                         .tabItem {
-                            Label("Hydration", systemImage: "heart")
+                            Label("Hydration", systemImage: "drop")
                         }
                     
                     SettingsView(showSignInView: $showSignInView)
