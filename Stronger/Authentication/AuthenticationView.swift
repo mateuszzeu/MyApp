@@ -92,6 +92,7 @@ struct AuthenticationView: View {
                 .transition(.opacity)
             }
         }
+        .applyGradientBackground()
     }
 }
 

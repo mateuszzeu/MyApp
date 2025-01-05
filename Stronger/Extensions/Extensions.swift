@@ -32,18 +32,18 @@ extension View {
 
 struct GradientBackground: ViewModifier {
     func body(content: Content) -> some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color.blue.opacity(0.2), Color.yellow.opacity(0.15), Color.white.opacity(0.9)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-            
+        LinearGradient(
+            colors: [Color.blue.opacity(0.2), Color.yellow.opacity(0.15), Color.white.opacity(0.9)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .ignoresSafeArea()
+        .overlay(
             content
-        }
+        )
     }
 }
+
 
 struct CustomTextField: View {
     let placeholder: String

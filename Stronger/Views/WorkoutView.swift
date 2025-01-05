@@ -14,9 +14,6 @@ struct WorkoutView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color.clear
-                    .applyGradientBackground()
-
                 VStack {
                     if viewModel.workoutDays.isEmpty {
                         Text("No workouts yet")
@@ -34,6 +31,7 @@ struct WorkoutView: View {
                     }
                 }
             }
+            .applyGradientBackground()
             .navigationTitle("Workout Days")
         }
         .onAppear {

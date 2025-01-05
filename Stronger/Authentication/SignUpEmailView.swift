@@ -79,6 +79,7 @@ struct SignUpEmailView: View {
         .navigationDestination(isPresented: $isNavigatedToSignInView) {
             AuthenticationView(showSignInView: $showSignInView)
         }
+        .applyGradientBackground()
     }
 }
 

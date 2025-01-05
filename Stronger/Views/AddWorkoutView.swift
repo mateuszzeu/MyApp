@@ -20,9 +20,6 @@ struct AddWorkoutView: View {
 
     var body: some View {
         ZStack {
-            Color.clear
-                .applyGradientBackground()
-
             VStack(spacing: 20) {
                 VStack(spacing: 10) {
                     TextField("Enter New Day Name", text: $newDayName)
@@ -97,6 +94,7 @@ struct AddWorkoutView: View {
             }
             .padding()
         }
+        .applyGradientBackground()
     }
 
     private func clearFields() {
