@@ -8,74 +8,90 @@ import SwiftUI
 
 struct AuthenticationView: View {
     @Binding var showSignInView: Bool
+    @State private var showContent = false
     @StateObject private var viewModel = SignInEmailViewModel()
 
     var body: some View {
-        VStack(spacing: 20) {
-            VStack(spacing: 15) {
-                TextField("Email...", text: $viewModel.email)
-                    .padding()
-                    .background(Color.gray.opacity(0.4))
-                    .cornerRadius(10)
-
-                SecureField("Password...", text: $viewModel.password)
-                    .padding()
-                    .background(Color.gray.opacity(0.4))
-                    .cornerRadius(10)
-
-                if viewModel.showErrorMessage {
-                    Text(viewModel.errorMessage)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                        .padding(.top, 10)
+        ZStack {
+            if !showContent {
+                LogoAnimationView {
+                    withAnimation(.easeInOut(duration: 3.0)) {
+                        showContent = true
+                    }
                 }
+                .transition(.opacity)
+            }
 
-                Button {
-                    Task {
-                        viewModel.showErrorMessage = false
-                        viewModel.errorMessage = ""
+            if showContent {
+                VStack(spacing: 20) {
+                    Spacer()
+                        .frame(height: UIScreen.main.bounds.height * 0.15)
 
-                        do {
-                            try await viewModel.signInUser()
+                    VStack(spacing: 15) {
+                        TextField("Email...", text: $viewModel.email)
+                            .padding()
+                            .background(Color.gray.opacity(0.4))
+                            .cornerRadius(10)
 
-                            if !viewModel.showErrorMessage {
-                                showSignInView = false
+                        SecureField("Password...", text: $viewModel.password)
+                            .padding()
+                            .background(Color.gray.opacity(0.4))
+                            .cornerRadius(10)
+
+                        if viewModel.showErrorMessage {
+                            Text(viewModel.errorMessage)
+                                .foregroundColor(.red)
+                                .font(.footnote)
+                                .padding(.top, 10)
+                        }
+
+                        Button {
+                            Task {
+                                viewModel.showErrorMessage = false
+                                viewModel.errorMessage = ""
+
+                                do {
+                                    try await viewModel.signInUser()
+
+                                    if !viewModel.showErrorMessage {
+                                        showSignInView = false
+                                    }
+                                } catch {
+                                    print("Login error: \(error.localizedDescription)")
+                                    viewModel.errorMessage = "Invalid login credentials"
+                                    viewModel.showErrorMessage = true
+                                }
                             }
-                        } catch {
-                            print("Login error: \(error.localizedDescription)")
-                            viewModel.errorMessage = "Invalid login credentials"
-                            viewModel.showErrorMessage = true
+                        } label: {
+                            Text("Sign In")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(height: 55)
+                                .frame(maxWidth: .infinity)
+                                .background(Color.blue)
+                                .cornerRadius(10)
                         }
                     }
-                } label: {
-                    Text("Sign In")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(height: 55)
-                        .frame(maxWidth: .infinity)
-                        .background(Color.blue)
-                        .cornerRadius(10)
+                    .padding(.horizontal)
+
+                    NavigationLink {
+                        SignUpEmailView(showSignInView: $showSignInView)
+                    } label: {
+                        Text("Register")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(height: 55)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.green)
+                            .cornerRadius(10)
+                    }
+                    .padding(.horizontal)
+
+                    Spacer()
                 }
+                .transition(.opacity)
             }
-            .padding(.horizontal)
-
-            NavigationLink {
-                SignUpEmailView(showSignInView: $showSignInView)
-            } label: {
-                Text("Register")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(height: 55)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.green)
-                    .cornerRadius(10)
-            }
-            .padding(.horizontal)
-
-            Spacer()
         }
-        .padding()
-        .navigationTitle("Welcome")
     }
 }
 
@@ -84,4 +100,3 @@ struct AuthenticationView: View {
         AuthenticationView(showSignInView: .constant(false))
     }
 }
-

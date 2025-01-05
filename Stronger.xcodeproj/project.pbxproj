@@ -62,6 +62,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Lottie/LottieView.swift,
+				Views/LogoAnimationView.swift,
 			);
 			target = 6E3D4A4E2D268BD400259C04 /* StrongerTests */;
 		};
