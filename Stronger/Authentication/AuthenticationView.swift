@@ -93,6 +93,7 @@ struct AuthenticationView: View {
             }
         }
         .applyGradientBackground()
+        .navigationBarBackButtonHidden(true)
     }
 }
 

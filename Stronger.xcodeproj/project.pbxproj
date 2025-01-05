@@ -63,6 +63,7 @@
 			membershipExceptions = (
 				Lottie/LottieView.swift,
 				Views/LogoAnimationView.swift,
+				Views/SuccessSheetView.swift,
 			);
 			target = 6E3D4A4E2D268BD400259C04 /* StrongerTests */;
 		};

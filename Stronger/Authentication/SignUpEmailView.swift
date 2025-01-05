@@ -66,15 +66,13 @@ struct SignUpEmailView: View {
             Spacer()
         }
         .padding()
-        .navigationTitle("Sign Up With Email")
-        .alert(isPresented: $showSuccessMessage) {
-            Alert(
-                title: Text("Success"),
-                message: Text("Your account has been created successfully!"),
-                dismissButton: .default(Text("OK")) {
-                    isNavigatedToSignInView = true
-                }
-            )
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
+        .sheet(isPresented: $showSuccessMessage) {
+            SuccessSheetView {
+                isNavigatedToSignInView = true
+                showSuccessMessage = false
+            }
         }
         .navigationDestination(isPresented: $isNavigatedToSignInView) {
             AuthenticationView(showSignInView: $showSignInView)
