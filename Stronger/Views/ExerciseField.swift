@@ -15,13 +15,15 @@ struct ExerciseField: View {
         HStack {
             Text("\(label):")
                 .font(.subheadline)
-                .foregroundColor(.gray)
+                //.foregroundColor(.gray)
+                .foregroundColor(Color.theme.text.opacity(0.6))
                 .frame(width: 55, alignment: .leading)
             
             Spacer()
             
             TextField(label, text: $value)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+                .applyTransparentBackground()
                 .frame(minWidth: 50, maxWidth: .infinity)
         }
     }

@@ -22,12 +22,8 @@ struct InfoView: View {
                     viewModel.updateExercise(dayName: dayName, exercise: exercise)
                 }
             ))
-            .scrollContentBackground(.hidden)
-            .background(Color.white.opacity(0.2))
-            .cornerRadius(12)
-            .shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: 5)
+            .applyTransparentBackground()
             .padding()
-            .frame(minHeight: 150)
         }
         .applyGradientBackground()
         .navigationTitle(exercise.name)
@@ -39,7 +35,8 @@ struct InfoView: View {
                     presentationMode.wrappedValue.dismiss()
                 }) {
                     Image(systemName: "chevron.left")
-                        .foregroundColor(.white)
+                        //.foregroundColor(.white)
+                        .foregroundColor(Color.theme.text)
                 }
             }
         }

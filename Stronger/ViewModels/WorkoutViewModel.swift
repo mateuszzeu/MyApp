@@ -100,7 +100,7 @@ class WorkoutViewModel: ObservableObject {
                 let data = document.data()
                 guard let dayName = data["dayName"] as? String,
                       let exercisesData = data["exercises"] as? [[String: Any]],
-                      let order = data["order"] as? Int // Obsługa order
+                      let order = data["order"] as? Int
                 else { continue }
                 
                 var exercises: [Exercise] = []
@@ -120,7 +120,7 @@ class WorkoutViewModel: ObservableObject {
             }
             
             DispatchQueue.main.async {
-                self.workoutDays = fetchedWorkoutDays.sorted(by: { $0.order < $1.order }) // Sortujemy według order
+                self.workoutDays = fetchedWorkoutDays.sorted(by: { $0.order < $1.order })
             }
         }
     }

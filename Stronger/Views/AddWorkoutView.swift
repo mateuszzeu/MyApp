@@ -24,8 +24,7 @@ struct AddWorkoutView: View {
                 VStack(spacing: 10) {
                     TextField("Enter New Day Name", text: $newDayName)
                         .padding()
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color.white))
-                        .shadow(color: .gray.opacity(0.2), radius: 4)
+                        .applyTransparentBackground()
 
                     Button(action: {
                         workoutViewModel.addDay(dayName: newDayName)
@@ -36,7 +35,7 @@ struct AddWorkoutView: View {
                         Text("Add New Day")
                     }
                     .buttonStyle(CustomButtonStyle(
-                        backgroundColor: newDayName.isEmpty ? Color.gray.opacity(0.5) : Color.teal
+                        backgroundColor: newDayName.isEmpty ? Color.theme.primary.opacity(0.4) : Color.theme.primary
                     ))
                     .disabled(newDayName.isEmpty)
                 }
@@ -55,7 +54,7 @@ struct AddWorkoutView: View {
                             showDeleteDayAlert = true
                         }
                         .buttonStyle(CustomButtonStyle(
-                            backgroundColor: selectedDay.isEmpty ? Color.gray.opacity(0.5) : Color.red.opacity(0.8)
+                            backgroundColor: selectedDay.isEmpty ? Color.theme.primary.opacity(0.4) : Color.theme.accent.opacity(0.8)
                         ))
                         .disabled(selectedDay.isEmpty)
                         .showConfirmationAlert(
@@ -84,7 +83,8 @@ struct AddWorkoutView: View {
                         Text("Add Exercise")
                     }
                     .buttonStyle(CustomButtonStyle(
-                        backgroundColor: [exerciseName, sets, reps, weight].contains(where: \ .isEmpty) ? Color.gray.opacity(0.5) : Color.teal
+                        backgroundColor: [exerciseName, sets, reps, weight].contains(where: \ .isEmpty) ? Color.theme.primary.opacity(0.4) : Color.theme.accent,
+                        foregroundColor: Color.theme.text
                     ))
                     .disabled([exerciseName, sets, reps, weight].contains(where: \ .isEmpty))
                 }

@@ -18,11 +18,13 @@ struct ExerciseRowView: View {
             HStack {
                 Text(exercise.name)
                     .font(.headline)
+                    .foregroundColor(Color.theme.text)
                 
                 Spacer()
                 
                 NavigationLink(destination: InfoView(exercise: exercise, viewModel: viewModel, dayName: dayName)) {
                     Image(systemName: "info.circle")
+                        .foregroundColor(Color.theme.text)
                 }
             }
             
@@ -54,9 +56,7 @@ struct ExerciseRowView: View {
             ))
         }
         .padding()
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.3), radius: 4, x: 0, y: 2)
+        .applyTransparentBackground()
         .contextMenu {
             if index > 0 {
                 Button("Move Up") {

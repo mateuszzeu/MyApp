@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct CustomButtonStyle: ButtonStyle {
-    var backgroundColor: Color = Color.teal
-    var foregroundColor: Color = .white
+    var backgroundColor: Color = Color.theme.primary
+    var foregroundColor: Color = Color.theme.text
     var cornerRadius: CGFloat = 10
     
     func makeBody(configuration: Configuration) -> some View {

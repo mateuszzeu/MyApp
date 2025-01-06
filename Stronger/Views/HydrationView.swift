@@ -24,7 +24,8 @@ struct HydrationView: View {
                             .resizable()
                             .renderingMode(.template)
                             .aspectRatio(contentMode: .fit)
-                            .foregroundColor(.black.opacity(0.2))
+                            //.foregroundColor(.black.opacity(0.2))
+                            .foregroundColor(Color.theme.text.opacity(0.2))
                             .offset(y: -1)
                         
                         WaterWave(
@@ -51,7 +52,8 @@ struct HydrationView: View {
                         if waveProgress == 0 {
                             Text("Tap to Add")
                                 .font(.headline.weight(.bold))
-                                .foregroundColor(.gray.opacity(0.7))
+                                //.foregroundColor(.gray.opacity(0.7))
+                                .foregroundColor(Color.theme.text.opacity(0.7))
                                 .scaleEffect(isPulsating ? 1.2 : 1.0)
                                 .opacity(isPulsating ? 0.4 : 1.0)
                                 .animation(
@@ -65,13 +67,15 @@ struct HydrationView: View {
                         } else {
                             Text("\(Int(waveProgress * 100))%")
                                 .font(.largeTitle.weight(.bold))
-                                .foregroundColor(.white)
+                                //.foregroundColor(.white)
+                                .foregroundColor(Color.theme.text)
                                 .opacity(0.8)
                             
                             if viewModel.hydrationData.drinks.count < 2 {
                                 Text("Long press for more")
                                     .font(.subheadline)
-                                    .foregroundColor(.gray.opacity(0.5))
+                                    //.foregroundColor(.gray.opacity(0.5))
+                                    .foregroundColor(Color.theme.text.opacity(0.5))
                                     .offset(y: 40)
                                     .opacity(isPulsating ? 0.2 : 1.0)
                                     .animation(
@@ -121,7 +125,8 @@ struct HydrationView: View {
             VStack(spacing: 12) {
                 HStack {
                     Text("Glass Volume:")
-                        .foregroundColor(.gray)
+                        //.foregroundColor(.gray)
+                        .foregroundColor(Color.theme.text.opacity(0.7))
                     Spacer()
                     Picker("Volume", selection: $viewModel.hydrationData.glassVolume) {
                         ForEach([0.1, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5], id: \.self) { volume in
@@ -133,7 +138,8 @@ struct HydrationView: View {
                     }
                     .frame(width: UIScreen.main.bounds.width * 0.4)
                     .pickerStyle(.wheel)
-                    .tint(.black)
+                    //.tint(.black)
+                    .tint(Color.theme.text)
                     .onChange(of: viewModel.hydrationData.glassVolume) {
                         viewModel.saveHydrationData()
                     }
@@ -141,7 +147,7 @@ struct HydrationView: View {
                 
                 HStack {
                     Text("Daily Limit:")
-                        .foregroundColor(.gray)
+                        .foregroundColor(Color.theme.text.opacity(0.7))
                     Spacer()
                     Picker("Limit", selection: $viewModel.hydrationData.dailyLimit) {
                         ForEach([1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0], id: \.self) { limit in
@@ -152,15 +158,14 @@ struct HydrationView: View {
                     }
                     .frame(width: UIScreen.main.bounds.width * 0.4)
                     .pickerStyle(.wheel)
-                    .tint(.black)
+                    .tint(Color.theme.text)
                     .onChange(of: viewModel.hydrationData.dailyLimit) {
                         viewModel.saveHydrationData()
                     }
                 }
             }
             .padding()
-            .background(Color.white.opacity(0.2))
-            .cornerRadius(12)
+            .applyTransparentBackground()
             .padding(.horizontal)
         }
         .applyGradientBackground()

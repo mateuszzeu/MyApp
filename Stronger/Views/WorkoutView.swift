@@ -18,7 +18,7 @@ struct WorkoutView: View {
                     if viewModel.workoutDays.isEmpty {
                         Text("No workouts yet")
                             .font(.headline)
-                            .foregroundColor(.black)
+                            .foregroundColor(Color.theme.text)
                             .padding()
                     } else {
                         WorkoutDaysScrollView(viewModel: viewModel, selectedDay: $selectedDay)

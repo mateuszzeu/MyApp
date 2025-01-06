@@ -30,17 +30,16 @@ struct AuthenticationView: View {
                     VStack(spacing: 15) {
                         TextField("Email...", text: $viewModel.email)
                             .padding()
-                            .background(Color.gray.opacity(0.4))
-                            .cornerRadius(10)
-
+                            .applyTransparentBackground()
+                        
                         SecureField("Password...", text: $viewModel.password)
                             .padding()
-                            .background(Color.gray.opacity(0.4))
-                            .cornerRadius(10)
+                            .applyTransparentBackground()
 
                         if viewModel.showErrorMessage {
                             Text(viewModel.errorMessage)
-                                .foregroundColor(.red)
+                                //.foregroundColor(.red)
+                                .foregroundColor(Color.theme.accent)
                                 .font(.footnote)
                                 .padding(.top, 10)
                         }
@@ -65,10 +64,12 @@ struct AuthenticationView: View {
                         } label: {
                             Text("Sign In")
                                 .font(.headline)
-                                .foregroundColor(.white)
+                                //.foregroundColor(.white)
+                                .foregroundColor(Color.theme.text)
                                 .frame(height: 55)
                                 .frame(maxWidth: .infinity)
-                                .background(Color.blue)
+                                //.background(Color.blue)
+                                .background(Color.theme.primary)
                                 .cornerRadius(10)
                         }
                     }
@@ -79,10 +80,12 @@ struct AuthenticationView: View {
                     } label: {
                         Text("Register")
                             .font(.headline)
-                            .foregroundColor(.white)
+                            //.foregroundColor(.white)
+                            .foregroundColor(Color.theme.text)
                             .frame(height: 55)
                             .frame(maxWidth: .infinity)
-                            .background(Color.green)
+                            //.background(Color.green)
+                            .background(Color.theme.accent)
                             .cornerRadius(10)
                     }
                     .padding(.horizontal)

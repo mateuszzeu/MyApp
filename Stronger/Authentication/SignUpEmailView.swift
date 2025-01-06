@@ -11,28 +11,26 @@ struct SignUpEmailView: View {
         VStack {
             TextField("Email...", text: $viewModel.email)
                 .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
+                .applyTransparentBackground()
             
             SecureField("Password...", text: $viewModel.password)
                 .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
+                .applyTransparentBackground()
                 .textContentType(.newPassword)
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
             
             SecureField("Confirm Password...", text: $viewModel.confirmPassword)
                 .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
+                .applyTransparentBackground()
                 .textContentType(.newPassword)
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
             
             if viewModel.showErrorMessage {
                 Text(viewModel.errorMessage)
-                    .foregroundColor(.red)
+                   // .foregroundColor(.red)
+                    .foregroundColor(Color.theme.accent)
                     .font(.footnote)
                     .padding(.top, 10)
             }
@@ -45,7 +43,6 @@ struct SignUpEmailView: View {
                             return
                         }
                         try await viewModel.signUp()
-                        
                         showSuccessMessage = true
                     } catch {
                         print("Sign up error: \(error.localizedDescription)")
@@ -56,10 +53,12 @@ struct SignUpEmailView: View {
             } label: {
                 Text("Sign Up")
                     .font(.headline)
-                    .foregroundColor(.white)
+                    //.foregroundColor(.white)
+                    .foregroundColor(Color.theme.text)
                     .frame(height: 55)
                     .frame(maxWidth: .infinity)
-                    .background(Color.green)
+                    //.background(Color.green)
+                    .background(Color.theme.primary)
                     .cornerRadius(10)
             }
             

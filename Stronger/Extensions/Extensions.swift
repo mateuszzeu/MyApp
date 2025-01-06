@@ -25,22 +25,27 @@ extension View {
     }
     
     func applyGradientBackground() -> some View {
-            self.modifier(GradientBackground())
-        }
-}
+        self.modifier(GradientBackground())
+    }
     
+    func applyTransparentBackground() -> some View {
+        self.modifier(TransparentBackground())
+    }
+}
+
 
 struct GradientBackground: ViewModifier {
     func body(content: Content) -> some View {
         LinearGradient(
-            colors: [Color.blue.opacity(0.2), Color.yellow.opacity(0.15), Color.white.opacity(0.9)],
+            colors: [
+                Color.theme.backgroundTop,
+                Color.theme.backgroundBottom
+            ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
         .ignoresSafeArea()
-        .overlay(
-            content
-        )
+        .overlay(content)
     }
 }
 
@@ -52,8 +57,7 @@ struct CustomTextField: View {
     var body: some View {
         TextField(placeholder, text: $text)
             .padding()
-            .background(RoundedRectangle(cornerRadius: 10).fill(Color.white))
-            .shadow(color: .gray.opacity(0.2), radius: 4)
+            .applyTransparentBackground()
     }
 }
 
@@ -85,5 +89,46 @@ struct WaterWave: Shape {
             path.addLine(to: CGPoint(x: rect.width, y: rect.height))
             path.addLine(to: CGPoint(x: 0, y: rect.height))
         }
+    }
+}
+
+extension Color {
+    static let theme = ColorTheme()
+}
+
+struct ColorTheme {
+    let primary = Color("PrimaryColor")
+    let accent = Color("AccentColor")
+    let backgroundTop = Color("BackgroundTop")
+    let backgroundBottom = Color("BackgroundBottom")
+    let text = Color("TextColor")
+}
+
+struct TransparentBackground: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .scrollContentBackground(.hidden)
+            //.background(Color.white.opacity(0.2))
+            .background(Color.theme.accent.opacity(0.15).blur(radius: 2))
+            .cornerRadius(12)
+            //.shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: 5)
+            .shadow(color: Color.theme.text.opacity(0.1), radius: 5, x: 0, y: 5)
+    }
+}
+
+struct TransparentButton: View {
+    let title: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.headline)
+                //.foregroundColor(.primary)
+                .foregroundColor(Color.theme.text)
+                .frame(maxWidth: .infinity)
+                .frame(height: 55)
+        }
+        .applyTransparentBackground()
     }
 }

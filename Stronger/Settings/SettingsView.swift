@@ -14,68 +14,74 @@ struct SettingsView: View {
     @State private var showDeleteAccountAlert = false
     
     var body: some View {
-        List {
-            Button("Log out") {
-                Task {
-                    do {
-                        try viewModel.signOut()
-                        showSignInView = true
-                    } catch {
-                        print(error)
-                    }
-                }
-            }
-            
-            Button(role: .destructive) {
-                showDeleteAccountAlert = true
-            } label: {
-                Text("Delete account")
-            }
-            .showConfirmationAlert(isPresented: $showDeleteAccountAlert) {
-                Task {
-                    do {
-                        try await viewModel.deleteAccount()
-                        showSignInView = true
-                    } catch {
-                        print(error)
-                    }
-                }
-            }
-            
-            Section(header: Text("Email functions")) {
-                Button("Reset password") {
+        ScrollView {
+            VStack(spacing: 20) {
+                TransparentButton(title: "Log out") {
                     Task {
                         do {
-                            try await viewModel.resetPassword()
-                            print("PASSWORD RESET")
+                            try viewModel.signOut()
+                            showSignInView = true
                         } catch {
                             print(error)
                         }
                     }
                 }
                 
-                Button("Update password") {
+                TransparentButton(title: "Delete account") {
+                    showDeleteAccountAlert = true
+                }
+                .showConfirmationAlert(isPresented: $showDeleteAccountAlert) {
                     Task {
                         do {
-                            try await viewModel.updatePassword()
-                            print("PASSWORD UPDATED")
+                            try await viewModel.deleteAccount()
+                            showSignInView = true
                         } catch {
                             print(error)
                         }
                     }
                 }
                 
-                Button("Update email") {
-                    Task {
-                        do {
-                            try await viewModel.updateEmail()
-                            print("EMAIL UPDATED")
-                        } catch {
-                            print(error)
+                VStack(alignment: .leading, spacing: 15) {
+                    Text("Email functions")
+                        .font(.headline)
+                        //.foregroundColor(.gray)
+                        .foregroundColor(Color.theme.text.opacity(0.8))
+                    
+                    TransparentButton(title: "Reset password") {
+                        Task {
+                            do {
+                                try await viewModel.resetPassword()
+                                print("PASSWORD RESET")
+                            } catch {
+                                print(error)
+                            }
+                        }
+                    }
+                    
+                    TransparentButton(title: "Update password") {
+                        Task {
+                            do {
+                                try await viewModel.updatePassword()
+                                print("PASSWORD UPDATED")
+                            } catch {
+                                print(error)
+                            }
+                        }
+                    }
+                    
+                    TransparentButton(title: "Update email") {
+                        Task {
+                            do {
+                                try await viewModel.updateEmail()
+                                print("EMAIL UPDATED")
+                            } catch {
+                                print(error)
+                            }
                         }
                     }
                 }
             }
+            .padding()
         }
         .scrollContentBackground(.hidden)
         .applyGradientBackground()
@@ -88,5 +94,3 @@ struct SettingsView: View {
         SettingsView(showSignInView: .constant(false))
     }
 }
-
-
