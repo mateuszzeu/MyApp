@@ -38,7 +38,6 @@ struct AuthenticationView: View {
 
                         if viewModel.showErrorMessage {
                             Text(viewModel.errorMessage)
-                                //.foregroundColor(.red)
                                 .foregroundColor(Color.theme.accent)
                                 .font(.footnote)
                                 .padding(.top, 10)
@@ -64,11 +63,9 @@ struct AuthenticationView: View {
                         } label: {
                             Text("Sign In")
                                 .font(.headline)
-                                //.foregroundColor(.white)
                                 .foregroundColor(Color.theme.text)
                                 .frame(height: 55)
                                 .frame(maxWidth: .infinity)
-                                //.background(Color.blue)
                                 .background(Color.theme.primary)
                                 .cornerRadius(10)
                         }
@@ -80,11 +77,9 @@ struct AuthenticationView: View {
                     } label: {
                         Text("Register")
                             .font(.headline)
-                            //.foregroundColor(.white)
                             .foregroundColor(Color.theme.text)
                             .frame(height: 55)
                             .frame(maxWidth: .infinity)
-                            //.background(Color.green)
                             .background(Color.theme.accent)
                             .cornerRadius(10)
                     }
@@ -96,7 +91,7 @@ struct AuthenticationView: View {
             }
         }
         .applyGradientBackground()
-        .navigationBarBackButtonHidden(true)
+        //.navigationBarBackButtonHidden(true)
     }
 }
 

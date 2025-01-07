@@ -29,7 +29,6 @@ struct SignUpEmailView: View {
             
             if viewModel.showErrorMessage {
                 Text(viewModel.errorMessage)
-                   // .foregroundColor(.red)
                     .foregroundColor(Color.theme.accent)
                     .font(.footnote)
                     .padding(.top, 10)
@@ -53,11 +52,9 @@ struct SignUpEmailView: View {
             } label: {
                 Text("Sign Up")
                     .font(.headline)
-                    //.foregroundColor(.white)
                     .foregroundColor(Color.theme.text)
                     .frame(height: 55)
                     .frame(maxWidth: .infinity)
-                    //.background(Color.green)
                     .background(Color.theme.primary)
                     .cornerRadius(10)
             }
@@ -65,8 +62,6 @@ struct SignUpEmailView: View {
             Spacer()
         }
         .padding()
-        .navigationBarHidden(true)
-        .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $showSuccessMessage) {
             SuccessSheetView {
                 isNavigatedToSignInView = true
@@ -75,7 +70,10 @@ struct SignUpEmailView: View {
         }
         .navigationDestination(isPresented: $isNavigatedToSignInView) {
             AuthenticationView(showSignInView: $showSignInView)
+                .navigationBarBackButtonHidden(true)
         }
+        .navigationTitle("Register")
+        .navigationBarTitleDisplayMode(.inline)
         .applyGradientBackground()
     }
 }

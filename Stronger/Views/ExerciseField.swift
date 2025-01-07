@@ -15,7 +15,6 @@ struct ExerciseField: View {
         HStack {
             Text("\(label):")
                 .font(.subheadline)
-                //.foregroundColor(.gray)
                 .foregroundColor(Color.theme.text.opacity(0.6))
                 .frame(width: 55, alignment: .leading)
             

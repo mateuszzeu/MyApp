@@ -26,7 +26,7 @@ struct WorkoutDaysScrollView: View {
                             .onTapGesture {
                                 selectedDay = day.dayName
                             }
-                            .foregroundColor(.black)
+                            .foregroundColor(Color.primary)
                             .contextMenu {
                                 if let index = viewModel.workoutDays.firstIndex(where: { $0.id == day.id }) {
                                     if index > 0 {

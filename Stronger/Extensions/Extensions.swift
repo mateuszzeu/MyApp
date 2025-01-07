@@ -108,10 +108,8 @@ struct TransparentBackground: ViewModifier {
     func body(content: Content) -> some View {
         content
             .scrollContentBackground(.hidden)
-            //.background(Color.white.opacity(0.2))
             .background(Color.theme.accent.opacity(0.15).blur(radius: 2))
             .cornerRadius(12)
-            //.shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: 5)
             .shadow(color: Color.theme.text.opacity(0.1), radius: 5, x: 0, y: 5)
     }
 }
@@ -124,7 +122,6 @@ struct TransparentButton: View {
         Button(action: action) {
             Text(title)
                 .font(.headline)
-                //.foregroundColor(.primary)
                 .foregroundColor(Color.theme.text)
                 .frame(maxWidth: .infinity)
                 .frame(height: 55)

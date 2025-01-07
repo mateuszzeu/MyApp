@@ -24,7 +24,6 @@ struct HydrationView: View {
                             .resizable()
                             .renderingMode(.template)
                             .aspectRatio(contentMode: .fit)
-                            //.foregroundColor(.black.opacity(0.2))
                             .foregroundColor(Color.theme.text.opacity(0.2))
                             .offset(y: -1)
                         
@@ -35,7 +34,7 @@ struct HydrationView: View {
                         )
                         .fill(
                             LinearGradient(
-                                colors: [.blue, .cyan],
+                                colors: [.cyan, .blue],
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
@@ -52,7 +51,6 @@ struct HydrationView: View {
                         if waveProgress == 0 {
                             Text("Tap to Add")
                                 .font(.headline.weight(.bold))
-                                //.foregroundColor(.gray.opacity(0.7))
                                 .foregroundColor(Color.theme.text.opacity(0.7))
                                 .scaleEffect(isPulsating ? 1.2 : 1.0)
                                 .opacity(isPulsating ? 0.4 : 1.0)
@@ -67,14 +65,12 @@ struct HydrationView: View {
                         } else {
                             Text("\(Int(waveProgress * 100))%")
                                 .font(.largeTitle.weight(.bold))
-                                //.foregroundColor(.white)
                                 .foregroundColor(Color.theme.text)
                                 .opacity(0.8)
                             
                             if viewModel.hydrationData.drinks.count < 2 {
                                 Text("Long press for more")
                                     .font(.subheadline)
-                                    //.foregroundColor(.gray.opacity(0.5))
                                     .foregroundColor(Color.theme.text.opacity(0.5))
                                     .offset(y: 40)
                                     .opacity(isPulsating ? 0.2 : 1.0)
@@ -125,7 +121,6 @@ struct HydrationView: View {
             VStack(spacing: 12) {
                 HStack {
                     Text("Glass Volume:")
-                        //.foregroundColor(.gray)
                         .foregroundColor(Color.theme.text.opacity(0.7))
                     Spacer()
                     Picker("Volume", selection: $viewModel.hydrationData.glassVolume) {
@@ -138,7 +133,6 @@ struct HydrationView: View {
                     }
                     .frame(width: UIScreen.main.bounds.width * 0.4)
                     .pickerStyle(.wheel)
-                    //.tint(.black)
                     .tint(Color.theme.text)
                     .onChange(of: viewModel.hydrationData.glassVolume) {
                         viewModel.saveHydrationData()
@@ -153,6 +147,7 @@ struct HydrationView: View {
                         ForEach([1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0], id: \.self) { limit in
                             Text("\(Int(limit * 1000)) ml")
                                 .font(.footnote)
+                                .bold()
                                 .tag(limit)
                         }
                     }
@@ -167,6 +162,7 @@ struct HydrationView: View {
             .padding()
             .applyTransparentBackground()
             .padding(.horizontal)
+            .padding(.bottom, 15)
         }
         .applyGradientBackground()
         .onAppear {

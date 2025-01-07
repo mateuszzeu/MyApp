@@ -35,7 +35,6 @@ struct InfoView: View {
                     presentationMode.wrappedValue.dismiss()
                 }) {
                     Image(systemName: "chevron.left")
-                        //.foregroundColor(.white)
                         .foregroundColor(Color.theme.text)
                 }
             }
