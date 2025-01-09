@@ -4,40 +4,49 @@
 //
 //  Created by Mateusz Żełudziewicz on 18/10/2024.
 //
-
 import SwiftUI
 
 struct MainView: View {
     @ObservedObject var viewModel = WorkoutViewModel()
-    
     @State private var showSignInView: Bool = !UserDefaults.standard.bool(forKey: "isUserLoggedIn")
+    @State private var selectedTab: TabItem = TabItem(icon: "figure.strengthtraining.traditional", title: "Workouts")
+    
+    private let tabItems: [TabItem] = [
+        TabItem(icon: "figure.strengthtraining.traditional", title: "Workouts"),
+        TabItem(icon: "square.and.pencil", title: "Add Workout"),
+        TabItem(icon: "drop", title: "Hydration"),
+        TabItem(icon: "gear", title: "Settings")
+    ]
     
     var body: some View {
-        ZStack {
-            if !showSignInView {
-                TabView {
+        VStack(spacing: 0) {
+            
+            ZStack {
+                switch selectedTab.title {
+                case "Workouts":
                     WorkoutView(viewModel: viewModel)
-                        .tabItem {
-                            Label("Workouts", systemImage: "figure.strengthtraining.traditional")
-                        }
-                    
+                case "Add Workout":
                     AddWorkoutView(workoutViewModel: viewModel)
-                        .tabItem {
-                            Label("Add Workout", systemImage: "square.and.pencil")
-                        }
-                    
+                case "Hydration":
                     HydrationView(viewModel: viewModel)
-                        .tabItem {
-                            Label("Hydration", systemImage: "drop")
-                        }
-                    
+                case "Settings":
                     SettingsView(showSignInView: $showSignInView)
-                        .tabItem {
-                            Label("Settings", systemImage: "gear")
-                        }
+                default:
+                    WorkoutView(viewModel: viewModel)
                 }
             }
+            .edgesIgnoringSafeArea(.bottom)
+            
+            CustomTabBar(selectedTab: $selectedTab, tabItems: tabItems)
         }
+        .background(
+            LinearGradient(
+                colors: [Color.theme.backgroundTop, Color.theme.backgroundBottom],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+        )
         .fullScreenCover(isPresented: $showSignInView) {
             NavigationStack {
                 AuthenticationView(showSignInView: $showSignInView)
@@ -54,5 +63,5 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView(viewModel: WorkoutViewModel())
+    MainView()
 }
