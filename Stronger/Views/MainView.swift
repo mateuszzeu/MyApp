@@ -19,34 +19,34 @@ struct MainView: View {
     ]
     
     var body: some View {
-        VStack(spacing: 0) {
-            
-            ZStack {
-                switch selectedTab.title {
-                case "Workouts":
-                    WorkoutView(viewModel: viewModel)
-                case "Add Workout":
-                    AddWorkoutView(workoutViewModel: viewModel)
-                case "Hydration":
-                    HydrationView(viewModel: viewModel)
-                case "Settings":
-                    SettingsView(showSignInView: $showSignInView)
-                default:
-                    WorkoutView(viewModel: viewModel)
+        ZStack {
+            // Treść główna
+            VStack(spacing: 0) {
+                ZStack {
+                    switch selectedTab.title {
+                    case "Workouts":
+                        WorkoutView(viewModel: viewModel)
+                    case "Add Workout":
+                        AddWorkoutView(workoutViewModel: viewModel)
+                    case "Hydration":
+                        HydrationView(viewModel: viewModel)
+                    case "Settings":
+                        SettingsView(showSignInView: $showSignInView)
+                    default:
+                        WorkoutView(viewModel: viewModel)
+                    }
                 }
+                .edgesIgnoringSafeArea(.all) // Unikamy nachodzenia paska
             }
-            .edgesIgnoringSafeArea(.bottom)
             
-            CustomTabBar(selectedTab: $selectedTab, tabItems: tabItems)
+            // Pasek zakładek
+            VStack {
+                Spacer()
+                CustomTabBar(selectedTab: $selectedTab, tabItems: tabItems)
+                    .padding(.horizontal, 10) // Dodatkowe odstawienia
+            }
         }
-        .background(
-            LinearGradient(
-                colors: [Color.theme.backgroundTop, Color.theme.backgroundBottom],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-        )
+        .background(Color.clear.ignoresSafeArea()) // Brak tła za paskiem
         .fullScreenCover(isPresented: $showSignInView) {
             NavigationStack {
                 AuthenticationView(showSignInView: $showSignInView)
@@ -61,6 +61,7 @@ struct MainView: View {
         showSignInView = !UserDefaults.standard.bool(forKey: "isUserLoggedIn")
     }
 }
+
 
 #Preview {
     MainView()

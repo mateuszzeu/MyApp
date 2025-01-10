@@ -14,78 +14,80 @@ struct SettingsView: View {
     @State private var showDeleteAccountAlert = false
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                TransparentButton(title: "Log out") {
-                    Task {
-                        do {
-                            try viewModel.signOut()
-                            showSignInView = true
-                        } catch {
-                            print(error)
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 20) {
+                    TransparentButton(title: "Log out") {
+                        Task {
+                            do {
+                                try viewModel.signOut()
+                                showSignInView = true
+                            } catch {
+                                print(error)
+                            }
                         }
                     }
-                }
-                
-                TransparentButton(title: "Delete account") {
-                    showDeleteAccountAlert = true
-                }
-                .showConfirmationAlert(isPresented: $showDeleteAccountAlert) {
-                    Task {
-                        do {
-                            try await viewModel.deleteAccount()
-                            showSignInView = true
-                        } catch {
-                            print(error)
+                    
+                    TransparentButton(title: "Delete account") {
+                        showDeleteAccountAlert = true
+                    }
+                    .showConfirmationAlert(isPresented: $showDeleteAccountAlert) {
+                        Task {
+                            do {
+                                try await viewModel.deleteAccount()
+                                showSignInView = true
+                            } catch {
+                                print(error)
+                            }
                         }
                     }
-                }
-                
-                VStack(alignment: .leading, spacing: 15) {
-                    Text("Email functions")
-                        .font(.headline)
+                    
+                    VStack(alignment: .leading, spacing: 15) {
+                        Text("Email functions")
+                            .font(.headline)
                         //.foregroundColor(.gray)
-                        .foregroundColor(Color.theme.text.opacity(0.8))
-                    
-                    TransparentButton(title: "Reset password") {
-                        Task {
-                            do {
-                                try await viewModel.resetPassword()
-                                print("PASSWORD RESET")
-                            } catch {
-                                print(error)
+                            .foregroundColor(Color.theme.text.opacity(0.8))
+                        
+                        TransparentButton(title: "Reset password") {
+                            Task {
+                                do {
+                                    try await viewModel.resetPassword()
+                                    print("PASSWORD RESET")
+                                } catch {
+                                    print(error)
+                                }
                             }
                         }
-                    }
-                    
-                    TransparentButton(title: "Update password") {
-                        Task {
-                            do {
-                                try await viewModel.updatePassword()
-                                print("PASSWORD UPDATED")
-                            } catch {
-                                print(error)
+                        
+                        TransparentButton(title: "Update password") {
+                            Task {
+                                do {
+                                    try await viewModel.updatePassword()
+                                    print("PASSWORD UPDATED")
+                                } catch {
+                                    print(error)
+                                }
                             }
                         }
-                    }
-                    
-                    TransparentButton(title: "Update email") {
-                        Task {
-                            do {
-                                try await viewModel.updateEmail()
-                                print("EMAIL UPDATED")
-                            } catch {
-                                print(error)
+                        
+                        TransparentButton(title: "Update email") {
+                            Task {
+                                do {
+                                    try await viewModel.updateEmail()
+                                    print("EMAIL UPDATED")
+                                } catch {
+                                    print(error)
+                                }
                             }
                         }
                     }
                 }
+                .padding()
             }
-            .padding()
+            .scrollContentBackground(.hidden)
+            .applyGradientBackground()
+            .navigationTitle("Settings")
         }
-        .scrollContentBackground(.hidden)
-        .applyGradientBackground()
-        .navigationTitle("Settings")
     }
 }
 

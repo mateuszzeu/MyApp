@@ -13,87 +13,87 @@ struct HydrationView: View {
     @State private var isPulsating = false
     
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
-            
-            ZStack(alignment: .center) {
-                GeometryReader { proxy in
-                    let size = proxy.size
-                    ZStack {
-                        Image(systemName: "drop.fill")
-                            .resizable()
-                            .renderingMode(.template)
-                            .aspectRatio(contentMode: .fit)
-                            .foregroundColor(Color.theme.text.opacity(0.2))
-                            .offset(y: -1)
-                        
-                        WaterWave(
-                            progress: waveProgress,
-                            waveHeight: 0.1,
-                            offset: startAnimation
-                        )
-                        .fill(
-                            LinearGradient(
-                                colors: [.cyan, .blue],
-                                startPoint: .top,
-                                endPoint: .bottom
+        NavigationView {
+            VStack(spacing: 0) {
+                ZStack(alignment: .center) {
+                    GeometryReader { proxy in
+                        let size = proxy.size
+                        ZStack {
+                            Image(systemName: "drop.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: size.width * 0.8)
+                                .foregroundColor(Color.theme.text.opacity(0.2))
+                                .offset(y: -1)
+                            
+                            WaterWave(
+                                progress: waveProgress,
+                                waveHeight: 0.1,
+                                offset: startAnimation
                             )
-                        )
-                        .mask {
-                            if waveProgress > 0 {
+                            .fill(
+                                LinearGradient(
+                                    colors: [.cyan, .blue],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .mask {
+                                if waveProgress > 0 {
                                     Image(systemName: "drop.fill")
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
+                                        .frame(width: size.width * 0.7)
                                         .padding()
                                 }
-                        }
-                        
-                        if waveProgress == 0 {
-                            Text("Tap to Add")
-                                .font(.headline.weight(.bold))
-                                .foregroundColor(Color.theme.text.opacity(0.7))
-                                .scaleEffect(isPulsating ? 1.2 : 1.0)
-                                .opacity(isPulsating ? 0.4 : 1.0)
-                                .animation(
-                                    .easeInOut(duration: 1).repeatForever(autoreverses: true),
-                                    value: isPulsating
-                                )
-                                .onAppear {
-                                    isPulsating = true
-                                }
-                                .offset(y: 60)
-                        } else {
-                            Text("\(Int(waveProgress * 100))%")
-                                .font(.largeTitle.weight(.bold))
-                                .foregroundColor(Color.theme.text)
-                                .opacity(0.8)
+                            }
                             
-                            if viewModel.hydrationData.drinks.count < 2 {
-                                Text("Long press for more")
-                                    .font(.subheadline)
-                                    .foregroundColor(Color.theme.text.opacity(0.5))
-                                    .offset(y: 40)
-                                    .opacity(isPulsating ? 0.2 : 1.0)
+                            if waveProgress == 0 {
+                                Text("Tap to Add")
+                                    .font(.headline.weight(.bold))
+                                    .foregroundColor(Color.theme.text.opacity(0.7))
+                                    .scaleEffect(isPulsating ? 1.2 : 1.0)
+                                    .opacity(isPulsating ? 0.4 : 1.0)
                                     .animation(
-                                        .easeInOut(duration: 1.5).repeatForever(autoreverses: true),
+                                        .easeInOut(duration: 1).repeatForever(autoreverses: true),
                                         value: isPulsating
                                     )
                                     .onAppear {
                                         isPulsating = true
                                     }
+                                    .offset(y: 60)
+                            } else {
+                                Text("\(Int(waveProgress * 100))%")
+                                    .font(.largeTitle.weight(.bold))
+                                    .foregroundColor(Color.theme.text)
+                                    .opacity(0.8)
+                                
+                                if viewModel.hydrationData.drinks.count < 2 {
+                                    Text("Long press for more")
+                                        .font(.subheadline)
+                                        .foregroundColor(Color.theme.text.opacity(0.5))
+                                        .offset(y: 40)
+                                        .opacity(isPulsating ? 0.2 : 1.0)
+                                        .animation(
+                                            .easeInOut(duration: 1.5).repeatForever(autoreverses: true),
+                                            value: isPulsating
+                                        )
+                                        .onAppear {
+                                            isPulsating = true
+                                        }
+                                }
                             }
-                        }
-                        
-                        Button(action: {
-                            viewModel.hydrationData.drinks.append(viewModel.hydrationData.glassVolume)
-                            viewModel.saveHydrationData()
-                            isPulsating = false
-                        }) {
-                            Color.clear
-                        }
-                        .frame(width: size.width, height: size.height)
-                        .contentShape(Circle())
-                        .contextMenu {
+                            
+                            Button(action: {
+                                viewModel.hydrationData.drinks.append(viewModel.hydrationData.glassVolume)
+                                viewModel.saveHydrationData()
+                                isPulsating = false
+                            }) {
+                                Color.clear
+                            }
+                            .frame(width: size.width, height: size.height)
+                            .contentShape(Circle())
+                            .contextMenu {
                                 Button("Remove last glass") {
                                     if !viewModel.hydrationData.drinks.isEmpty {
                                         viewModel.hydrationData.drinks.removeLast()
@@ -105,68 +105,72 @@ struct HydrationView: View {
                                     viewModel.saveHydrationData()
                                 }
                             }
-                    }
-                    .frame(width: size.width, height: size.height)
-                    .onAppear {
-                        withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
-                            startAnimation = 360
+                        }
+                        .frame(width: size.width, height: size.height)
+                        .onAppear {
+                            withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
+                                startAnimation = 360
+                            }
                         }
                     }
                 }
-            }
-            .frame(width: 330, height: 500)
-            
-            Spacer()
-            
-            VStack(spacing: 12) {
-                HStack {
-                    Text("Glass Volume:")
-                        .foregroundColor(Color.theme.text.opacity(0.7))
-                    Spacer()
-                    Picker("Volume", selection: $viewModel.hydrationData.glassVolume) {
-                        ForEach([0.1, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5], id: \.self) { volume in
-                            Text("\(Int(volume * 1000)) ml")
-                                .font(.footnote)
-                                .bold()
-                                .tag(volume)
-                        }
-                    }
-                    .frame(width: UIScreen.main.bounds.width * 0.4)
-                    .pickerStyle(.wheel)
-                    .tint(Color.theme.text)
-                    .onChange(of: viewModel.hydrationData.glassVolume) {
-                        viewModel.saveHydrationData()
-                    }
-                }
+                .frame(height: 470)
                 
-                HStack {
-                    Text("Daily Limit:")
-                        .foregroundColor(Color.theme.text.opacity(0.7))
-                    Spacer()
-                    Picker("Limit", selection: $viewModel.hydrationData.dailyLimit) {
-                        ForEach([1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0], id: \.self) { limit in
-                            Text("\(Int(limit * 1000)) ml")
-                                .font(.footnote)
-                                .bold()
-                                .tag(limit)
+                Spacer()
+                
+                VStack {
+                    HStack {
+                        Text("Glass Volume:")
+                            .foregroundColor(Color.theme.text.opacity(0.7))
+                        Spacer()
+                        Picker("Volume", selection: $viewModel.hydrationData.glassVolume) {
+                            ForEach([0.1, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5], id: \.self) { volume in
+                                Text("\(Int(volume * 1000)) ml")
+                                    .font(.footnote)
+                                    .bold()
+                                    .tag(volume)
+                            }
+                        }
+                        .frame(width: UIScreen.main.bounds.width * 0.4)
+                        .pickerStyle(.menu)
+                        
+                        .tint(Color.theme.text)
+                        .onChange(of: viewModel.hydrationData.glassVolume) {
+                            viewModel.saveHydrationData()
                         }
                     }
-                    .frame(width: UIScreen.main.bounds.width * 0.4)
-                    .pickerStyle(.wheel)
-                    .tint(Color.theme.text)
-                    .onChange(of: viewModel.hydrationData.dailyLimit) {
-                        viewModel.saveHydrationData()
+                    
+                    HStack {
+                        Text("Daily Limit:")
+                            .foregroundColor(Color.theme.text.opacity(0.7))
+                        Spacer()
+                        Picker("Limit", selection: $viewModel.hydrationData.dailyLimit) {
+                            ForEach([1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0], id: \.self) { limit in
+                                Text("\(Int(limit * 1000)) ml")
+                                    .font(.footnote)
+                                    .bold()
+                                    .tag(limit)
+                            }
+                        }
+                        .frame(width: UIScreen.main.bounds.width * 0.4)
+                        .tint(Color.theme.text)
+                        .onChange(of: viewModel.hydrationData.dailyLimit) {
+                            viewModel.saveHydrationData()
+                        }
                     }
                 }
+                .padding()
+                .applyTransparentBackground()
+                .padding(.horizontal)
+                .padding(.bottom, 15)
+                
+                Spacer()
             }
-            .padding()
-            .applyTransparentBackground()
-            .padding(.horizontal)
-            .padding(.bottom, 15)
-        }
-        .applyGradientBackground()
-        .onAppear {
-            viewModel.loadHydrationData()
+            .padding(.top, 15)
+            .applyGradientBackground()
+            .onAppear {
+                viewModel.loadHydrationData()
+            }
         }
     }
     

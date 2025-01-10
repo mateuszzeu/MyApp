@@ -24,15 +24,15 @@ struct CustomTabBar: View {
                         if selectedTab == tab {
                             Circle()
                                 .fill(Color.purple.opacity(0.2))
-                                .frame(width: 50, height: 50)
+                                .frame(width: 60, height: 40)
                                 .overlay(
                                     Image(systemName: tab.icon)
-                                        .font(.system(size: 20, weight: .bold))
+                                        .font(.system(size: 19, weight: .bold))
                                         .foregroundColor(.purple)
                                 )
                         } else {
                             Image(systemName: tab.icon)
-                                .font(.system(size: 20))
+                                .font(.system(size: 19))
                                 .foregroundColor(.gray)
                         }
                     }
@@ -40,16 +40,18 @@ struct CustomTabBar: View {
                 }
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 5)
         .background(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 25)
                 .fill(.ultraThinMaterial)
                 .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 0)
         )
-        .padding(.horizontal, 8)
-        .padding(.bottom, 8)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 16)
     }
 }
+
+
 
 #Preview {
     CustomTabBar(
