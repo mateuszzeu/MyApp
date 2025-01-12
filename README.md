@@ -20,7 +20,10 @@ Features
 
     VISUALISATION
 
-![Fitally_1](https://github.com/user-attachments/assets/064f4aa3-f020-4c0e-a75d-fc8b87a12212) ![Fitally_2](https://github.com/user-attachments/assets/758ce23f-715f-405c-98e3-7ae38746a858)
+![Fitally_1](https://github.com/user-attachments/assets/064f4aa3-f020-4c0e-a75d-fc8b87a12212) ![Fitally_2](https://github.com/user-attachments/assets/758ce23f-715f-405c-98e3-7ae38746a858) ![Fitally_3](https://github.com/user-attachments/assets/adfc5fa1-cda4-494b-8c38-80f06fd3de0a) ![Fitally_4](https://github.com/user-attachments/assets/e5ce89e1-e186-4104-a9de-f94ce77599c6) ![Fitally_5](https://github.com/user-attachments/assets/74cdf056-9b64-46e5-9ba0-8cc709480d32)
+
+
+
 
 
 
