@@ -32,7 +32,14 @@ struct WorkoutView: View {
                 }
             }
             .applyGradientBackground()
-            .navigationTitle("Workout Days")
+            .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("Workouts")
+                            .font(.system(size: 22))
+                            .fontWeight(.bold)
+                    }
+                }
+            .navigationBarTitleDisplayMode(.inline)
         }
         .onAppear {
             viewModel.loadWorkoutDaysFromFirestore()

@@ -122,7 +122,8 @@ struct HydrationView: View {
                     HStack {
                         Text("Glass Volume:")
                             .foregroundColor(Color.theme.text.opacity(0.7))
-                        Spacer()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        //Spacer()
                         Picker("Volume", selection: $viewModel.hydrationData.glassVolume) {
                             ForEach([0.1, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5], id: \.self) { volume in
                                 Text("\(Int(volume * 1000)) ml")
@@ -131,9 +132,8 @@ struct HydrationView: View {
                                     .tag(volume)
                             }
                         }
-                        .frame(width: UIScreen.main.bounds.width * 0.4)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                         .pickerStyle(.menu)
-                        
                         .tint(Color.theme.text)
                         .onChange(of: viewModel.hydrationData.glassVolume) {
                             viewModel.saveHydrationData()
@@ -143,6 +143,7 @@ struct HydrationView: View {
                     HStack {
                         Text("Daily Limit:")
                             .foregroundColor(Color.theme.text.opacity(0.7))
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         Spacer()
                         Picker("Limit", selection: $viewModel.hydrationData.dailyLimit) {
                             ForEach([1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0], id: \.self) { limit in
@@ -152,7 +153,7 @@ struct HydrationView: View {
                                     .tag(limit)
                             }
                         }
-                        .frame(width: UIScreen.main.bounds.width * 0.4)
+                        .frame(maxWidth: .infinity, alignment: .trailing) 
                         .tint(Color.theme.text)
                         .onChange(of: viewModel.hydrationData.dailyLimit) {
                             viewModel.saveHydrationData()

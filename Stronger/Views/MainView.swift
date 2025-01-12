@@ -20,7 +20,6 @@ struct MainView: View {
     
     var body: some View {
         ZStack {
-            // Treść główna
             VStack(spacing: 0) {
                 ZStack {
                     switch selectedTab.title {
@@ -36,17 +35,16 @@ struct MainView: View {
                         WorkoutView(viewModel: viewModel)
                     }
                 }
-                .edgesIgnoringSafeArea(.all) // Unikamy nachodzenia paska
+                .edgesIgnoringSafeArea(.all)
             }
             
-            // Pasek zakładek
             VStack {
                 Spacer()
                 CustomTabBar(selectedTab: $selectedTab, tabItems: tabItems)
-                    .padding(.horizontal, 10) // Dodatkowe odstawienia
+                    .padding(.horizontal, 10)
             }
         }
-        .background(Color.clear.ignoresSafeArea()) // Brak tła za paskiem
+        .background(Color.clear.ignoresSafeArea())
         .fullScreenCover(isPresented: $showSignInView) {
             NavigationStack {
                 AuthenticationView(showSignInView: $showSignInView)

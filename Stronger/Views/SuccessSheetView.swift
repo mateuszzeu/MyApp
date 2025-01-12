@@ -18,6 +18,7 @@ struct SuccessSheetView: View {
 
             Text("Your account has been created successfully!")
                 .font(.headline)
+                .foregroundColor(Color("TextColor"))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
 
@@ -26,10 +27,10 @@ struct SuccessSheetView: View {
             }) {
                 Text("Go to Login")
                     .font(.headline)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color("TextColor"))
                     .frame(height: 55)
                     .frame(maxWidth: .infinity)
-                    .background(Color.green)
+                    .background(Color("PrimaryColor"))
                     .cornerRadius(10)
             }
             .padding(.horizontal)
@@ -37,7 +38,7 @@ struct SuccessSheetView: View {
             Spacer()
         }
         .padding()
-        .background(Color.white.ignoresSafeArea())
+        .applyGradientBackground()
     }
 }
 

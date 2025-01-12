@@ -13,14 +13,16 @@ struct WorkoutDaysScrollView: View {
 
     var body: some View {
         VStack {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
+            GeometryReader { geometry in
+                let totalDays = viewModel.workoutDays.count
+                let itemWidth = geometry.size.width / CGFloat(totalDays)
+
+                HStack(spacing: 0) {
                     ForEach(viewModel.workoutDays) { day in
                         Text(day.dayName)
                             .font(.system(size: 14, weight: .medium))
                             .lineLimit(1)
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 12)
+                            .frame(width: itemWidth - 16 / CGFloat(totalDays), height: 40)
                             .background(selectedDay == day.dayName ? Color.blue.opacity(0.2) : Color.clear)
                             .cornerRadius(8)
                             .onTapGesture {
@@ -43,10 +45,10 @@ struct WorkoutDaysScrollView: View {
                             }
                     }
                 }
-                .padding(.horizontal, 8)
+                .frame(width: geometry.size.width, height: 50)
             }
-            .frame(height: 50)
         }
+        .frame(height: 50)
     }
 }
 
@@ -61,3 +63,4 @@ struct WorkoutDaysScrollView: View {
     ]
     return WorkoutDaysScrollView(viewModel: viewModel, selectedDay: .constant("Wtorek"))
 }
+

@@ -15,15 +15,18 @@ struct InfoView: View {
 
     var body: some View {
         VStack {
-            TextEditor(text: Binding(
-                get: { exercise.info },
-                set: { newValue in
-                    exercise.info = newValue
-                    viewModel.updateExercise(dayName: dayName, exercise: exercise)
-                }
-            ))
-            .applyTransparentBackground()
-            .padding()
+            GeometryReader { geometry in
+                TextEditor(text: Binding(
+                    get: { exercise.info },
+                    set: { newValue in
+                        exercise.info = newValue
+                        viewModel.updateExercise(dayName: dayName, exercise: exercise)
+                    }
+                ))
+                .applyTransparentBackground()
+                .padding()
+                .frame(height: geometry.size.height * 0.9)
+            }
         }
         .applyGradientBackground()
         .navigationTitle(exercise.name)
@@ -45,3 +48,4 @@ struct InfoView: View {
 #Preview {
     InfoView(exercise: Exercise(name: "Squat", sets: "3", reps: "10", weight: "100", info: "Sample info"), viewModel: WorkoutViewModel(), dayName: "Push")
 }
+

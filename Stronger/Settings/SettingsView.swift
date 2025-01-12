@@ -16,7 +16,11 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Main functions")
+                        .font(.headline)
+                        .foregroundColor(Color.theme.text.opacity(0.8))
+                    
                     TransparentButton(title: "Log out") {
                         Task {
                             do {
@@ -42,10 +46,9 @@ struct SettingsView: View {
                         }
                     }
                     
-                    VStack(alignment: .leading, spacing: 15) {
+                    VStack(alignment: .leading, spacing: 10) {
                         Text("Email functions")
                             .font(.headline)
-                        //.foregroundColor(.gray)
                             .foregroundColor(Color.theme.text.opacity(0.8))
                         
                         TransparentButton(title: "Reset password") {
@@ -86,7 +89,14 @@ struct SettingsView: View {
             }
             .scrollContentBackground(.hidden)
             .applyGradientBackground()
-            .navigationTitle("Settings")
+            .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("Settings")
+                            .font(.system(size: 22))
+                            .fontWeight(.bold)
+                    }
+                }
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
