@@ -18,9 +18,10 @@ Features
   - Keep track of your daily hydration goals with an intuitive and visually engaging interface.
 
 
-                                                                                                                  VISUALISATION
+    VISUALISATION
 
-![Fitally_1](https://github.com/user-attachments/assets/064f4aa3-f020-4c0e-a75d-fc8b87a12212)
+![Fitally_1](https://github.com/user-attachments/assets/064f4aa3-f020-4c0e-a75d-fc8b87a12212) ![Fitally_2](https://github.com/user-attachments/assets/758ce23f-715f-405c-98e3-7ae38746a858)
+
 
 
 
