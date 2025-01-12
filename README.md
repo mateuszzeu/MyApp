@@ -1,4 +1,4 @@
-Stronger
+![Simulator Screenshot - iPhone 16 Pro - 2025-01-12 at 18 15 07](https://github.com/user-attachments/assets/96c363ff-2724-484b-b9af-25ee6c8b04e3)Stronger
 
 Stronger is a fitness app that I am currently developing in my free time with SwiftUI, inspired by the personal need for a streamlined workout planner for myself and my close friends.
 The app helps users create, manage, and track workout routines while seamlessly storing data in the cloud using Firebase.
@@ -17,6 +17,13 @@ Features
 - Water Intake Tracking:
   - Keep track of your daily hydration goals with an intuitive and visually engaging interface.
 
+
+                                                                                                                  VISUALISATION
+![Simulator Screenshot - iPhone 16 Pro - 2025-01-12 at 18 27 22](https://github.com/user-attachments/assets/5bb88f01-1fe0-4794-bdea-7a8a013ef5d7)
+
+
+
+
 Getting Started
 
 1. Clone the repository
@@ -33,5 +40,9 @@ Getting Started
 - Drag and drop the GoogleService-Info.plist file into the project in Xcode (place it in the main app folder).
 
 3. Open the project in Xcode and run the app.
+
+
+
+
 
 
