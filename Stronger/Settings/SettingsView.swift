@@ -12,8 +12,7 @@ struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
     @Binding var showSignInView: Bool
     @State private var showDeleteAccountAlert = false
-    
-    @AppStorage("isDarkMode") private var isDarkMode: Bool = false
+    @State private var isTransitioning = false
     
     var body: some View {
         NavigationView {
@@ -24,11 +23,7 @@ struct SettingsView: View {
                         .foregroundColor(Color.theme.text.opacity(0.8))
                     
                     Button(action: {
-                        isDarkMode.toggle()
-                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                               let window = windowScene.windows.first {
-                                window.overrideUserInterfaceStyle = isDarkMode ? .dark : .light
-                            }
+                        viewModel.toggleDarkMode()
                     }) {
                         HStack {
                             Text("Dark Mode")
@@ -37,8 +32,7 @@ struct SettingsView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .offset(x: 120)
                             
-
-                            Toggle("", isOn: $isDarkMode)
+                            Toggle("", isOn: .constant(viewModel.isDarkMode))
                                 .labelsHidden()
                         }
                         .padding()
@@ -81,7 +75,6 @@ struct SettingsView: View {
                             Task {
                                 do {
                                     try await viewModel.resetPassword()
-                                    print("PASSWORD RESET")
                                 } catch {
                                     print(error)
                                 }
@@ -92,7 +85,6 @@ struct SettingsView: View {
                             Task {
                                 do {
                                     try await viewModel.updatePassword()
-                                    print("PASSWORD UPDATED")
                                 } catch {
                                     print(error)
                                 }
@@ -103,7 +95,6 @@ struct SettingsView: View {
                             Task {
                                 do {
                                     try await viewModel.updateEmail()
-                                    print("EMAIL UPDATED")
                                 } catch {
                                     print(error)
                                 }

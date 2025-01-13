@@ -7,12 +7,15 @@
 import FirebaseAuth
 import FirebaseFirestore
 import Foundation
+import SwiftUI
 
 @MainActor
 final class SettingsViewModel: ObservableObject {
     
     @Published var email = ""
     @Published var password = ""
+    
+    @AppStorage("isDarkMode") var isDarkMode: Bool = false
     
     func signOut() throws {
         try AuthenticationManager.shared.signOut()
@@ -28,12 +31,12 @@ final class SettingsViewModel: ObservableObject {
         try await AuthenticationManager.shared.resetPassword(email: email)
     }
     
-    func updateEmail() async throws {
+    func updateEmail() async throws { //do napisania
         let email = "Lizuneczka@example.com"
         try await AuthenticationManager.shared.updateEmail(email: email)
     }
     
-    func updatePassword() async throws {
+    func updatePassword() async throws { //do napisania
         let password = "dupa12341234"
         try await AuthenticationManager.shared.updatePassword(password: password)
     }
@@ -65,5 +68,16 @@ final class SettingsViewModel: ObservableObject {
         
         try await db.collection("users").document(userId).delete()
     }
+    
+    func applyInterfaceStyle() {
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = windowScene.windows.first else { return }
+            window.overrideUserInterfaceStyle = isDarkMode ? .dark : .light
+        }
+    
+    func toggleDarkMode() {
+            isDarkMode.toggle()
+            applyInterfaceStyle()
+        }
 }
 
