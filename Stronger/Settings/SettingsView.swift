@@ -13,6 +13,8 @@ struct SettingsView: View {
     @Binding var showSignInView: Bool
     @State private var showDeleteAccountAlert = false
     
+    @AppStorage("isDarkMode") private var isDarkMode: Bool = false
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -20,6 +22,30 @@ struct SettingsView: View {
                     Text("Main functions")
                         .font(.headline)
                         .foregroundColor(Color.theme.text.opacity(0.8))
+                    
+                    Button(action: {
+                        isDarkMode.toggle()
+                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                               let window = windowScene.windows.first {
+                                window.overrideUserInterfaceStyle = isDarkMode ? .dark : .light
+                            }
+                    }) {
+                        HStack {
+                            Text("Dark Mode")
+                                .font(.headline)
+                                .foregroundColor(Color.theme.text)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .offset(x: 120)
+                            
+
+                            Toggle("", isOn: $isDarkMode)
+                                .labelsHidden()
+                        }
+                        .padding()
+                        .background(Color.theme.accent.opacity(0.15))
+                        .cornerRadius(12)
+                        .shadow(color: Color.theme.text.opacity(0.1), radius: 5, x: 0, y: 5)
+                    }
                     
                     TransparentButton(title: "Log out") {
                         Task {
