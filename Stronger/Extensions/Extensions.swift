@@ -31,6 +31,10 @@ extension View {
     func applyTransparentBackground() -> some View {
         self.modifier(TransparentBackground())
     }
+    
+    func hideKeyboard() {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
 }
 
 

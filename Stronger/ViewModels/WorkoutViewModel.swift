@@ -14,25 +14,38 @@ class WorkoutViewModel: ObservableObject {
     @Published var workoutDays: [WorkoutDay] = []
     @Published var hydrationData: HydrationData = HydrationData()
     
+    @Published var selectedDay: String = ""
+    @Published var exerciseName: String = ""
+    @Published var sets: String = ""
+    @Published var reps: String = ""
+    @Published var weight: String = ""
+    @Published var newDayName: String = ""
+    
     var isTesting = false
     private var db = Firestore.firestore()
     
-    func addExercise(dayName: String, exerciseName: String, sets: String, reps: String, weight: String) {
+    func addExercise() -> Result<Void, Error> {
+        guard !selectedDay.isEmpty else {
+            return .failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Nie wybrano dnia."]))
+        }
+        guard !exerciseName.isEmpty, !sets.isEmpty, !reps.isEmpty, !weight.isEmpty else {
+            return .failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Nie wszystkie pola są wypełnione."]))
+        }
+
         let newExercise = Exercise(name: exerciseName, sets: sets, reps: reps, weight: weight, info: "")
-        
-        if let index = workoutDays.firstIndex(where: { $0.dayName == dayName }) {
+
+        if let index = workoutDays.firstIndex(where: { $0.dayName == selectedDay }) {
             workoutDays[index].exercises.append(newExercise)
+            saveWorkoutDayToFirestore(workoutDays[index])
         } else {
-            let newDay = WorkoutDay(dayName: dayName, exercises: [newExercise], order: workoutDays.count)
+            let newDay = WorkoutDay(dayName: selectedDay, exercises: [newExercise], order: workoutDays.count)
             workoutDays.append(newDay)
             saveWorkoutDayToFirestore(newDay)
-            return
         }
-        
-        if let day = workoutDays.first(where: { $0.dayName == dayName }) {
-            saveWorkoutDayToFirestore(day)
-        }
+
+        return .success(())
     }
+
     
     private func saveWorkoutDayToFirestore(_ workoutDay: WorkoutDay) {
         guard let userId = Auth.auth().currentUser?.uid else { return }
@@ -189,11 +202,16 @@ class WorkoutViewModel: ObservableObject {
     
     
     
-    func addDay(dayName: String) {
-        guard !dayName.isEmpty else { return }
+    func addDay(dayName: String) -> Result<Void, Error> {
+        guard !dayName.isEmpty else {
+            return .failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Nazwa dnia nie może być pusta."]))
+        }
+
         let newDay = WorkoutDay(dayName: dayName, exercises: [], order: workoutDays.count)
         workoutDays.append(newDay)
         saveWorkoutDayToFirestore(newDay)
+
+        return .success(())
     }
     
     func removeDay(dayName: String) {
