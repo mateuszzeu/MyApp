@@ -30,6 +30,7 @@ struct WorkoutDaysScrollView: View {
                             }
                             .foregroundColor(Color.primary)
                             .contextMenu {
+                                
                                 if let index = viewModel.workoutDays.firstIndex(where: { $0.id == day.id }) {
                                     if index > 0 {
                                         Button("Move Left") {
@@ -39,6 +40,17 @@ struct WorkoutDaysScrollView: View {
                                     if index < viewModel.workoutDays.count - 1 {
                                         Button("Move Right") {
                                             viewModel.moveDay(fromIndex: index, directionLeft: false)
+                                        }
+                                    }
+                                }
+                                
+                                Button("Save Day") {
+                                    Task {
+                                        do {
+                                            let statsVM = StatsViewModel()
+                                            try await statsVM.saveDayToHistory(day: day)
+                                        } catch {
+                                            print("Error saving day to history: \(error)")
                                         }
                                     }
                                 }
@@ -63,4 +75,3 @@ struct WorkoutDaysScrollView: View {
     ]
     return WorkoutDaysScrollView(viewModel: viewModel, selectedDay: .constant("Wtorek"))
 }
-
