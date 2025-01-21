@@ -133,3 +133,22 @@ struct TransparentButton: View {
         .applyTransparentBackground()
     }
 }
+
+struct SimplifiedExerciseRowView: View {
+    let exercise: Exercise
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(exercise.name)
+                .font(.headline)
+                .foregroundColor(Color.theme.text)
+            
+            ExerciseField(label: "Sets", value: .constant(exercise.sets))
+            ExerciseField(label: "Reps", value: .constant(exercise.reps))
+            ExerciseField(label: "Weight", value: .constant(exercise.weight))
+        }
+        .padding()
+        .background(Color.theme.primary.opacity(0.1))
+        .cornerRadius(8)
+    }
+}
