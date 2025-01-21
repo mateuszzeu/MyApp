@@ -144,8 +144,11 @@ struct SimplifiedExerciseRowView: View {
                 .foregroundColor(Color.theme.text)
             
             ExerciseField(label: "Sets", value: .constant(exercise.sets))
+                .disabled(true)
             ExerciseField(label: "Reps", value: .constant(exercise.reps))
+                .disabled(true)
             ExerciseField(label: "Weight", value: .constant(exercise.weight))
+                .disabled(true)
         }
         .padding()
         .background(Color.theme.primary.opacity(0.1))
