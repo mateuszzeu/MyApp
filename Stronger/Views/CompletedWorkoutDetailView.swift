@@ -28,6 +28,7 @@ struct CompletedWorkoutDetailView: View {
                             SimplifiedExerciseRowView(exercise: exercise)
                         }
                     }
+                    Spacer().frame(height: 80)
                 }
                 .padding()
             }

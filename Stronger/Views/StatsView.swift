@@ -51,9 +51,9 @@ struct StatsView: View {
                                     .cornerRadius(8)
                                 }
                             }
+                            Spacer().frame(height: 80)
                         }
                     }
-                    //.frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 16)
                 }
             }

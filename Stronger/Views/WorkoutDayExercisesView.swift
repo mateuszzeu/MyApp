@@ -26,6 +26,7 @@ struct WorkoutDayExercisesView: View {
                         index: workoutDay.exercises.firstIndex(of: exercise) ?? 0
                     )
                 }
+                Spacer().frame(height: 80)
             }
             .padding(.horizontal)
         }
