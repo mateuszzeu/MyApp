@@ -15,8 +15,8 @@ struct MainView: View {
         TabItem(icon: "figure.strengthtraining.traditional", title: "Workouts"),
         TabItem(icon: "square.and.pencil", title: "Add Workout"),
         TabItem(icon: "drop", title: "Hydration"),
-        TabItem(icon: "gear", title: "Settings"),
-        TabItem(icon: "chart.bar", title: "Stats")
+        TabItem(icon: "chart.bar", title: "Stats"),
+        TabItem(icon: "gear", title: "Settings")
     ]
     
     var body: some View {
@@ -30,10 +30,10 @@ struct MainView: View {
                         AddWorkoutView(workoutViewModel: viewModel)
                     case "Hydration":
                         HydrationView(viewModel: viewModel)
-                    case "Settings":
-                        SettingsView(showSignInView: $showSignInView)
                     case "Stats":
                         StatsView()
+                    case "Settings":
+                        SettingsView(showSignInView: $showSignInView)
                     default:
                         WorkoutView(viewModel: viewModel)
                     }
