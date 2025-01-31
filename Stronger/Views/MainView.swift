@@ -4,19 +4,22 @@
 //
 //  Created by Mateusz Żełudziewicz on 18/10/2024.
 //
+
 import SwiftUI
 
 struct MainView: View {
     @ObservedObject var viewModel = WorkoutViewModel()
+    @StateObject private var measurementsViewModel = MeasurementsViewModel()
     @State private var showSignInView: Bool = !UserDefaults.standard.bool(forKey: "isUserLoggedIn")
     @State private var selectedTab: TabItem = TabItem(icon: "figure.strengthtraining.traditional", title: "Workouts")
     
     private let tabItems: [TabItem] = [
         TabItem(icon: "figure.strengthtraining.traditional", title: "Workouts"),
-        TabItem(icon: "square.and.pencil", title: "Add Workout"),
-        TabItem(icon: "drop", title: "Hydration"),
-        TabItem(icon: "chart.bar", title: "Stats"),
-        TabItem(icon: "gear", title: "Settings")
+        TabItem(icon: "dumbbell.fill", title: "Add Workout"),
+        TabItem(icon: "drop.fill", title: "Hydration"),
+        TabItem(icon: "chart.bar.xaxis", title: "Stats"),
+        TabItem(icon: "plus.rectangle.fill.on.rectangle.fill", title: "Add Measurements"),
+        TabItem(icon: "gearshape.fill", title: "Settings")
     ]
     
     var body: some View {
@@ -27,11 +30,13 @@ struct MainView: View {
                     case "Workouts":
                         WorkoutView(viewModel: viewModel)
                     case "Add Workout":
-                        AddWorkoutView(workoutViewModel: viewModel)
+                        AddWorkoutView(viewModel: viewModel)
                     case "Hydration":
                         HydrationView(viewModel: viewModel)
                     case "Stats":
-                        StatsView()
+                        StatsView(measurementsViewModel: measurementsViewModel)
+                    case "Add Measurements":
+                        AddMeasurementsView(viewModel: measurementsViewModel)
                     case "Settings":
                         SettingsView(showSignInView: $showSignInView)
                     default:
@@ -62,7 +67,6 @@ struct MainView: View {
         showSignInView = !UserDefaults.standard.bool(forKey: "isUserLoggedIn")
     }
 }
-
 
 #Preview {
     MainView()

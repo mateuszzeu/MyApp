@@ -57,10 +57,13 @@ struct CustomTabBar: View {
     CustomTabBar(
         selectedTab: .constant(TabItem(icon: "house", title: "Home")),
         tabItems: [
-            TabItem(icon: "house", title: "Home"),
-            TabItem(icon: "heart", title: "Favorites"),
-            TabItem(icon: "message", title: "Messages"),
-            TabItem(icon: "person", title: "Profile")
+            TabItem(icon: "figure.strengthtraining.traditional", title: "Workouts"),
+            TabItem(icon: "dumbbell.fill", title: "Add Workout"),
+            TabItem(icon: "drop.fill", title: "Hydration"),
+            TabItem(icon: "chart.bar.xaxis", title: "Stats"),
+            TabItem(icon: "plus.rectangle.fill.on.rectangle.fill", title: "Add Measurements"),
+            TabItem(icon: "gearshape.fill", title: "Settings")
         ]
     )
 }
+

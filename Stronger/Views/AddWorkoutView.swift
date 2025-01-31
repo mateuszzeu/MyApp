@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AddWorkoutView: View {
     
-    @ObservedObject var workoutViewModel: WorkoutViewModel
+    @ObservedObject var viewModel: WorkoutViewModel
     
     @State private var showDeleteDayAlert = false
     @State private var showValidationErrorAlert = false
@@ -20,32 +20,32 @@ struct AddWorkoutView: View {
             ZStack {
                 VStack(spacing: 20) {
                     VStack(spacing: 10) {
-                        TextField("Enter New Day Name", text: $workoutViewModel.newDayName)
+                        TextField("Enter New Day Name", text: $viewModel.newDayName)
                             .padding()
                             .applyTransparentBackground()
                         
                         Button(action: {
-                            let result = workoutViewModel.addDay(dayName: workoutViewModel.newDayName)
+                            let result = viewModel.addDay(dayName: viewModel.newDayName)
                             if case .failure(let error) = result {
                                 validationErrorMessage = error.localizedDescription
                                 showValidationErrorAlert = true
                             }
-                            workoutViewModel.newDayName = ""
+                            viewModel.newDayName = ""
                             hideKeyboard()
                         }) {
                             Text("Add New Day")
                         }
                         .buttonStyle(CustomButtonStyle(
-                            backgroundColor: workoutViewModel.newDayName.isEmpty ? Color.theme.primary.opacity(0.4) : Color.theme.primary
+                            backgroundColor: viewModel.newDayName.isEmpty ? Color.theme.primary.opacity(0.4) : Color.theme.primary
                         ))
-                        .disabled(workoutViewModel.newDayName.isEmpty)
+                        .disabled(viewModel.newDayName.isEmpty)
                     }
                     .padding()
                     
-                    if !workoutViewModel.workoutDays.isEmpty {
+                    if !viewModel.workoutDays.isEmpty {
                         VStack(spacing: 10) {
-                            Picker("Day", selection: $workoutViewModel.selectedDay) {
-                                ForEach(workoutViewModel.workoutDays) { day in
+                            Picker("Day", selection: $viewModel.selectedDay) {
+                                ForEach(viewModel.workoutDays) { day in
                                     Text(day.dayName).tag(day.dayName)
                                 }
                             }
@@ -55,29 +55,29 @@ struct AddWorkoutView: View {
                                 showDeleteDayAlert = true
                             }
                             .buttonStyle(CustomButtonStyle(
-                                backgroundColor: workoutViewModel.selectedDay.isEmpty ? Color.theme.primary.opacity(0.4) : Color.theme.accent.opacity(0.8)
+                                backgroundColor: viewModel.selectedDay.isEmpty ? Color.theme.primary.opacity(0.4) : Color.theme.accent.opacity(0.8)
                             ))
-                            .disabled(workoutViewModel.selectedDay.isEmpty)
+                            .disabled(viewModel.selectedDay.isEmpty)
                             .showConfirmationAlert(
                                 isPresented: $showDeleteDayAlert,
                                 title: "Delete Day",
-                                message: "Are you sure you want to delete \(workoutViewModel.selectedDay)?"
+                                message: "Are you sure you want to delete \(viewModel.selectedDay)?"
                             ) {
-                                workoutViewModel.removeDay(dayName: workoutViewModel.selectedDay)
-                                workoutViewModel.selectedDay = workoutViewModel.workoutDays.first?.dayName ?? ""
+                                viewModel.removeDay(dayName: viewModel.selectedDay)
+                                viewModel.selectedDay = viewModel.workoutDays.first?.dayName ?? ""
                             }
                         }
                         .padding()
                     }
                     
                     VStack(spacing: 10) {
-                        CustomTextField(placeholder: "Exercise Name", text: $workoutViewModel.exerciseName)
-                        CustomTextField(placeholder: "Sets", text: $workoutViewModel.sets)
-                        CustomTextField(placeholder: "Reps", text: $workoutViewModel.reps)
-                        CustomTextField(placeholder: "Weight", text: $workoutViewModel.weight)
+                        CustomTextField(placeholder: "Exercise Name", text: $viewModel.exerciseName)
+                        CustomTextField(placeholder: "Sets", text: $viewModel.sets)
+                        CustomTextField(placeholder: "Reps", text: $viewModel.reps)
+                        CustomTextField(placeholder: "Weight", text: $viewModel.weight)
                         
                         Button(action: {
-                            let result = workoutViewModel.addExercise()
+                            let result = viewModel.addExercise()
                             switch result {
                             case .success:
                                 clearFields()
@@ -90,10 +90,10 @@ struct AddWorkoutView: View {
                             Text("Add Exercise")
                         }
                         .buttonStyle(CustomButtonStyle(
-                            backgroundColor: [workoutViewModel.exerciseName, workoutViewModel.sets, workoutViewModel.reps, workoutViewModel.weight].contains(where: \.isEmpty) || workoutViewModel.selectedDay.isEmpty ? Color.theme.primary.opacity(0.4) : Color.theme.accent,
+                            backgroundColor: [viewModel.exerciseName, viewModel.sets, viewModel.reps, viewModel.weight].contains(where: \.isEmpty) || viewModel.selectedDay.isEmpty ? Color.theme.primary.opacity(0.4) : Color.theme.accent,
                             foregroundColor: Color.theme.text
                         ))
-                        .disabled([workoutViewModel.exerciseName, workoutViewModel.sets, workoutViewModel.reps, workoutViewModel.weight].contains(where: \.isEmpty) || workoutViewModel.selectedDay.isEmpty)
+                        .disabled([viewModel.exerciseName, viewModel.sets, viewModel.reps, viewModel.weight].contains(where: \.isEmpty) || viewModel.selectedDay.isEmpty)
                     }
                     .padding()
                     
@@ -111,14 +111,14 @@ struct AddWorkoutView: View {
     }
     
     private func clearFields() {
-        workoutViewModel.exerciseName = ""
-        workoutViewModel.sets = ""
-        workoutViewModel.reps = ""
-        workoutViewModel.weight = ""
+        viewModel.exerciseName = ""
+        viewModel.sets = ""
+        viewModel.reps = ""
+        viewModel.weight = ""
     }
 }
 
 
 #Preview {
-    AddWorkoutView(workoutViewModel: WorkoutViewModel())
+    AddWorkoutView(viewModel: WorkoutViewModel())
 }
