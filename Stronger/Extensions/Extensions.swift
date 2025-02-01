@@ -72,6 +72,7 @@ struct CustomTextField: View {
         }
         .padding()
         .applyTransparentBackground()
+        .disableAutocorrection(true)
     }
 }
 

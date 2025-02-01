@@ -53,6 +53,7 @@ struct MainView: View {
             }
         }
         .background(Color.clear.ignoresSafeArea())
+        .ignoresSafeArea(.keyboard, edges: .bottom)
         .fullScreenCover(isPresented: $showSignInView) {
             NavigationStack {
                 AuthenticationView(showSignInView: $showSignInView)

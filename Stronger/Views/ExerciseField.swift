@@ -24,6 +24,7 @@ struct ExerciseField: View {
                 .padding()
                 .applyTransparentBackground()
                 .frame(minWidth: 50, maxWidth: .infinity)
+                .disableAutocorrection(true)
         }
     }
 }
