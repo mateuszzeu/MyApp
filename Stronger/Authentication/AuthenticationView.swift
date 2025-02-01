@@ -28,13 +28,9 @@ struct AuthenticationView: View {
                         .frame(height: UIScreen.main.bounds.height * 0.15)
                     
                     VStack(spacing: 15) {
-                        TextField("Email...", text: $viewModel.email)
-                            .padding()
-                            .applyTransparentBackground()
+                        CustomTextField(placeholder: "Email...", text: $viewModel.email)
                         
-                        SecureField("Password...", text: $viewModel.password)
-                            .padding()
-                            .applyTransparentBackground()
+                        CustomTextField(placeholder: "Password...", text: $viewModel.password, isSecure: true)
                         
                         if viewModel.showErrorMessage {
                             Text(viewModel.errorMessage)

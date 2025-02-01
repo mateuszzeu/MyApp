@@ -19,9 +19,7 @@ struct AddWorkoutView: View {
         ZStack {
             VStack(spacing: 20) {
                 VStack(spacing: 10) {
-                    TextField("Enter New Day Name", text: $viewModel.newDayName)
-                        .padding()
-                        .applyTransparentBackground()
+                    CustomTextField(placeholder: "Enter New Day Name", text: $viewModel.newDayName)
                     
                     Button(action: {
                         let result = viewModel.addDay(dayName: viewModel.newDayName)

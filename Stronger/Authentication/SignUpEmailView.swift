@@ -9,20 +9,14 @@ struct SignUpEmailView: View {
     
     var body: some View {
         VStack {
-            TextField("Email...", text: $viewModel.email)
-                .padding()
-                .applyTransparentBackground()
+            CustomTextField(placeholder: "Email...", text: $viewModel.email)
             
-            SecureField("Password...", text: $viewModel.password)
-                .padding()
-                .applyTransparentBackground()
+            CustomTextField(placeholder: "Password...", text: $viewModel.password, isSecure: true)
                 .textContentType(.newPassword)
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
             
-            SecureField("Confirm Password...", text: $viewModel.confirmPassword)
-                .padding()
-                .applyTransparentBackground()
+            CustomTextField(placeholder: "Confirm Password...", text: $viewModel.confirmPassword, isSecure: true)
                 .textContentType(.newPassword)
                 .autocapitalization(.none)
                 .disableAutocorrection(true)

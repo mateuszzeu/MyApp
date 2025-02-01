@@ -20,30 +20,15 @@ struct AddMeasurementsView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 20) {
-                TextField("Weight (kg)", text: $viewModel.weight)
-                    .keyboardType(.decimalPad)
-                    .padding()
-                    .applyTransparentBackground()
+                CustomTextField(placeholder: "Weight (kg)", text: $viewModel.weight, keyboardType: .decimalPad)
                 
-                TextField("Protein (g)", text: $viewModel.protein)
-                    .keyboardType(.decimalPad)
-                    .padding()
-                    .applyTransparentBackground()
+                CustomTextField(placeholder: "Protein (g)", text: $viewModel.protein, keyboardType: .decimalPad)
                 
-                TextField("Carbs (g)", text: $viewModel.carbs)
-                    .keyboardType(.decimalPad)
-                    .padding()
-                    .applyTransparentBackground()
+                CustomTextField(placeholder: "Carbs (g)", text: $viewModel.carbs, keyboardType: .decimalPad)
                 
-                TextField("Fat (g)", text: $viewModel.fat)
-                    .keyboardType(.decimalPad)
-                    .padding()
-                    .applyTransparentBackground()
+                CustomTextField(placeholder: "Fat (g)", text: $viewModel.fat, keyboardType: .decimalPad)
                 
-                TextField("Calories", text: $viewModel.calories)
-                    .keyboardType(.decimalPad)
-                    .padding()
-                    .applyTransparentBackground()
+                CustomTextField(placeholder: "Calories", text: $viewModel.calories, keyboardType: .decimalPad)
                 
                 Button(action: {
                     saveMeasurement()

@@ -122,7 +122,7 @@ struct HydrationView: View {
                     Text("Glass Volume:")
                         .foregroundColor(Color.theme.text.opacity(0.7))
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    //Spacer()
+                    
                     Picker("Volume", selection: $viewModel.hydrationData.glassVolume) {
                         ForEach([0.1, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5], id: \.self) { volume in
                             Text("\(Int(volume * 1000)) ml")
@@ -162,7 +162,7 @@ struct HydrationView: View {
             .padding()
             .applyTransparentBackground()
             .padding(.horizontal)
-            .padding(.bottom, 25)
+            .padding(.bottom, 40)
             
             Spacer()
         }

@@ -57,13 +57,24 @@ struct GradientBackground: ViewModifier {
 struct CustomTextField: View {
     let placeholder: String
     @Binding var text: String
-    
+    var isSecure: Bool = false
+    var keyboardType: UIKeyboardType = .default
+
     var body: some View {
-        TextField(placeholder, text: $text)
-            .padding()
-            .applyTransparentBackground()
+        Group {
+            if isSecure {
+                SecureField(placeholder, text: $text)
+                    .keyboardType(keyboardType)
+            } else {
+                TextField(placeholder, text: $text)
+                    .keyboardType(keyboardType)
+            }
+        }
+        .padding()
+        .applyTransparentBackground()
     }
 }
+
 
 
 struct WaterWave: Shape {
@@ -153,5 +164,13 @@ struct SimplifiedExerciseRowView: View {
         .padding()
         .background(Color.theme.primary.opacity(0.1))
         .cornerRadius(8)
+    }
+}
+
+struct ValidationHelper {
+    static func isValidEmail(_ email: String) -> Bool {
+        let emailFormat = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailFormat)
+        return emailPredicate.evaluate(with: email)
     }
 }
