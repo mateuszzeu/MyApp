@@ -32,12 +32,12 @@ final class SettingsViewModel: ObservableObject {
     }
     
     func updateEmail() async throws { //do napisania
-        let email = "Lizuneczka@example.com"
+        let email = "Testing@example.com"
         try await AuthenticationManager.shared.updateEmail(email: email)
     }
     
     func updatePassword() async throws { //do napisania
-        let password = "dupa12341234"
+        let password = "H@sl01234567"
         try await AuthenticationManager.shared.updatePassword(password: password)
     }
     

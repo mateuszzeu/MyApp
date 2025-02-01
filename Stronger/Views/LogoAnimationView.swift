@@ -8,13 +8,11 @@ import SwiftUI
 
 struct LogoAnimationView: View {
     @State private var opacity = 0.0
-    @State private var blur = 0.0
     var onAnimationEnd: () -> Void
 
     var body: some View {
         VStack {
             Spacer()
-
             Text("Fitally")
                 .font(.largeTitle.bold())
                 .foregroundColor(.black)
@@ -30,7 +28,6 @@ struct LogoAnimationView: View {
                         onAnimationEnd()
                     }
                 }
-
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

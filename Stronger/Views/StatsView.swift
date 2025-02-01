@@ -12,74 +12,33 @@ struct StatsView: View {
     @ObservedObject var measurementsViewModel: MeasurementsViewModel
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                Color.clear
-                    .applyGradientBackground()
-                    .ignoresSafeArea()
-
-                ScrollView {
-                    LazyVStack {
-                        if viewModel.completedWorkouts.isEmpty {
-                            Text("No workouts yet.")
-                                .padding()
-                                .foregroundColor(Color.theme.text.opacity(0.5))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        } else {
-                            ForEach(viewModel.completedWorkouts) { workout in
-                                NavigationLink(destination: CompletedWorkoutDetailView(workout: workout)) {
-                                    VStack {
-                                        Text(workout.workoutDayName)
-                                            .font(.headline)
-                                            .foregroundColor(Color.theme.text)
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                        Text("Date: \(workout.date.formatted(date: .abbreviated, time: .shortened))")
-                                            .font(.subheadline)
-                                            .foregroundColor(Color.theme.text.opacity(0.7))
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                        
-                                        if let notes = workout.notes, !notes.isEmpty {
-                                            Text("Notes: \(notes)")
-                                                .font(.footnote)
-                                                .foregroundColor(Color.theme.text.opacity(0.6))
-                                                .frame(maxWidth: .infinity, alignment: .leading)
-                                        }
-                                    }
-                                    .padding()
-                                    .background(Color.theme.primary.opacity(0.1))
-                                    .cornerRadius(8)
-                                }
-                            }
-                            Spacer().frame(height: 80)
-                        }
-                        
-                        if measurementsViewModel.dailyMeasurements.isEmpty {
-                            Text("No measurements yet.")
-                                .padding()
-                                .foregroundColor(Color.theme.text.opacity(0.5))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        } else {
-                            ForEach(measurementsViewModel.dailyMeasurements) { measurement in
+        ZStack {
+            Color.clear
+                .applyGradientBackground()
+                .ignoresSafeArea()
+            
+            ScrollView {
+                LazyVStack {
+                    if viewModel.completedWorkouts.isEmpty {
+                        Text("No workouts yet.")
+                            .padding()
+                            .foregroundColor(Color.theme.text.opacity(0.5))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    } else {
+                        ForEach(viewModel.completedWorkouts) { workout in
+                            NavigationLink(destination: CompletedWorkoutDetailView(workout: workout)) {
                                 VStack {
-                                    Text("Date: \(measurement.date.formatted(date: .abbreviated, time: .shortened))")
+                                    Text(workout.workoutDayName)
                                         .font(.headline)
                                         .foregroundColor(Color.theme.text)
                                         .frame(maxWidth: .infinity, alignment: .leading)
+                                    Text("Date: \(workout.date.formatted(date: .abbreviated, time: .shortened))")
+                                        .font(.subheadline)
+                                        .foregroundColor(Color.theme.text.opacity(0.7))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                                     
-                                    if let weight = measurement.weight {
-                                        Text("Weight: \(String(format: "%.1f", weight)) kg")
-                                            .font(.subheadline)
-                                            .foregroundColor(Color.theme.text.opacity(0.7))
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                    }
-                                    
-                                    if let macros = measurement.macros {
-                                        Text("Calories: \(Int(macros.calories)) kcal")
-                                            .font(.footnote)
-                                            .foregroundColor(Color.theme.text.opacity(0.6))
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                        
-                                        Text("Protein: \(Int(macros.protein)) g, Carbs: \(Int(macros.carbs)) g, Fat: \(Int(macros.fat)) g")
+                                    if let notes = workout.notes, !notes.isEmpty {
+                                        Text("Notes: \(notes)")
                                             .font(.footnote)
                                             .foregroundColor(Color.theme.text.opacity(0.6))
                                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -90,20 +49,60 @@ struct StatsView: View {
                                 .cornerRadius(8)
                             }
                         }
+                        Spacer().frame(height: 80)
                     }
-                    .padding(.horizontal, 16)
+                    
+                    if measurementsViewModel.dailyMeasurements.isEmpty {
+                        Text("No measurements yet.")
+                            .padding()
+                            .foregroundColor(Color.theme.text.opacity(0.5))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    } else {
+                        ForEach(measurementsViewModel.dailyMeasurements) { measurement in
+                            VStack {
+                                Text("Date: \(measurement.date.formatted(date: .abbreviated, time: .shortened))")
+                                    .font(.headline)
+                                    .foregroundColor(Color.theme.text)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                if let weight = measurement.weight {
+                                    Text("Weight: \(String(format: "%.1f", weight)) kg")
+                                        .font(.subheadline)
+                                        .foregroundColor(Color.theme.text.opacity(0.7))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                
+                                if let macros = measurement.macros {
+                                    Text("Calories: \(Int(macros.calories)) kcal")
+                                        .font(.footnote)
+                                        .foregroundColor(Color.theme.text.opacity(0.6))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    
+                                    Text("Protein: \(Int(macros.protein)) g, Carbs: \(Int(macros.carbs)) g, Fat: \(Int(macros.fat)) g")
+                                        .font(.footnote)
+                                        .foregroundColor(Color.theme.text.opacity(0.6))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                            }
+                            .padding()
+                            .background(Color.theme.primary.opacity(0.1))
+                            .cornerRadius(8)
+                        }
+                    }
                 }
+                .padding(.horizontal, 16)
             }
-            .navigationTitle("Statistics")
-            .onAppear {
-                viewModel.fetchCompletedWorkouts()
-                measurementsViewModel.fetchDailyMeasurements()
-            }
-            .onDisappear {
-                viewModel.stopListening()
-                measurementsViewModel.stopListening()
-            }
+            .padding(.top, 66)
         }
+        .onAppear {
+            viewModel.fetchCompletedWorkouts()
+            measurementsViewModel.fetchDailyMeasurements()
+        }
+        .onDisappear {
+            viewModel.stopListening()
+            measurementsViewModel.stopListening()
+        }
+        
     }
 }
 

@@ -12,7 +12,6 @@ struct WorkoutView: View {
     @State private var selectedDay: String = ""
 
     var body: some View {
-        NavigationView {
             ZStack {
                 VStack {
                     if viewModel.workoutDays.isEmpty {
@@ -30,23 +29,17 @@ struct WorkoutView: View {
                         }
                     }
                 }
+                .padding(.top, 66)
             }
             .applyGradientBackground()
-            .toolbar {
-                    ToolbarItem(placement: .principal) {
-                        Text("Workouts")
-                            .font(.system(size: 22))
-                            .fontWeight(.bold)
-                    }
+            .onAppear {
+                viewModel.loadWorkoutDaysFromFirestore()
+                if selectedDay.isEmpty, let firstDay = viewModel.workoutDays.first?.dayName {
+                    selectedDay = firstDay
                 }
-            .navigationBarTitleDisplayMode(.inline)
-        }
-        .onAppear {
-            viewModel.loadWorkoutDaysFromFirestore()
-            if selectedDay.isEmpty, let firstDay = viewModel.workoutDays.first?.dayName {
-                selectedDay = firstDay
             }
-        }
+        
+        
     }
 }
 
