@@ -56,7 +56,7 @@ struct AddWorkoutView: View {
                             showValidationErrorAlert = true
                         }
                     }) {
-                        Text("Add Exercise")
+                        Text("Add Exercise to \(viewModel.selectedDay.isEmpty ? "Selected Day" : viewModel.selectedDay)")
                     }
                     .buttonStyle(CustomButtonStyle(
                         backgroundColor: [viewModel.exerciseName, viewModel.sets, viewModel.reps, viewModel.weight].contains(where: \.isEmpty) || viewModel.selectedDay.isEmpty ? Color.theme.primary.opacity(0.4) : Color.theme.accent,

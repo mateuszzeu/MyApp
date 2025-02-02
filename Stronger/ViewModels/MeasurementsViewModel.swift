@@ -44,30 +44,27 @@ class MeasurementsViewModel: ObservableObject {
     
     func commitMeasurement(completion: @escaping (Result<Void, Error>) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
-            completion(.failure(NSError(
-                domain: "No user",
-                code: 0,
-                userInfo: [NSLocalizedDescriptionKey: "User not logged in"]
-            )))
+            completion(.failure(NSError(domain: "No user", code: 0, userInfo: [NSLocalizedDescriptionKey: "User not logged in"])))
             return
         }
-        
+
         guard let weightVal = Double(weight),
               let proteinVal = Double(protein),
               let carbsVal = Double(carbs),
               let fatVal = Double(fat),
               let caloriesVal = Double(calories) else {
-            
-            completion(.failure(NSError(
-                domain: "Invalid input",
-                code: 0,
-                userInfo: [NSLocalizedDescriptionKey: "Invalid numeric values"]
-            )))
+            completion(.failure(NSError(domain: "Invalid input", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid numeric values"])))
             return
         }
-        
+
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let documentId = dateFormatter.string(from: currentDate)
+
         let newMeasurement = DailyMeasurement(
-            date: Date(),
+            id: UUID(),
+            date: currentDate,
             weight: weightVal,
             macros: DailyMeasurement.Macros(
                 protein: proteinVal,
@@ -76,13 +73,13 @@ class MeasurementsViewModel: ObservableObject {
                 calories: caloriesVal
             )
         )
-        
+
         let docRef = db.collection("users")
             .document(userId)
             .collection("dailyMeasurements")
-            .document(newMeasurement.id.uuidString)
-        
-        docRef.setData(newMeasurement.dictionary) { error in
+            .document(documentId)
+
+        docRef.setData(newMeasurement.dictionary, merge: true) { error in
             if let error = error {
                 completion(.failure(error))
             } else {
@@ -90,6 +87,8 @@ class MeasurementsViewModel: ObservableObject {
             }
         }
     }
+
+
     
     func clearFields() {
         weight = ""
