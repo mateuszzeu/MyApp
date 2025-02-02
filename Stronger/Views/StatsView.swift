@@ -13,16 +13,12 @@ struct StatsView: View {
     
     var body: some View {
         ZStack {
-            Color.clear
-                .applyGradientBackground()
-                .ignoresSafeArea()
-            
             ScrollView {
                 LazyVStack {
                     Text("Completed Workouts")
-                                .font(.title2).bold()
-                                .foregroundColor(Color.theme.text)
-                                .padding(.top, 8)
+                        .font(.title2).bold()
+                        .foregroundColor(Color.theme.text)
+                        .padding(.top, 8)
                     
                     if viewModel.completedWorkouts.isEmpty {
                         Text("No workouts yet.")
@@ -54,24 +50,25 @@ struct StatsView: View {
                                 .cornerRadius(8)
                             }
                         }
-                        Spacer().frame(height: 80)
+                        Spacer().frame(height: 20)
                     }
                     
                     Divider().padding(.vertical, 10)
                     
-                    Text("Daily Measurements")
-                                .font(.title2).bold()
-                                .foregroundColor(Color.theme.text)
+                    Text("Weight History")
+                        .font(.title2).bold()
+                        .foregroundColor(Color.theme.text)
+                        .padding(.top, 10)
                     
                     if measurementsViewModel.dailyMeasurements.isEmpty {
-                        Text("No measurements yet.")
+                        Text("No weight records yet.")
                             .padding()
                             .foregroundColor(Color.theme.text.opacity(0.5))
                             .frame(maxWidth: .infinity, alignment: .leading)
                     } else {
                         ForEach(measurementsViewModel.dailyMeasurements) { measurement in
                             VStack {
-                                Text("Date: \(measurement.date.formatted(date: .abbreviated, time: .shortened))")
+                                Text("\(measurement.date.formatted(date: .abbreviated, time: .shortened))")
                                     .font(.headline)
                                     .foregroundColor(Color.theme.text)
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -82,8 +79,34 @@ struct StatsView: View {
                                         .foregroundColor(Color.theme.text.opacity(0.7))
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                 }
-                                
-                                if let macros = measurement.macros {
+                            }
+                            .padding()
+                            .background(Color.theme.primary.opacity(0.1))
+                            .cornerRadius(8)
+                        }
+                    }
+                    
+                    Divider().padding(.vertical, 10)
+                    
+                    Text("Nutrition History")
+                        .font(.title2).bold()
+                        .foregroundColor(Color.theme.text)
+                        .padding(.top, 10)
+                    
+                    if measurementsViewModel.dailyMeasurements.allSatisfy({ $0.macros == nil }) {
+                        Text("No macro records yet.")
+                            .padding()
+                            .foregroundColor(Color.theme.text.opacity(0.5))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    } else {
+                        ForEach(measurementsViewModel.dailyMeasurements) { measurement in
+                            if let macros = measurement.macros {
+                                VStack {
+                                    Text("\(measurement.date.formatted(date: .abbreviated, time: .omitted))")
+                                        .font(.headline)
+                                        .foregroundColor(Color.theme.text)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    
                                     Text("Calories: \(Int(macros.calories)) kcal")
                                         .font(.footnote)
                                         .foregroundColor(Color.theme.text.opacity(0.6))
@@ -94,10 +117,10 @@ struct StatsView: View {
                                         .foregroundColor(Color.theme.text.opacity(0.6))
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                 }
+                                .padding()
+                                .background(Color.theme.primary.opacity(0.1))
+                                .cornerRadius(8)
                             }
-                            .padding()
-                            .background(Color.theme.primary.opacity(0.1))
-                            .cornerRadius(8)
                         }
                     }
                 }
@@ -108,6 +131,7 @@ struct StatsView: View {
                 Spacer().frame(height: 120)
             }
         }
+        .applyGradientBackground()
         .onAppear {
             viewModel.fetchCompletedWorkouts()
             measurementsViewModel.fetchDailyMeasurements()
@@ -116,9 +140,9 @@ struct StatsView: View {
             viewModel.stopListening()
             measurementsViewModel.stopListening()
         }
-        
     }
 }
+
 
 #Preview {
     let statsViewModel = StatsViewModel()
