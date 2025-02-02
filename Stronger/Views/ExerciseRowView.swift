@@ -73,6 +73,9 @@ struct ExerciseRowView: View {
                 viewModel.deleteExercise(dayName: dayName, exerciseId: exercise.id)
             }
         }
+        .onTapGesture {
+            hideKeyboard()
+        }
     }
 }
 

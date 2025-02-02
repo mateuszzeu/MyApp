@@ -30,6 +30,9 @@ struct WorkoutView: View {
                     }
                 }
                 .padding(.top, 66)
+                .safeAreaInset(edge: .bottom) {
+                    Spacer().frame(height: 40)
+                }
             }
             .applyGradientBackground()
             .onAppear {

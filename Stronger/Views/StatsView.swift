@@ -19,6 +19,11 @@ struct StatsView: View {
             
             ScrollView {
                 LazyVStack {
+                    Text("Completed Workouts")
+                                .font(.title2).bold()
+                                .foregroundColor(Color.theme.text)
+                                .padding(.top, 8)
+                    
                     if viewModel.completedWorkouts.isEmpty {
                         Text("No workouts yet.")
                             .padding()
@@ -51,6 +56,12 @@ struct StatsView: View {
                         }
                         Spacer().frame(height: 80)
                     }
+                    
+                    Divider().padding(.vertical, 10)
+                    
+                    Text("Daily Measurements")
+                                .font(.title2).bold()
+                                .foregroundColor(Color.theme.text)
                     
                     if measurementsViewModel.dailyMeasurements.isEmpty {
                         Text("No measurements yet.")
@@ -93,6 +104,9 @@ struct StatsView: View {
                 .padding(.horizontal, 16)
             }
             .padding(.top, 66)
+            .safeAreaInset(edge: .bottom) {
+                Spacer().frame(height: 120)
+            }
         }
         .onAppear {
             viewModel.fetchCompletedWorkouts()

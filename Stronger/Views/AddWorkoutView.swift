@@ -39,6 +39,33 @@ struct AddWorkoutView: View {
                 }
                 .padding()
                 
+                VStack(spacing: 10) {
+                    CustomTextField(placeholder: "Exercise Name", text: $viewModel.exerciseName)
+                    CustomTextField(placeholder: "Sets", text: $viewModel.sets)
+                    CustomTextField(placeholder: "Reps", text: $viewModel.reps)
+                    CustomTextField(placeholder: "Weight", text: $viewModel.weight)
+                    
+                    Button(action: {
+                        let result = viewModel.addExercise()
+                        switch result {
+                        case .success:
+                            clearFields()
+                            hideKeyboard()
+                        case .failure(let error):
+                            validationErrorMessage = error.localizedDescription
+                            showValidationErrorAlert = true
+                        }
+                    }) {
+                        Text("Add Exercise")
+                    }
+                    .buttonStyle(CustomButtonStyle(
+                        backgroundColor: [viewModel.exerciseName, viewModel.sets, viewModel.reps, viewModel.weight].contains(where: \.isEmpty) || viewModel.selectedDay.isEmpty ? Color.theme.primary.opacity(0.4) : Color.theme.accent,
+                        foregroundColor: Color.theme.text
+                    ))
+                    .disabled([viewModel.exerciseName, viewModel.sets, viewModel.reps, viewModel.weight].contains(where: \.isEmpty) || viewModel.selectedDay.isEmpty)
+                }
+                .padding()
+                
                 if !viewModel.workoutDays.isEmpty {
                     VStack(spacing: 10) {
                         Picker("Day", selection: $viewModel.selectedDay) {
@@ -67,33 +94,6 @@ struct AddWorkoutView: View {
                     .padding()
                 }
                 
-                VStack(spacing: 10) {
-                    CustomTextField(placeholder: "Exercise Name", text: $viewModel.exerciseName)
-                    CustomTextField(placeholder: "Sets", text: $viewModel.sets)
-                    CustomTextField(placeholder: "Reps", text: $viewModel.reps)
-                    CustomTextField(placeholder: "Weight", text: $viewModel.weight)
-                    
-                    Button(action: {
-                        let result = viewModel.addExercise()
-                        switch result {
-                        case .success:
-                            clearFields()
-                            hideKeyboard()
-                        case .failure(let error):
-                            validationErrorMessage = error.localizedDescription
-                            showValidationErrorAlert = true
-                        }
-                    }) {
-                        Text("Add Exercise")
-                    }
-                    .buttonStyle(CustomButtonStyle(
-                        backgroundColor: [viewModel.exerciseName, viewModel.sets, viewModel.reps, viewModel.weight].contains(where: \.isEmpty) || viewModel.selectedDay.isEmpty ? Color.theme.primary.opacity(0.4) : Color.theme.accent,
-                        foregroundColor: Color.theme.text
-                    ))
-                    .disabled([viewModel.exerciseName, viewModel.sets, viewModel.reps, viewModel.weight].contains(where: \.isEmpty) || viewModel.selectedDay.isEmpty)
-                }
-                .padding()
-                
                 Spacer()
             }
             .padding(.top, 66)
@@ -103,6 +103,9 @@ struct AddWorkoutView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(validationErrorMessage)
+        }
+        .onTapGesture {
+            hideKeyboard()
         }
         
     }
