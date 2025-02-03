@@ -63,8 +63,10 @@
 			membershipExceptions = (
 				Lottie/Animations/Success.json,
 				Lottie/LottieView.swift,
-				Views/AddMeasurementsView.swift,
+				ViewModels/BodyMeasurementsViewModel.swift,
 				Views/LogoAnimationView.swift,
+				Views/StatsView/AddMeasurementsView.swift,
+				Views/StatsView/BodyMeasurementsHistoryView.swift,
 				Views/StatsView/MacrosHistoryView.swift,
 				Views/StatsView/StatsView.swift,
 				Views/StatsView/WeightHistoryView.swift,

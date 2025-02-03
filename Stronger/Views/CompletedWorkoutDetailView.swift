@@ -17,7 +17,7 @@ struct CompletedWorkoutDetailView: View {
                 .ignoresSafeArea()
             
             ScrollView {
-                LazyVStack {
+                VStack {
                     if workout.exercises.isEmpty {
                         Text("No exercises found")
                             .foregroundColor(Color.theme.text.opacity(0.5))

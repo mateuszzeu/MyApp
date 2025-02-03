@@ -1,5 +1,5 @@
 //
-//  MacrosViewModel.swift
+//  BodyMeasurementsViewModel.swift
 //  Stronger
 //
 //  Created by Liza on 03/02/2025.
@@ -10,18 +10,18 @@ import FirebaseFirestore
 import FirebaseAuth
 
 @MainActor
-class MacrosViewModel: ObservableObject {
+class BodyMeasurementsViewModel: ObservableObject {
     
-    @Published var dailyMacros: [DailyMacros] = []
-    @Published var protein: String = ""
-    @Published var carbs: String = ""
-    @Published var fat: String = ""
-    @Published var calories: String = ""
+    @Published var measurements: [BodyMeasurements] = []
+    @Published var chest: String = ""
+    @Published var shoulders: String = ""
+    @Published var waist: String = ""
+    @Published var hips: String = ""
     
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     
-    func fetchDailyMacros() {
+    func fetchMeasurements() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
         db.collection("users")
@@ -31,35 +31,35 @@ class MacrosViewModel: ObservableObject {
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self else { return }
                 if let error = error {
-                    print("Error fetching macros records: \(error.localizedDescription)")
+                    print("Error fetching body measurements: \(error.localizedDescription)")
                     return
                 }
                 
                 guard let documents = snapshot?.documents else { return }
                 
-                self.dailyMacros = documents.compactMap { document in
+                self.measurements = documents.compactMap { document in
                     let data = document.data()
                     
-                    if data["protein"] == nil && data["carbs"] == nil && data["fat"] == nil && data["calories"] == nil {
+                    
+                    if data["chest"] == nil && data["shoulders"] == nil && data["waist"] == nil && data["hips"] == nil {
                         return nil
                     }
                     
-                    return DailyMacros(dictionary: data)
+                    return BodyMeasurements(dictionary: data)
                 }
             }
     }
     
-    
-    func saveMacros(completion: @escaping (Result<Void, Error>) -> Void) {
+    func saveMeasurements(completion: @escaping (Result<Void, Error>) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
             completion(.failure(NSError(domain: "No user", code: 0, userInfo: [NSLocalizedDescriptionKey: "User not logged in"])))
             return
         }
         
-        guard let proteinVal = Double(protein),
-              let carbsVal = Double(carbs),
-              let fatVal = Double(fat),
-              let caloriesVal = Double(calories) else {
+        guard let chestVal = Double(chest),
+              let shouldersVal = Double(shoulders),
+              let waistVal = Double(waist),
+              let hipsVal = Double(hips) else {
             completion(.failure(NSError(domain: "Invalid input", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid numeric values"])))
             return
         }
@@ -69,13 +69,13 @@ class MacrosViewModel: ObservableObject {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let documentId = dateFormatter.string(from: currentDate)
         
-        let newMacrosEntry = DailyMacros(
+        let newMeasurements = BodyMeasurements(
             id: UUID(),
             date: currentDate,
-            protein: proteinVal,
-            carbs: carbsVal,
-            fat: fatVal,
-            calories: caloriesVal
+            chest: chestVal,
+            shoulders: shouldersVal,
+            waist: waistVal,
+            hips: hipsVal
         )
         
         let docRef = db.collection("users")
@@ -83,7 +83,7 @@ class MacrosViewModel: ObservableObject {
             .collection("dailyMeasurements")
             .document(documentId)
         
-        docRef.setData(newMacrosEntry.dictionary, merge: true) { error in
+        docRef.setData(newMeasurements.dictionary, merge: true) { error in
             if let error = error {
                 completion(.failure(error))
             } else {
@@ -92,25 +92,14 @@ class MacrosViewModel: ObservableObject {
         }
     }
     
-    func clearMacrosFields() {
-        protein = ""
-        carbs = ""
-        fat = ""
-        calories = ""
+    func clearMeasurementsFields() {
+        chest = ""
+        shoulders = ""
+        waist = ""
+        hips = ""
     }
     
     func stopListening() {
         listener?.remove()
     }
-}
-
-#Preview {
-    let macrosViewModel = MacrosViewModel()
-    
-    macrosViewModel.dailyMacros = [
-        DailyMacros(date: Date(), protein: 150, carbs: 200, fat: 50, calories: 2500),
-        DailyMacros(date: Date().addingTimeInterval(-86400), protein: 140, carbs: 210, fat: 55, calories: 2600)
-    ]
-    
-    return MacrosHistoryView(macrosViewModel: macrosViewModel)
 }
