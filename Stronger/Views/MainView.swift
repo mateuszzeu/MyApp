@@ -9,7 +9,8 @@ import SwiftUI
 
 struct MainView: View {
     @ObservedObject var viewModel = WorkoutViewModel()
-    @StateObject private var measurementsViewModel = MeasurementsViewModel()
+    @StateObject private var weightViewModel = WeightViewModel()
+    @StateObject private var macrosViewModel = MacrosViewModel()
     @State private var showSignInView: Bool = !UserDefaults.standard.bool(forKey: "isUserLoggedIn")
     @State private var selectedTab: TabItem = TabItem(icon: "figure.strengthtraining.traditional", title: "Workouts")
     
@@ -34,9 +35,9 @@ struct MainView: View {
                     case "Hydration":
                         HydrationView(viewModel: viewModel)
                     case "Stats":
-                        StatsView(measurementsViewModel: measurementsViewModel)
+                        StatsView(weightViewModel: weightViewModel, macrosViewModel: macrosViewModel)
                     case "Add Measurements":
-                        AddMeasurementsView(viewModel: measurementsViewModel)
+                        AddMeasurementsView(weightViewModel: weightViewModel, macrosViewModel: macrosViewModel)
                     case "Settings":
                         SettingsView(showSignInView: $showSignInView)
                     default:

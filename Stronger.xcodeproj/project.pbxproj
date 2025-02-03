@@ -63,11 +63,11 @@
 			membershipExceptions = (
 				Lottie/Animations/Success.json,
 				Lottie/LottieView.swift,
-				Models/DailyMeasurement.swift,
-				ViewModels/MeasurementsViewModel.swift,
 				Views/AddMeasurementsView.swift,
 				Views/LogoAnimationView.swift,
-				Views/StatsView.swift,
+				Views/StatsView/MacrosHistoryView.swift,
+				Views/StatsView/StatsView.swift,
+				Views/StatsView/WeightHistoryView.swift,
 				Views/SuccessSheetView.swift,
 			);
 			target = 6E3D4A4E2D268BD400259C04 /* StrongerTests */;

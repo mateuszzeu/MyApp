@@ -4,49 +4,57 @@
 //
 //  Created by Liza on 22/01/2025.
 //
+
 import SwiftUI
 
 struct AddMeasurementsView: View {
-    @ObservedObject var viewModel: MeasurementsViewModel
+    @ObservedObject var weightViewModel: WeightViewModel
+    @ObservedObject var macrosViewModel: MacrosViewModel
     
-    @State private var showConfirmation = false
+    @State private var showWeightConfirmation = false
+    @State private var showMacroConfirmation = false
     @State private var errorMessage: String?
     
     var body: some View {
         ZStack {
             VStack(spacing: 20) {
-                CustomTextField(placeholder: "Weight (kg)", text: $viewModel.weight, keyboardType: .decimalPad)
-                CustomTextField(placeholder: "Protein (g)", text: $viewModel.protein, keyboardType: .decimalPad)
-                CustomTextField(placeholder: "Carbs (g)", text: $viewModel.carbs, keyboardType: .decimalPad)
-                CustomTextField(placeholder: "Fat (g)", text: $viewModel.fat, keyboardType: .decimalPad)
-                CustomTextField(placeholder: "Calories", text: $viewModel.calories, keyboardType: .decimalPad)
                 
-                Button {
-                    saveMeasurement()
-                } label: {
-                    Text("Save")
-                        .font(.headline)
-                        .foregroundColor(Color.theme.text)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.theme.primary)
-                        .cornerRadius(10)
-                }
-                .disabled([viewModel.weight,
-                           viewModel.protein,
-                           viewModel.carbs,
-                           viewModel.fat,
-                           viewModel.calories].contains(where: \.isEmpty))
-                .opacity([viewModel.weight,
-                          viewModel.protein,
-                          viewModel.carbs,
-                          viewModel.fat,
-                          viewModel.calories].contains(where: \.isEmpty) ? 0.5 : 1.0)
+                Text("Weight")
+                    .font(.title2).bold()
+                    .foregroundColor(Color.theme.text)
+                
+                CustomTextField(placeholder: "Weight",
+                                text: $weightViewModel.weight,
+                                keyboardType: .decimalPad)
+                
+                Button("Save Weight", action: saveWeight)
+                    .buttonStyle(CustomButtonStyle())
+                    .disabled(weightViewModel.weight.isEmpty)
+                    .opacity(weightViewModel.weight.isEmpty ? 0.5 : 1.0)
+
+                
+                Divider().padding(.vertical, 10)
+                
+                Text("Macros")
+                    .font(.title2).bold()
+                    .foregroundColor(Color.theme.text)
+                
+                CustomTextField(placeholder: "Protein (g)", text: $macrosViewModel.protein, keyboardType: .decimalPad)
+                CustomTextField(placeholder: "Carbs (g)", text: $macrosViewModel.carbs, keyboardType: .decimalPad)
+                CustomTextField(placeholder: "Fat (g)", text: $macrosViewModel.fat, keyboardType: .decimalPad)
+                CustomTextField(placeholder: "Calories", text: $macrosViewModel.calories, keyboardType: .decimalPad)
+                
+                Button("Save Macros", action: saveMacros)
+                    .buttonStyle(CustomButtonStyle())
+                    .disabled([macrosViewModel.protein, macrosViewModel.carbs, macrosViewModel.fat, macrosViewModel.calories].contains(where: \.isEmpty))
+                    .opacity([macrosViewModel.protein, macrosViewModel.carbs, macrosViewModel.fat, macrosViewModel.calories].contains(where: \.isEmpty) ? 0.5 : 1.0)
                 
                 if let errorMessage = errorMessage {
                     Text(errorMessage).foregroundColor(.red)
-                } else if showConfirmation {
-                    Text("Measurement saved!").foregroundColor(.green)
+                } else if showWeightConfirmation {
+                    Text("Weight saved!").foregroundColor(.green)
+                } else if showMacroConfirmation {
+                    Text("Macros saved!").foregroundColor(.green)
                 }
                 
                 Spacer()
@@ -60,30 +68,40 @@ struct AddMeasurementsView: View {
         }
     }
     
-    private func saveMeasurement() {
-        viewModel.commitMeasurement { result in
+    private func saveWeight() {
+        weightViewModel.saveWeight { result in
             switch result {
             case .success():
-                showConfirmation = true
+                showWeightConfirmation = true
                 errorMessage = nil
-                viewModel.clearFields()
+                weightViewModel.clearWeightField()
             case .failure(let error):
-                showConfirmation = false
+                showWeightConfirmation = false
                 errorMessage = error.localizedDescription
-                print("Error saving measurement: \(error)")
+                print("Error saving weight: \(error)")
+            }
+        }
+    }
+    
+    private func saveMacros() {
+        macrosViewModel.saveMacros { result in
+            switch result {
+            case .success():
+                showMacroConfirmation = true
+                errorMessage = nil
+                macrosViewModel.clearMacrosFields()
+            case .failure(let error):
+                showMacroConfirmation = false
+                errorMessage = error.localizedDescription
+                print("Error saving macros: \(error)")
             }
         }
     }
 }
 
-
 #Preview {
-    let viewModel = MeasurementsViewModel()
-    viewModel.weight = "70"
-    viewModel.protein = "150"
-    viewModel.carbs = "200"
-    viewModel.fat = "50"
-    viewModel.calories = "2500"
+    let weightViewModel = WeightViewModel()
+    let macrosViewModel = MacrosViewModel()
     
-    return AddMeasurementsView(viewModel: viewModel)
+    return AddMeasurementsView(weightViewModel: weightViewModel, macrosViewModel: macrosViewModel)
 }
