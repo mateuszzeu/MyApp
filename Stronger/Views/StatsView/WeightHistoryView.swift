@@ -45,3 +45,14 @@ struct WeightHistoryView: View {
         }
     }
 }
+
+#Preview {
+    let weightViewModel = WeightViewModel()
+    
+    weightViewModel.dailyWeights = [
+        DailyWeight(date: Date(), weight: 70.5),
+        DailyWeight(date: Date().addingTimeInterval(-86400), weight: 71.0)
+    ]
+    
+    return WeightHistoryView(weightViewModel: weightViewModel)
+}

@@ -48,3 +48,14 @@ struct MacrosHistoryView: View {
         }
     }
 }
+
+#Preview {
+    let macrosViewModel = MacrosViewModel()
+    
+    macrosViewModel.dailyMacros = [
+        DailyMacros(date: Date(), protein: 150, carbs: 200, fat: 50, calories: 2500),
+        DailyMacros(date: Date().addingTimeInterval(-86400), protein: 140, carbs: 210, fat: 55, calories: 2600)
+    ]
+    
+    return MacrosHistoryView(macrosViewModel: macrosViewModel)
+}

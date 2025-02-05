@@ -4,6 +4,7 @@
 //
 //  Created by Mateusz Żełudziewicz on 22/10/2024.
 //
+
 import FirebaseAuth
 import FirebaseFirestore
 import Foundation
@@ -22,7 +23,7 @@ final class SettingsViewModel: ObservableObject {
     }
     
     func resetPassword() async throws {
-        let authUser = try AuthenticationManager.shared.getAuthenticatedUser()
+        let authUser = try await AuthenticationManager.shared.getAuthenticatedUser()
         
         guard let email = authUser.email else {
             throw URLError(.fileDoesNotExist)
@@ -31,12 +32,12 @@ final class SettingsViewModel: ObservableObject {
         try await AuthenticationManager.shared.resetPassword(email: email)
     }
     
-    func updateEmail() async throws { //do napisania
+    func updateEmail() async throws {
         let email = "Testing@example.com"
         try await AuthenticationManager.shared.updateEmail(email: email)
     }
     
-    func updatePassword() async throws { //do napisania
+    func updatePassword() async throws {
         let password = "H@sl01234567"
         try await AuthenticationManager.shared.updatePassword(password: password)
     }
@@ -44,7 +45,6 @@ final class SettingsViewModel: ObservableObject {
     func deleteAccount() async throws {
         do {
             try await deleteUserData()
-            
             try await AuthenticationManager.shared.delete()
         } catch {
             print("Błąd podczas usuwania danych lub konta: \(error.localizedDescription)")
@@ -70,14 +70,13 @@ final class SettingsViewModel: ObservableObject {
     }
     
     func applyInterfaceStyle() {
-            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                  let window = windowScene.windows.first else { return }
-            window.overrideUserInterfaceStyle = isDarkMode ? .dark : .light
-        }
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else { return }
+        window.overrideUserInterfaceStyle = isDarkMode ? .dark : .light
+    }
     
     func toggleDarkMode() {
-            isDarkMode.toggle()
-            applyInterfaceStyle()
-        }
+        isDarkMode.toggle()
+        applyInterfaceStyle()
+    }
 }
-
