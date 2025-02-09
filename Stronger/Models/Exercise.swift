@@ -14,6 +14,7 @@ struct Exercise: Identifiable, Equatable {
     var reps: String
     var weight: String
     var info: String
+    var imageURL: String?
     
     init(
         id: UUID = UUID(),
@@ -21,7 +22,8 @@ struct Exercise: Identifiable, Equatable {
         sets: String,
         reps: String,
         weight: String,
-        info: String
+        info: String,
+        imageURL: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -29,6 +31,7 @@ struct Exercise: Identifiable, Equatable {
         self.reps = reps
         self.weight = weight
         self.info = info
+        self.imageURL = imageURL
     }
 }
 
@@ -53,16 +56,21 @@ extension Exercise {
         self.reps = reps
         self.weight = weight
         self.info = info
+        self.imageURL = dictionary["imageURL"] as? String
     }
     
     var dictionary: [String: Any] {
-        [
-            "id": id.uuidString,
-            "name": name,
-            "sets": sets,
-            "reps": reps,
-            "weight": weight,
-            "info": info
-        ]
-    }
+            var dict: [String: Any] = [
+                "id": id.uuidString,
+                "name": name,
+                "sets": sets,
+                "reps": reps,
+                "weight": weight,
+                "info": info
+            ]
+            if let imageURL = imageURL {
+                dict["imageURL"] = imageURL
+            }
+            return dict
+        }
 }

@@ -67,6 +67,7 @@
 				Views/LogoAnimationView.swift,
 				Views/StatsView/AddMeasurementsView.swift,
 				Views/StatsView/BodyMeasurementsHistoryView.swift,
+				Views/StatsView/ImagePicker.swift,
 				Views/StatsView/MacrosHistoryView.swift,
 				Views/StatsView/StatsView.swift,
 				Views/StatsView/WeightHistoryView.swift,

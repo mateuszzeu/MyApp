@@ -9,6 +9,7 @@ import SwiftUI
 import Combine
 import FirebaseFirestore
 import FirebaseAuth
+import FirebaseStorage
 
 class WorkoutViewModel: ObservableObject {
     @Published var workoutDays: [WorkoutDay] = []
@@ -32,7 +33,7 @@ class WorkoutViewModel: ObservableObject {
             return .failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Nie wszystkie pola są wypełnione."]))
         }
 
-        let newExercise = Exercise(name: exerciseName, sets: sets, reps: reps, weight: weight, info: "")
+        let newExercise = Exercise(name: exerciseName, sets: sets, reps: reps, weight: weight, info: "", imageURL: nil)
 
         if let index = workoutDays.firstIndex(where: { $0.dayName == selectedDay }) {
             workoutDays[index].exercises.append(newExercise)
@@ -54,11 +55,13 @@ class WorkoutViewModel: ObservableObject {
             "dayName": workoutDay.dayName,
             "order": workoutDay.order,
             "exercises": workoutDay.exercises.map { [
+                "id": $0.id.uuidString,
                 "name": $0.name,
                 "sets": $0.sets,
                 "reps": $0.reps,
                 "weight": $0.weight,
-                "info": $0.info
+                "info": $0.info,
+                "imageURL": $0.imageURL ?? ""
             ]}
         ]
         
@@ -113,17 +116,19 @@ class WorkoutViewModel: ObservableObject {
                 let data = document.data()
                 guard let dayName = data["dayName"] as? String,
                       let exercisesData = data["exercises"] as? [[String: Any]],
-                      let order = data["order"] as? Int
-                else { continue }
+                      let order = data["order"] as? Int else { continue }
                 
                 var exercises: [Exercise] = []
                 for exerciseData in exercisesData {
-                    if let name = exerciseData["name"] as? String,
+                    if let idString = exerciseData["id"] as? String,
+                       let uuid = UUID(uuidString: idString),
+                       let name = exerciseData["name"] as? String,
                        let sets = exerciseData["sets"] as? String,
                        let reps = exerciseData["reps"] as? String,
                        let weight = exerciseData["weight"] as? String,
                        let info = exerciseData["info"] as? String {
-                        let exercise = Exercise(name: name, sets: sets, reps: reps, weight: weight, info: info)
+                        let imageURL = exerciseData["imageURL"] as? String
+                        let exercise = Exercise(id: uuid, name: name, sets: sets, reps: reps, weight: weight, info: info, imageURL: imageURL)
                         exercises.append(exercise)
                     }
                 }
@@ -137,6 +142,7 @@ class WorkoutViewModel: ObservableObject {
             }
         }
     }
+
     
     
     
@@ -188,7 +194,8 @@ class WorkoutViewModel: ObservableObject {
                     "sets": $0.sets,
                     "reps": $0.reps,
                     "weight": $0.weight,
-                    "info": $0.info
+                    "info": $0.info,
+                    "imageURL": $0.imageURL ?? ""
                 ]}
             ]
             
@@ -278,4 +285,65 @@ class WorkoutViewModel: ObservableObject {
             }
         }
     }
+
+    func uploadExerciseImage(dayName: String, exerciseId: UUID, imageData: Data?, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let imageData = imageData, !imageData.isEmpty else {
+            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Obraz jest pusty!"])))
+            return
+        }
+
+        let storageRef = Storage.storage().reference()
+        let imageRef = storageRef.child("exerciseImages/\(exerciseId).jpg")
+
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+
+        imageRef.putData(imageData, metadata: metadata) { _, error in
+            if let error = error {
+                print("❌ Błąd przesyłania zdjęcia: \(error.localizedDescription)")
+                completion(.failure(error))
+            } else {
+                imageRef.downloadURL { url, error in
+                    if let error = error {
+                        print("❌ Błąd pobierania URL: \(error.localizedDescription)")
+                        completion(.failure(error))
+                    } else if let url = url {
+                        print("✅ Zdjęcie przesłane pomyślnie: \(url.absoluteString)")
+                        
+                        self.updateExerciseImage(dayName: dayName, exerciseId: exerciseId, imageURL: url.absoluteString)
+                        
+                        completion(.success(url.absoluteString))
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    
+    func updateExerciseImage(dayName: String, exerciseId: UUID, imageURL: String) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        guard let dayIndex = workoutDays.firstIndex(where: { $0.dayName == dayName }) else { return }
+        guard let exerciseIndex = workoutDays[dayIndex].exercises.firstIndex(where: { $0.id == exerciseId }) else { return }
+
+        workoutDays[dayIndex].exercises[exerciseIndex].imageURL = imageURL
+
+        let exerciseRef = db.collection("users")
+            .document(userId)
+            .collection("workouts")
+            .document(dayName)
+
+        exerciseRef.updateData([
+            "exercises.\(exerciseIndex).imageURL": imageURL
+        ]) { error in
+            if let error = error {
+                print("❌ Błąd aktualizacji URL obrazu w Firestore: \(error.localizedDescription)")
+            } else {
+                print("✅ URL obrazu poprawnie zapisany w Firestore")
+            }
+        }
+    }
+
+
 }
