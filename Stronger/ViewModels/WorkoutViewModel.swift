@@ -76,17 +76,34 @@ class WorkoutViewModel: ObservableObject {
     
     func deleteExercise(dayName: String, exerciseId: UUID) {
         guard let dayIndex = workoutDays.firstIndex(where: { $0.dayName == dayName }) else { return }
+        guard let exerciseIndex = workoutDays[dayIndex].exercises.firstIndex(where: { $0.id == exerciseId }) else { return }
         
-        if let exerciseIndex = workoutDays[dayIndex].exercises.firstIndex(where: { $0.id == exerciseId }) {
-            workoutDays[dayIndex].exercises.remove(at: exerciseIndex)
-            
-            if workoutDays[dayIndex].exercises.isEmpty {
-                removeDay(dayName: dayName)
-            } else {
-                saveWorkoutDayToFirestore(workoutDays[dayIndex])
+        let exercise = workoutDays[dayIndex].exercises[exerciseIndex]
+        
+        if let imageURL = exercise.imageURL, !imageURL.isEmpty {
+            deleteExerciseImage(imageURL: imageURL) { result in
+                switch result {
+                case .success:
+                    self.removeExerciseFromFirestore(dayName: dayName, exerciseId: exerciseId, dayIndex: dayIndex, exerciseIndex: exerciseIndex)
+                case .failure(let error):
+                    print("❌ Nie można usunąć ćwiczenia – błąd usuwania zdjęcia: \(error.localizedDescription)")
+                }
             }
+        } else {
+            removeExerciseFromFirestore(dayName: dayName, exerciseId: exerciseId, dayIndex: dayIndex, exerciseIndex: exerciseIndex)
         }
     }
+
+    private func removeExerciseFromFirestore(dayName: String, exerciseId: UUID, dayIndex: Int, exerciseIndex: Int) {
+        workoutDays[dayIndex].exercises.remove(at: exerciseIndex)
+
+        if workoutDays[dayIndex].exercises.isEmpty {
+            removeDay(dayName: dayName)
+        } else {
+            saveWorkoutDayToFirestore(workoutDays[dayIndex])
+        }
+    }
+
     
     
     func updateExercise(dayName: String, exercise: Exercise) {
@@ -345,5 +362,17 @@ class WorkoutViewModel: ObservableObject {
         }
     }
 
+    func deleteExerciseImage(imageURL: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        let storageRef = Storage.storage().reference(forURL: imageURL)
 
+        storageRef.delete { error in
+            if let error = error {
+                print("❌ Błąd usuwania zdjęcia: \(error.localizedDescription)")
+                completion(.failure(error))
+            } else {
+                print("✅ Zdjęcie usunięte poprawnie")
+                completion(.success(()))
+            }
+        }
+    }
 }
