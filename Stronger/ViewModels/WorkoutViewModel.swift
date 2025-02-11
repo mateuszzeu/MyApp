@@ -33,7 +33,7 @@ class WorkoutViewModel: ObservableObject {
             return .failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Nie wszystkie pola są wypełnione."]))
         }
 
-        let newExercise = Exercise(name: exerciseName, sets: sets, reps: reps, weight: weight, info: "", imageURL: nil)
+        let newExercise = Exercise(name: exerciseName, sets: sets, reps: reps, weight: weight, info: "", imageURLs: [])
 
         if let index = workoutDays.firstIndex(where: { $0.dayName == selectedDay }) {
             workoutDays[index].exercises.append(newExercise)
@@ -61,7 +61,7 @@ class WorkoutViewModel: ObservableObject {
                 "reps": $0.reps,
                 "weight": $0.weight,
                 "info": $0.info,
-                "imageURL": $0.imageURL ?? ""
+                "imageURLs": $0.imageURLs ?? []
             ]}
         ]
         
@@ -80,8 +80,8 @@ class WorkoutViewModel: ObservableObject {
         
         let exercise = workoutDays[dayIndex].exercises[exerciseIndex]
         
-        if let imageURL = exercise.imageURL, !imageURL.isEmpty {
-            deleteExerciseImage(imageURL: imageURL) { result in
+        if let imageURLs = exercise.imageURLs, !imageURLs.isEmpty {
+            deleteExerciseImage(imageURLs: imageURLs) { result in
                 switch result {
                 case .success:
                     self.removeExerciseFromFirestore(dayName: dayName, exerciseId: exerciseId, dayIndex: dayIndex, exerciseIndex: exerciseIndex)
@@ -95,23 +95,68 @@ class WorkoutViewModel: ObservableObject {
     }
 
     private func removeExerciseFromFirestore(dayName: String, exerciseId: UUID, dayIndex: Int, exerciseIndex: Int) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let workoutRef = db.collection("users").document(userId).collection("workouts").document(dayName)
+
         workoutDays[dayIndex].exercises.remove(at: exerciseIndex)
 
         if workoutDays[dayIndex].exercises.isEmpty {
             removeDay(dayName: dayName)
         } else {
-            saveWorkoutDayToFirestore(workoutDays[dayIndex])
+            workoutRef.getDocument { document, error in
+                guard let document = document, document.exists else { return }
+                
+                if var exercises = document.data()?["exercises"] as? [[String: Any]] {
+                    exercises.removeAll { $0["id"] as? String == exerciseId.uuidString }
+
+                    workoutRef.updateData(["exercises": exercises]) { error in
+                        if let error = error {
+                            print("❌ Błąd usuwania ćwiczenia z Firestore: \(error.localizedDescription)")
+                        } else {
+                            print("✅ Ćwiczenie usunięte z Firestore")
+                        }
+                    }
+                }
+            }
         }
     }
 
     
     
     func updateExercise(dayName: String, exercise: Exercise) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
         guard let dayIndex = workoutDays.firstIndex(where: { $0.dayName == dayName }) else { return }
-        
-        if let exerciseIndex = workoutDays[dayIndex].exercises.firstIndex(where: { $0.id == exercise.id }) {
-            workoutDays[dayIndex].exercises[exerciseIndex] = exercise
-            saveWorkoutDayToFirestore(workoutDays[dayIndex])
+        guard let exerciseIndex = workoutDays[dayIndex].exercises.firstIndex(where: { $0.id == exercise.id }) else { return }
+
+        workoutDays[dayIndex].exercises[exerciseIndex] = exercise
+
+        let workoutRef = db.collection("users").document(userId).collection("workouts").document(dayName)
+
+        workoutRef.getDocument { document, error in
+            guard let document = document, document.exists else { return }
+
+            if var exercises = document.data()?["exercises"] as? [[String: Any]] {
+                if let index = exercises.firstIndex(where: { $0["id"] as? String == exercise.id.uuidString }) {
+                    exercises[index] = [
+                        "id": exercise.id.uuidString,
+                        "name": exercise.name,
+                        "sets": exercise.sets,
+                        "reps": exercise.reps,
+                        "weight": exercise.weight,
+                        "info": exercise.info,
+                        "imageURLs": exercise.imageURLs ?? []
+                    ]
+                }
+
+                workoutRef.updateData(["exercises": exercises]) { error in
+                    if let error = error {
+                        print("❌ Błąd aktualizacji ćwiczenia w Firestore: \(error.localizedDescription)")
+                    } else {
+                        print("✅ Ćwiczenie zaktualizowane w Firestore")
+                    }
+                }
+            }
         }
     }
     
@@ -144,8 +189,8 @@ class WorkoutViewModel: ObservableObject {
                        let reps = exerciseData["reps"] as? String,
                        let weight = exerciseData["weight"] as? String,
                        let info = exerciseData["info"] as? String {
-                        let imageURL = exerciseData["imageURL"] as? String
-                        let exercise = Exercise(id: uuid, name: name, sets: sets, reps: reps, weight: weight, info: info, imageURL: imageURL)
+                        let imageURLs = exerciseData["imageURLs"] as? [String] ?? []
+                        let exercise = Exercise(id: uuid, name: name, sets: sets, reps: reps, weight: weight, info: info, imageURLs: imageURLs)
                         exercises.append(exercise)
                     }
                 }
@@ -164,15 +209,33 @@ class WorkoutViewModel: ObservableObject {
     
     
     func moveExercise(dayName: String, fromIndex: Int, directionUp: Bool) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
         guard let dayIndex = workoutDays.firstIndex(where: { $0.dayName == dayName }) else { return }
+        
         let targetIndex = directionUp ? fromIndex - 1 : fromIndex + 1
         guard targetIndex >= 0 && targetIndex < workoutDays[dayIndex].exercises.count else { return }
 
         withAnimation(.easeInOut(duration: 0.3)) {
             workoutDays[dayIndex].exercises.swapAt(fromIndex, targetIndex)
         }
-        
-        saveWorkoutDayToFirestore(workoutDays[dayIndex])
+
+        let workoutRef = db.collection("users").document(userId).collection("workouts").document(dayName)
+
+        workoutRef.getDocument { document, error in
+            guard let document = document, document.exists else { return }
+
+            if var exercises = document.data()?["exercises"] as? [[String: Any]] {
+                exercises.swapAt(fromIndex, targetIndex)
+
+                workoutRef.updateData(["exercises": exercises]) { error in
+                    if let error = error {
+                        print("❌ Błąd aktualizacji kolejności ćwiczeń w Firestore: \(error.localizedDescription)")
+                    } else {
+                        print("✅ Kolejność ćwiczeń zaktualizowana w Firestore")
+                    }
+                }
+            }
+        }
     }
     
     
@@ -180,6 +243,8 @@ class WorkoutViewModel: ObservableObject {
 
     
     func moveDay(fromIndex: Int, directionLeft: Bool) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+
         let toIndex = directionLeft ? fromIndex - 1 : fromIndex + 1
         guard toIndex >= 0 && toIndex < workoutDays.count else { return }
 
@@ -187,16 +252,19 @@ class WorkoutViewModel: ObservableObject {
             workoutDays.swapAt(fromIndex, toIndex)
         }
 
-        if isTesting {
-            self.workoutDays.enumerated().forEach { index, day in
+        let workoutRef = db.collection("users").document(userId).collection("workouts")
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            for (index, day) in self.workoutDays.enumerated() {
                 self.workoutDays[index].order = index
-            }
-        } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.workoutDays.enumerated().forEach { index, day in
-                    self.workoutDays[index].order = index
+
+                workoutRef.document(day.dayName).updateData(["order": index]) { error in
+                    if let error = error {
+                        print("❌ Błąd aktualizacji kolejności dni treningowych w Firestore: \(error.localizedDescription)")
+                    } else {
+                        print("✅ Kolejność dni treningowych zaktualizowana w Firestore")
+                    }
                 }
-                self.saveWorkoutDaysOrder()
             }
         }
     }
@@ -206,27 +274,17 @@ class WorkoutViewModel: ObservableObject {
     
     func saveWorkoutDaysOrder() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let workoutRef = db.collection("users").document(userId).collection("workouts")
 
-        for day in workoutDays {
-            let workoutDayData: [String: Any] = [
-                "dayName": day.dayName,
-                "order": day.order,
-                "exercises": day.exercises.map { exercise in
-                    [
-                        "id": exercise.id.uuidString,
-                        "name": exercise.name,
-                        "sets": exercise.sets,
-                        "reps": exercise.reps,
-                        "weight": exercise.weight,
-                        "info": exercise.info,
-                        "imageURL": exercise.imageURL ?? ""
-                    ]
-                }
-            ]
+        for (index, day) in workoutDays.enumerated() {
+            workoutDays[index].order = index
 
-            db.collection("users").document(userId).collection("workouts").document(day.dayName).setData(workoutDayData) { error in
+            workoutRef.document(day.dayName).updateData(["order": index]) { error in
                 if let error = error {
-                    print("Błąd zapisu dnia treningowego: \(error.localizedDescription)")
+                    print("❌ Error updating workout day order: \(error.localizedDescription)")
+                } else {
+                    print("✅ Workout day order updated successfully")
                 }
             }
         }
@@ -237,7 +295,7 @@ class WorkoutViewModel: ObservableObject {
     
     func addDay(dayName: String) -> Result<Void, Error> {
         guard !dayName.isEmpty else {
-            return .failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Nazwa dnia nie może być pusta."]))
+            return .failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Day name cannot be empty."]))
         }
 
         let newDay = WorkoutDay(dayName: dayName, exercises: [], order: workoutDays.count)
@@ -254,13 +312,13 @@ class WorkoutViewModel: ObservableObject {
             let dayToDelete = workoutDays[dayIndex]
 
             for exercise in dayToDelete.exercises {
-                if let imageURL = exercise.imageURL, !imageURL.isEmpty {
-                    deleteExerciseImage(imageURL: imageURL) { result in
+                if let imageURLs = exercise.imageURLs, !imageURLs.isEmpty {
+                    deleteExerciseImage(imageURLs: imageURLs) { result in
                         switch result {
                         case .success:
-                            print("✅ Zdjęcie \(imageURL) usunięte")
+                            print("✅ Images deleted successfully")
                         case .failure(let error):
-                            print("⚠️ Nie udało się usunąć zdjęcia \(imageURL): \(error.localizedDescription)")
+                            print("⚠️ Failed to delete images: \(error.localizedDescription)")
                         }
                     }
                 }
@@ -268,17 +326,26 @@ class WorkoutViewModel: ObservableObject {
 
             workoutDays.remove(at: dayIndex)
 
-            workoutDays.enumerated().forEach { index, day in
-                workoutDays[index].order = index
+            let workoutRef = db.collection("users").document(userId).collection("workouts")
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                for (index, day) in self.workoutDays.enumerated() {
+                    self.workoutDays[index].order = index
+                    workoutRef.document(day.dayName).updateData(["order": index]) { error in
+                        if let error = error {
+                            print("❌ Error updating workout day order: \(error.localizedDescription)")
+                        } else {
+                            print("✅ Workout day order updated successfully")
+                        }
+                    }
+                }
             }
 
-            saveWorkoutDaysOrder()
-
-            db.collection("users").document(userId).collection("workouts").document(dayToDelete.dayName).delete { error in
+            workoutRef.document(dayToDelete.dayName).delete { error in
                 if let error = error {
-                    print("❌ Błąd usunięcia dnia: \(error.localizedDescription)")
+                    print("❌ Error deleting workout day: \(error.localizedDescription)")
                 } else {
-                    print("✅ Dzień treningowy usunięty poprawnie")
+                    print("✅ Workout day deleted successfully")
                 }
             }
         }
@@ -291,7 +358,7 @@ class WorkoutViewModel: ObservableObject {
         
         db.collection("users").document(userId).getDocument { document, error in
             if let error = error {
-                print("Błąd podczas ładowania danych nawodnienia: \(error.localizedDescription)")
+                print("❌ Error loading hydration data: \(error.localizedDescription)")
                 return
             }
             
@@ -322,38 +389,38 @@ class WorkoutViewModel: ObservableObject {
         
         db.collection("users").document(userId).setData(["hydration": hydrationDict], merge: true) { error in
             if let error = error {
-                print("Błąd podczas zapisu danych nawodnienia: \(error.localizedDescription)")
+                print("❌ Error saving hydration data: \(error.localizedDescription)")
             }
         }
     }
 
     func uploadExerciseImage(dayName: String, exerciseId: UUID, imageData: Data?, completion: @escaping (Result<String, Error>) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
-            completion(.failure(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "Brak użytkownika."])))
+            completion(.failure(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "User not found."])))
             return
         }
         guard let imageData = imageData, !imageData.isEmpty else {
-            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Obraz jest pusty!"])))
+            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Image data is empty."])))
             return
         }
 
         let storageRef = Storage.storage().reference()
-        let imageRef = storageRef.child("exerciseImages/\(userId)/\(exerciseId).jpg")
+        let imageRef = storageRef.child("exerciseImages/\(userId)/\(UUID().uuidString).jpg")
 
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
 
         imageRef.putData(imageData, metadata: metadata) { _, error in
             if let error = error {
-                print("❌ Błąd przesyłania zdjęcia: \(error.localizedDescription)")
+                print("❌ Error uploading image: \(error.localizedDescription)")
                 completion(.failure(error))
             } else {
                 imageRef.downloadURL { url, error in
                     if let error = error {
-                        print("❌ Błąd pobierania URL: \(error.localizedDescription)")
+                        print("❌ Error getting image URL: \(error.localizedDescription)")
                         completion(.failure(error))
                     } else if let url = url {
-                        print("✅ Zdjęcie przesłane pomyślnie: \(url.absoluteString)")
+                        print("✅ Image uploaded successfully: \(url.absoluteString)")
 
                         self.updateExerciseImage(dayName: dayName, exerciseId: exerciseId, imageURL: url.absoluteString)
 
@@ -364,60 +431,85 @@ class WorkoutViewModel: ObservableObject {
         }
     }
 
-
-
-
     
     func updateExerciseImage(dayName: String, exerciseId: UUID, imageURL: String) {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         guard let dayIndex = workoutDays.firstIndex(where: { $0.dayName == dayName }) else { return }
         guard let exerciseIndex = workoutDays[dayIndex].exercises.firstIndex(where: { $0.id == exerciseId }) else { return }
 
-        workoutDays[dayIndex].exercises[exerciseIndex].imageURL = imageURL
+        if workoutDays[dayIndex].exercises[exerciseIndex].imageURLs == nil {
+            workoutDays[dayIndex].exercises[exerciseIndex].imageURLs = []
+        }
+        workoutDays[dayIndex].exercises[exerciseIndex].imageURLs?.append(imageURL)
 
         let exerciseRef = db.collection("users")
             .document(userId)
             .collection("workouts")
             .document(dayName)
 
-        exerciseRef.updateData([
-            "exercises.\(exerciseIndex).imageURL": imageURL
-        ]) { error in
-            if let error = error {
-                print("❌ Błąd aktualizacji URL obrazu w Firestore: \(error.localizedDescription)")
-            } else {
-                print("✅ URL obrazu poprawnie zapisany w Firestore")
+        exerciseRef.getDocument { document, error in
+            guard let document = document, document.exists else { return }
+
+            if var exercises = document.data()?["exercises"] as? [[String: Any]] {
+                if let index = exercises.firstIndex(where: { $0["id"] as? String == exerciseId.uuidString }) {
+                    var updatedExercise = exercises[index]
+                    
+                    if var existingImageURLs = updatedExercise["imageURLs"] as? [String] {
+                        existingImageURLs.append(imageURL)
+                        updatedExercise["imageURLs"] = existingImageURLs
+                    } else {
+                        updatedExercise["imageURLs"] = [imageURL]
+                    }
+
+                    exercises[index] = updatedExercise
+
+                    exerciseRef.updateData(["exercises": exercises]) { error in
+                        if let error = error {
+                            print("❌ Error updating exercise images in Firestore: \(error.localizedDescription)")
+                        } else {
+                            print("✅ Exercise images updated successfully in Firestore")
+                        }
+                    }
+                }
             }
         }
     }
 
-    func deleteExerciseImage(imageURL: String, completion: @escaping (Result<Void, Error>) -> Void) {
+    func deleteExerciseImage(imageURLs: [String], completion: @escaping (Result<Void, Error>) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
-            completion(.failure(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "Brak użytkownika."])))
+            completion(.failure(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "User not found."])))
             return
         }
 
         let storageRef = Storage.storage().reference()
+        let dispatchGroup = DispatchGroup()
+        var errors: [Error] = []
 
-        if let url = URL(string: imageURL),
-           let lastPathComponent = url.lastPathComponent.removingPercentEncoding {
+        for imageURL in imageURLs {
+            if let url = URL(string: imageURL),
+               let lastPathComponent = url.lastPathComponent.removingPercentEncoding {
 
-            let imageRef = storageRef.child("exerciseImages/\(userId)/\(lastPathComponent)")
+                let imageRef = storageRef.child("exerciseImages/\(userId)/\(lastPathComponent)")
 
-            imageRef.delete { error in
-                if let error = error {
-                    print("❌ Błąd usuwania zdjęcia: \(error.localizedDescription)")
-                    completion(.failure(error))
-                } else {
-                    print("✅ Zdjęcie usunięte pomyślnie")
-                    completion(.success(()))
+                dispatchGroup.enter()
+                imageRef.delete { error in
+                    if let error = error {
+                        print("❌ Error deleting image: \(error.localizedDescription)")
+                        errors.append(error)
+                    } else {
+                        print("✅ Image deleted successfully: \(imageURL)")
+                    }
+                    dispatchGroup.leave()
                 }
             }
-        } else {
-            print("❌ Błąd parsowania URL obrazu do usunięcia")
-            completion(.failure(NSError(domain: "", code: -3, userInfo: [NSLocalizedDescriptionKey: "Błędny URL zdjęcia."])))
+        }
+
+        dispatchGroup.notify(queue: .main) {
+            if errors.isEmpty {
+                completion(.success(()))
+            } else {
+                completion(.failure(NSError(domain: "", code: -4, userInfo: [NSLocalizedDescriptionKey: "Some images could not be deleted."])))
+            }
         }
     }
-
-
 }

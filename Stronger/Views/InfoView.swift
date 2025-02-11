@@ -32,16 +32,24 @@ struct InfoView: View {
                 .frame(height: geometry.size.height * 0.6)
             }
 
-            if let imageURL = exercise.imageURL, let url = URL(string: imageURL) {
-                AsyncImage(url: url) { image in
-                    image.resizable()
-                        .scaledToFit()
-                        .frame(height: 200)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .padding()
-                } placeholder: {
-                    ProgressView()
-                        .frame(height: 200)
+            if let imageURLs = exercise.imageURLs, !imageURLs.isEmpty {
+                ScrollView(.horizontal) {
+                    HStack {
+                        ForEach(imageURLs, id: \.self) { imageURL in
+                            if let url = URL(string: imageURL) {
+                                AsyncImage(url: url) { image in
+                                    image.resizable()
+                                        .scaledToFit()
+                                        .frame(height: 200)
+                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                                        .padding()
+                                } placeholder: {
+                                    ProgressView()
+                                        .frame(height: 200)
+                                }
+                            }
+                        }
+                    }
                 }
             } else if let imageData = selectedImageData, let uiImage = UIImage(data: imageData) {
                 Image(uiImage: uiImage)
@@ -72,7 +80,12 @@ struct InfoView: View {
                             switch result {
                             case .success(let imageURL):
                                 print("✅ Image URL: \(imageURL)")
-                                exercise.imageURL = imageURL
+
+                                if exercise.imageURLs == nil {
+                                    exercise.imageURLs = []
+                                }
+                                exercise.imageURLs?.append(imageURL)
+
                                 viewModel.updateExercise(dayName: dayName, exercise: exercise)
                             case .failure(let error):
                                 print("❌ Upload failed: \(error.localizedDescription)")
@@ -103,5 +116,5 @@ struct InfoView: View {
 }
 
 #Preview {
-    InfoView(exercise: Exercise(name: "Squat", sets: "3", reps: "10", weight: "100", info: "Sample info"), viewModel: WorkoutViewModel(), dayName: "Push")
+    InfoView(exercise: Exercise(name: "Squat", sets: "3", reps: "10", weight: "100", info: "Sample info", imageURLs: []), viewModel: WorkoutViewModel(), dayName: "Push") // ✅ Dodano `imageURLs`
 }
