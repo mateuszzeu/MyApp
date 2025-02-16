@@ -17,7 +17,6 @@ struct InfoView: View {
 
     @State private var selectedItem: PhotosPickerItem?
     @State private var selectedImageData: Data?
-    @State private var selectedImagesForDeletion: Set<String> = []
     @State private var showConfirmationAlert = false
 
     var body: some View {
@@ -48,18 +47,18 @@ struct InfoView: View {
                                             .clipShape(RoundedRectangle(cornerRadius: 12))
                                             .overlay(
                                                 RoundedRectangle(cornerRadius: 12)
-                                                    .stroke(selectedImagesForDeletion.contains(imageURL) ? Color.red : Color.clear, lineWidth: 4)
+                                                    .stroke(infoViewModel.selectedImagesForDeletion.contains(imageURL) ? Color.red : Color.clear, lineWidth: 4)
                                             )
                                             .padding()
                                             .onTapGesture {
-                                                toggleImageSelection(imageURL)
+                                                infoViewModel.toggleImageSelection(imageURL)
                                             }
                                     } placeholder: {
                                         ProgressView()
                                             .frame(height: 200)
                                     }
 
-                                    if selectedImagesForDeletion.contains(imageURL) {
+                                    if infoViewModel.selectedImagesForDeletion.contains(imageURL) {
                                         Image(systemName: "checkmark.circle.fill")
                                             .foregroundColor(.red)
                                             .background(Color.white)
@@ -73,11 +72,11 @@ struct InfoView: View {
                 }
             }
 
-            if !selectedImagesForDeletion.isEmpty {
+            if !infoViewModel.selectedImagesForDeletion.isEmpty {
                 Button(action: {
                     showConfirmationAlert = true
                 }) {
-                    Text("Delete Selected (\(selectedImagesForDeletion.count))")
+                    Text("Delete Selected (\(infoViewModel.selectedImagesForDeletion.count))")
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -91,7 +90,7 @@ struct InfoView: View {
                         title: Text("Confirm Deletion"),
                         message: Text("Are you sure you want to delete these images?"),
                         primaryButton: .destructive(Text("Delete")) {
-                            deleteSelectedImages()
+                            infoViewModel.deleteSelectedImages(dayName: dayName, exerciseId: exercise.id, workoutViewModel: viewModel, exercise: exercise)
                         },
                         secondaryButton: .cancel()
                     )
@@ -141,28 +140,6 @@ struct InfoView: View {
                     Image(systemName: "chevron.left")
                         .foregroundColor(Color.theme.text)
                 }
-            }
-        }
-    }
-
-    private func toggleImageSelection(_ imageURL: String) {
-        if selectedImagesForDeletion.contains(imageURL) {
-            selectedImagesForDeletion.remove(imageURL)
-        } else {
-            selectedImagesForDeletion.insert(imageURL)
-        }
-    }
-
-    private func deleteSelectedImages() {
-        guard !selectedImagesForDeletion.isEmpty else { return }
-
-        infoViewModel.deleteExerciseImages(dayName: dayName, exerciseId: exercise.id, imageURLs: Array(selectedImagesForDeletion)) { result in
-            switch result {
-            case .success:
-                exercise.imageURLs?.removeAll { selectedImagesForDeletion.contains($0) }
-                selectedImagesForDeletion.removeAll()
-            case .failure(let error):
-                print("❌ Error deleting images: \(error.localizedDescription)")
             }
         }
     }

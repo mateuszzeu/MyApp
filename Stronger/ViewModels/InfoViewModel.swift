@@ -144,5 +144,32 @@ class InfoViewModel: ObservableObject {
             }
         }
     }
+    
+    func toggleImageSelection(_ imageURL: String) {
+        if selectedImagesForDeletion.contains(imageURL) {
+            selectedImagesForDeletion.remove(imageURL)
+        } else {
+            selectedImagesForDeletion.insert(imageURL)
+        }
+    }
+
+    func deleteSelectedImages(dayName: String, exerciseId: UUID, workoutViewModel: WorkoutViewModel, exercise: Exercise) {
+        guard !selectedImagesForDeletion.isEmpty else { return }
+        
+        var updatedExercise = exercise
+        
+        deleteExerciseImages(dayName: dayName, exerciseId: exerciseId, imageURLs: Array(selectedImagesForDeletion)) { result in
+            switch result {
+            case .success:
+                updatedExercise.imageURLs?.removeAll { self.selectedImagesForDeletion.contains($0) }
+                self.selectedImagesForDeletion.removeAll()
+                
+                workoutViewModel.updateExercise(dayName: dayName, exercise: updatedExercise)
+                
+            case .failure(let error):
+                print("❌ Error deleting images: \(error.localizedDescription)")
+            }
+        }
+    }
 }
 
