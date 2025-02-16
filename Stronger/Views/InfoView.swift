@@ -90,7 +90,11 @@ struct InfoView: View {
                         title: Text("Confirm Deletion"),
                         message: Text("Are you sure you want to delete these images?"),
                         primaryButton: .destructive(Text("Delete")) {
-                            infoViewModel.deleteSelectedImages(dayName: dayName, exerciseId: exercise.id, workoutViewModel: viewModel, exercise: exercise)
+                            infoViewModel.deleteSelectedImages(dayName: dayName, exerciseId: exercise.id, workoutViewModel: viewModel) { deletedImages in
+                                DispatchQueue.main.async {
+                                    exercise.imageURLs?.removeAll { deletedImages.contains($0) }
+                                }
+                            }
                         },
                         secondaryButton: .cancel()
                     )

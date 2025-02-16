@@ -153,23 +153,27 @@ class InfoViewModel: ObservableObject {
         }
     }
 
-    func deleteSelectedImages(dayName: String, exerciseId: UUID, workoutViewModel: WorkoutViewModel, exercise: Exercise) {
+    func deleteSelectedImages(dayName: String, exerciseId: UUID, workoutViewModel: WorkoutViewModel, completion: @escaping ([String]) -> Void) {
         guard !selectedImagesForDeletion.isEmpty else { return }
-        
-        var updatedExercise = exercise
-        
-        deleteExerciseImages(dayName: dayName, exerciseId: exerciseId, imageURLs: Array(selectedImagesForDeletion)) { result in
-            switch result {
-            case .success:
-                updatedExercise.imageURLs?.removeAll { self.selectedImagesForDeletion.contains($0) }
-                self.selectedImagesForDeletion.removeAll()
-                
-                workoutViewModel.updateExercise(dayName: dayName, exercise: updatedExercise)
-                
-            case .failure(let error):
-                print("❌ Error deleting images: \(error.localizedDescription)")
+
+        let imagesToDelete = Array(selectedImagesForDeletion)
+
+        deleteExerciseImages(dayName: dayName, exerciseId: exerciseId, imageURLs: imagesToDelete) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    self.selectedImagesForDeletion.removeAll()
+                    
+                    completion(imagesToDelete)
+
+                    workoutViewModel.objectWillChange.send()
+                    
+                case .failure(let error):
+                    print("❌ Error deleting images: \(error.localizedDescription)")
+                }
             }
         }
     }
+
 }
 
