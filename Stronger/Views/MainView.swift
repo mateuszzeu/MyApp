@@ -9,7 +9,8 @@ import SwiftUI
 
 struct MainView: View {
     @ObservedObject var viewModel = WorkoutViewModel()
-    
+    @ObservedObject var infoViewModel = InfoViewModel()
+
     @StateObject private var weightViewModel = WeightViewModel()
     @StateObject private var macrosViewModel = MacrosViewModel()
     @StateObject private var bodyMeasurementsViewModel = BodyMeasurementsViewModel()
@@ -32,7 +33,7 @@ struct MainView: View {
                 ZStack {
                     switch selectedTab.title {
                     case "Workouts":
-                        WorkoutView(viewModel: viewModel)
+                        WorkoutView(viewModel: viewModel, infoViewModel: infoViewModel) 
                     case "Add Workout":
                         AddWorkoutView(viewModel: viewModel)
                     case "Hydration":
@@ -44,7 +45,7 @@ struct MainView: View {
                     case "Settings":
                         SettingsView(showSignInView: $showSignInView)
                     default:
-                        WorkoutView(viewModel: viewModel)
+                        WorkoutView(viewModel: viewModel, infoViewModel: infoViewModel)
                     }
                 }
                 .edgesIgnoringSafeArea(.all)

@@ -3,11 +3,13 @@
 //  Stronger
 //
 //  Created by Mateusz Żełudziewicz on 29/10/2024.
+//
 
 import SwiftUI
 
 struct ExerciseRowView: View {
     @ObservedObject var viewModel: WorkoutViewModel
+    @ObservedObject var infoViewModel: InfoViewModel
     
     let exercise: Exercise
     let dayName: String
@@ -22,7 +24,7 @@ struct ExerciseRowView: View {
                 
                 Spacer()
                 
-                NavigationLink(destination: InfoView(exercise: exercise, viewModel: viewModel, dayName: dayName)) {
+                NavigationLink(destination: InfoView(exercise: exercise, viewModel: viewModel, infoViewModel: infoViewModel, dayName: dayName)) {
                     Image(systemName: "info.circle")
                         .foregroundColor(Color.theme.text)
                 }
@@ -70,7 +72,7 @@ struct ExerciseRowView: View {
             }
             
             Button("Delete") {
-                viewModel.deleteExercise(dayName: dayName, exerciseId: exercise.id)
+                viewModel.deleteExercise(dayName: dayName, exerciseId: exercise.id, infoViewModel: infoViewModel)
             }
         }
         .onTapGesture {
@@ -81,8 +83,8 @@ struct ExerciseRowView: View {
 
 #Preview {
     let viewModel = WorkoutViewModel()
+    let infoViewModel = InfoViewModel()
     let exampleExercise = Exercise(name: "Squat", sets: "3", reps: "10", weight: "100kg", info: "Sample info")
-    ExerciseRowView(viewModel: viewModel, exercise: exampleExercise, dayName: "Push", index: 0)
+    
+    return ExerciseRowView(viewModel: viewModel, infoViewModel: infoViewModel, exercise: exampleExercise, dayName: "Push", index: 0)
 }
-
-

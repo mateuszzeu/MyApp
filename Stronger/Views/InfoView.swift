@@ -11,11 +11,14 @@ import PhotosUI
 struct InfoView: View {
     @State var exercise: Exercise
     @ObservedObject var viewModel: WorkoutViewModel
+    @ObservedObject var infoViewModel: InfoViewModel
     var dayName: String
     @Environment(\.presentationMode) var presentationMode
 
     @State private var selectedItem: PhotosPickerItem?
     @State private var selectedImageData: Data?
+    @State private var selectedImagesForDeletion: Set<String> = []
+    @State private var showConfirmationAlert = false
 
     var body: some View {
         VStack {
@@ -37,27 +40,62 @@ struct InfoView: View {
                     HStack {
                         ForEach(imageURLs, id: \.self) { imageURL in
                             if let url = URL(string: imageURL) {
-                                AsyncImage(url: url) { image in
-                                    image.resizable()
-                                        .scaledToFit()
-                                        .frame(height: 200)
-                                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                                        .padding()
-                                } placeholder: {
-                                    ProgressView()
-                                        .frame(height: 200)
+                                ZStack(alignment: .topTrailing) {
+                                    AsyncImage(url: url) { image in
+                                        image.resizable()
+                                            .scaledToFit()
+                                            .frame(height: 200)
+                                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 12)
+                                                    .stroke(selectedImagesForDeletion.contains(imageURL) ? Color.red : Color.clear, lineWidth: 4)
+                                            )
+                                            .padding()
+                                            .onTapGesture {
+                                                toggleImageSelection(imageURL)
+                                            }
+                                    } placeholder: {
+                                        ProgressView()
+                                            .frame(height: 200)
+                                    }
+
+                                    if selectedImagesForDeletion.contains(imageURL) {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(.red)
+                                            .background(Color.white)
+                                            .clipShape(Circle())
+                                            .padding(8)
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            } else if let imageData = selectedImageData, let uiImage = UIImage(data: imageData) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 200)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .padding()
+            }
+
+            if !selectedImagesForDeletion.isEmpty {
+                Button(action: {
+                    showConfirmationAlert = true
+                }) {
+                    Text("Delete Selected (\(selectedImagesForDeletion.count))")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.red)
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                }
+                .alert(isPresented: $showConfirmationAlert) {
+                    Alert(
+                        title: Text("Confirm Deletion"),
+                        message: Text("Are you sure you want to delete these images?"),
+                        primaryButton: .destructive(Text("Delete")) {
+                            deleteSelectedImages()
+                        },
+                        secondaryButton: .cancel()
+                    )
+                }
             }
 
             PhotosPicker(selection: $selectedItem, matching: .images, photoLibrary: .shared()) {
@@ -71,32 +109,25 @@ struct InfoView: View {
                     .padding()
             }
             .onChange(of: selectedItem) { newItem in
+                guard let newItem = newItem else { return }
                 Task {
-                    if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                    if let data = try? await newItem.loadTransferable(type: Data.self) {
                         selectedImageData = data
-                        print("✅ Image selected successfully!")
-
-                        viewModel.uploadExerciseImage(dayName: dayName, exerciseId: exercise.id, imageData: data) { result in
+                        infoViewModel.uploadExerciseImage(dayName: dayName, exerciseId: exercise.id, imageData: data, workoutViewModel: viewModel) { result in
                             switch result {
                             case .success(let imageURL):
-                                print("✅ Image URL: \(imageURL)")
-
                                 if exercise.imageURLs == nil {
                                     exercise.imageURLs = []
                                 }
                                 exercise.imageURLs?.append(imageURL)
-
                                 viewModel.updateExercise(dayName: dayName, exercise: exercise)
                             case .failure(let error):
                                 print("❌ Upload failed: \(error.localizedDescription)")
                             }
                         }
-                    } else {
-                        print("❌ Failed to load image data")
                     }
                 }
             }
-
         }
         .applyGradientBackground()
         .navigationTitle(exercise.name)
@@ -113,8 +144,35 @@ struct InfoView: View {
             }
         }
     }
+
+    private func toggleImageSelection(_ imageURL: String) {
+        if selectedImagesForDeletion.contains(imageURL) {
+            selectedImagesForDeletion.remove(imageURL)
+        } else {
+            selectedImagesForDeletion.insert(imageURL)
+        }
+    }
+
+    private func deleteSelectedImages() {
+        guard !selectedImagesForDeletion.isEmpty else { return }
+
+        infoViewModel.deleteExerciseImages(dayName: dayName, exerciseId: exercise.id, imageURLs: Array(selectedImagesForDeletion)) { result in
+            switch result {
+            case .success:
+                exercise.imageURLs?.removeAll { selectedImagesForDeletion.contains($0) }
+                selectedImagesForDeletion.removeAll()
+            case .failure(let error):
+                print("❌ Error deleting images: \(error.localizedDescription)")
+            }
+        }
+    }
 }
 
 #Preview {
-    InfoView(exercise: Exercise(name: "Squat", sets: "3", reps: "10", weight: "100", info: "Sample info", imageURLs: []), viewModel: WorkoutViewModel(), dayName: "Push") // ✅ Dodano `imageURLs`
+    InfoView(
+        exercise: Exercise(name: "Squat", sets: "3", reps: "10", weight: "100", info: "Sample info", imageURLs: ["https://picsum.photos/400"]),
+        viewModel: WorkoutViewModel(),
+        infoViewModel: InfoViewModel(),
+        dayName: "Push"
+    )
 }

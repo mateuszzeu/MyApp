@@ -22,13 +22,14 @@ struct AddWorkoutView: View {
                     CustomTextField(placeholder: "Enter New Day Name", text: $viewModel.newDayName)
                     
                     Button(action: {
-                        let result = viewModel.addDay(dayName: viewModel.newDayName)
-                        if case .failure(let error) = result {
-                            validationErrorMessage = error.localizedDescription
-                            showValidationErrorAlert = true
+                        viewModel.addDay(dayName: viewModel.newDayName) { result in
+                            if case .failure(let error) = result {
+                                validationErrorMessage = error.localizedDescription
+                                showValidationErrorAlert = true
+                            }
+                            viewModel.newDayName = ""
+                            hideKeyboard()
                         }
-                        viewModel.newDayName = ""
-                        hideKeyboard()
                     }) {
                         Text("Add New Day")
                     }
@@ -87,7 +88,7 @@ struct AddWorkoutView: View {
                             title: "Delete Day",
                             message: "Are you sure you want to delete \(viewModel.selectedDay)?"
                         ) {
-                            viewModel.removeDay(dayName: viewModel.selectedDay)
+                            viewModel.removeDay(dayName: viewModel.selectedDay, infoViewModel: InfoViewModel())
                             viewModel.selectedDay = viewModel.workoutDays.first?.dayName ?? ""
                         }
                     }
@@ -117,7 +118,6 @@ struct AddWorkoutView: View {
         viewModel.weight = ""
     }
 }
-
 
 #Preview {
     AddWorkoutView(viewModel: WorkoutViewModel())

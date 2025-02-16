@@ -64,6 +64,7 @@
 				Lottie/Animations/Success.json,
 				Lottie/LottieView.swift,
 				ViewModels/BodyMeasurementsViewModel.swift,
+				ViewModels/InfoViewModel.swift,
 				Views/LogoAnimationView.swift,
 				Views/StatsView/AddMeasurementsView.swift,
 				Views/StatsView/BodyMeasurementsHistoryView.swift,
