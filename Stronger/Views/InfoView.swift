@@ -42,19 +42,19 @@ struct InfoView: View {
                                     AsyncImage(url: url) { image in
                                         image.resizable()
                                             .scaledToFit()
-                                            .frame(height: 200)
+                                            .frame(height: 180)
                                             .clipShape(RoundedRectangle(cornerRadius: 12))
                                             .overlay(
                                                 RoundedRectangle(cornerRadius: 12)
-                                                    .stroke(infoViewModel.selectedImagesForDeletion.contains(imageURL) ? Color.red : Color.clear, lineWidth: 4)
+                                                    .stroke(infoViewModel.selectedImagesForDeletion.contains(imageURL) ? Color.red : Color.clear, lineWidth: 3)
                                             )
-                                            .padding()
+                                            .padding(4)
                                             .onTapGesture {
                                                 infoViewModel.toggleImageSelection(imageURL)
                                             }
                                     } placeholder: {
                                         ProgressView()
-                                            .frame(height: 200)
+                                            .frame(height: 180)
                                     }
 
                                     if infoViewModel.selectedImagesForDeletion.contains(imageURL) {
@@ -62,12 +62,13 @@ struct InfoView: View {
                                             .foregroundColor(.red)
                                             .background(Color.white)
                                             .clipShape(Circle())
-                                            .padding(8)
+                                            .padding(6)
                                     }
                                 }
                             }
                         }
                     }
+                    .padding(.horizontal)
                 }
             }
 
@@ -76,12 +77,12 @@ struct InfoView: View {
                     showConfirmationAlert = true
                 }) {
                     Text("Delete Selected (\(infoViewModel.selectedImagesForDeletion.count))")
-                        .font(.headline)
+                        .font(.subheadline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.red)
-                        .cornerRadius(10)
+                        .padding(8)
+                        .background(Color.red.opacity(0.85))
+                        .cornerRadius(8)
                         .padding(.horizontal)
                 }
                 .alert(isPresented: $showConfirmationAlert) {
@@ -101,14 +102,14 @@ struct InfoView: View {
             }
 
             PhotosPicker(selection: $selectedItem, matching: .images, photoLibrary: .shared()) {
-                Text("Select Image")
-                    .font(.headline)
-                    .foregroundColor(.white)
+                Text("Add Image")
+                    .font(.subheadline)
+                    .foregroundColor(Color.theme.text)
                     .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .cornerRadius(10)
-                    .padding()
+                    .padding(8)
+                    .background(Color.theme.primary.opacity(0.2))
+                    .cornerRadius(8)
+                    .padding(.horizontal)
             }
             .onChange(of: selectedItem) { newItem in
                 guard let newItem = newItem else { return }
