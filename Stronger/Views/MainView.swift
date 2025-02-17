@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct MainView: View {
     @ObservedObject var viewModel = WorkoutViewModel()
@@ -15,7 +16,7 @@ struct MainView: View {
     @StateObject private var macrosViewModel = MacrosViewModel()
     @StateObject private var bodyMeasurementsViewModel = BodyMeasurementsViewModel()
     
-    @State private var showSignInView: Bool = !UserDefaults.standard.bool(forKey: "isUserLoggedIn")
+    @State private var showSignInView: Bool = Auth.auth().currentUser == nil
     @State private var selectedTab: TabItem = TabItem(icon: "figure.strengthtraining.traditional", title: "Workouts")
     
     private let tabItems: [TabItem] = [
@@ -67,11 +68,12 @@ struct MainView: View {
         .onAppear {
             showSignInView = !UserDefaults.standard.bool(forKey: "isUserLoggedIn")
         }
-        .onChange(of: showSignInView) { oldValue, newValue in
-            if oldValue != newValue && !newValue {
-                selectedTab = TabItem(icon: "figure.strengthtraining.traditional", title: "Workouts")
-            }
+        .onChange(of: Auth.auth().currentUser) { _, _ in
+            updateSignInStatus()
         }
+    }
+    private func updateSignInStatus() {
+        showSignInView = Auth.auth().currentUser == nil
     }
 }
 
