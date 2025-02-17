@@ -30,8 +30,7 @@ struct InfoView: View {
                     }
                 ))
                 .applyTransparentBackground()
-                .padding()
-                .frame(height: geometry.size.height * 0.6)
+                .padding(.horizontal)
             }
 
             if let imageURLs = exercise.imageURLs, !imageURLs.isEmpty {
