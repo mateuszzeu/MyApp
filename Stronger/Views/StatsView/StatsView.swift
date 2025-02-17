@@ -35,7 +35,7 @@ struct StatsView: View {
                                         .font(.headline)
                                         .foregroundColor(Color.theme.text)
                                         .frame(maxWidth: .infinity, alignment: .leading)
-                                    Text("Date: \(workout.date.formatted(date: .abbreviated, time: .shortened))")
+                                    Text("Date: \(workout.date.formatted(date: .abbreviated, time: .omitted))")
                                         .font(.subheadline)
                                         .foregroundColor(Color.theme.text.opacity(0.7))
                                         .frame(maxWidth: .infinity, alignment: .leading)

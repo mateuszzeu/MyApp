@@ -10,7 +10,7 @@ import SwiftUI
 struct MainView: View {
     @ObservedObject var viewModel = WorkoutViewModel()
     @ObservedObject var infoViewModel = InfoViewModel()
-
+    
     @StateObject private var weightViewModel = WeightViewModel()
     @StateObject private var macrosViewModel = MacrosViewModel()
     @StateObject private var bodyMeasurementsViewModel = BodyMeasurementsViewModel()
@@ -33,7 +33,7 @@ struct MainView: View {
                 ZStack {
                     switch selectedTab.title {
                     case "Workouts":
-                        WorkoutView(viewModel: viewModel, infoViewModel: infoViewModel) 
+                        WorkoutView(viewModel: viewModel, infoViewModel: infoViewModel)
                     case "Add Workout":
                         AddWorkoutView(viewModel: viewModel)
                     case "Hydration":
@@ -65,12 +65,13 @@ struct MainView: View {
             }
         }
         .onAppear {
-            updateSignInViewState()
+            showSignInView = !UserDefaults.standard.bool(forKey: "isUserLoggedIn")
         }
-    }
-    
-    private func updateSignInViewState() {
-        showSignInView = !UserDefaults.standard.bool(forKey: "isUserLoggedIn")
+        .onChange(of: showSignInView) { oldValue, newValue in
+            if oldValue != newValue && !newValue {
+                selectedTab = TabItem(icon: "figure.strengthtraining.traditional", title: "Workouts")
+            }
+        }
     }
 }
 

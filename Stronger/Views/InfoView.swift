@@ -34,7 +34,7 @@ struct InfoView: View {
             }
 
             if let imageURLs = exercise.imageURLs, !imageURLs.isEmpty {
-                ScrollView(.horizontal) {
+                ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(imageURLs, id: \.self) { imageURL in
                             if let url = URL(string: imageURL) {
@@ -131,6 +131,9 @@ struct InfoView: View {
                     }
                 }
             }
+        }
+        .onTapGesture {
+            hideKeyboard()
         }
         .applyGradientBackground()
         .navigationTitle(exercise.name)

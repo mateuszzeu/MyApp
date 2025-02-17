@@ -174,6 +174,5 @@ class InfoViewModel: ObservableObject {
             }
         }
     }
-
 }
 
