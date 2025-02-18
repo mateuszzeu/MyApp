@@ -36,11 +36,9 @@ Features
 ![3](https://github.com/user-attachments/assets/8bb63623-0c41-4470-a4f7-e87c7330c51f)   ![3](https://github.com/user-attachments/assets/f4b83434-9d44-4b96-8eb4-a1eaace06dda)
 
 
-
-
 4 AddExercise
 
-[Light screen] + [Dark screen]
+![resized_4](https://github.com/user-attachments/assets/cd6240fe-6e64-4ea1-9399-74fb16e8fd29)   ![resized_4 2](https://github.com/user-attachments/assets/96d59300-1d4f-4696-8844-4fe09364ea19)
 
 5 HydrationView
 
