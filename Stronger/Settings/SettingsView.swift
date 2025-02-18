@@ -32,7 +32,7 @@ struct SettingsView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .offset(x: 120)
                     
-                    Toggle("", isOn: .constant(viewModel.isDarkMode))
+                    Toggle("", isOn: $viewModel.isDarkMode)
                         .labelsHidden()
                 }
                 .padding()

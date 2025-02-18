@@ -16,7 +16,28 @@ final class SettingsViewModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""
     
-    @AppStorage("isDarkMode") var isDarkMode: Bool = false
+    func toggleDarkMode() {
+        isDarkMode.toggle()
+    }
+    
+    @AppStorage("isDarkMode") var isDarkMode: Bool = false {
+        didSet {
+            SettingsViewModel.applyInterfaceStyle(isDarkMode)
+        }
+    }
+    
+    static func applyInterfaceStyle(_ isDarkMode: Bool) {
+        DispatchQueue.main.async {
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = windowScene.windows.first else { return }
+            window.overrideUserInterfaceStyle = isDarkMode ? .dark : .light
+        }
+    }
+    
+    static func applySavedTheme() {
+        let savedTheme = UserDefaults.standard.bool(forKey: "isDarkMode")
+        applyInterfaceStyle(savedTheme)
+    }
     
     func signOut() throws {
         try AuthenticationManager.shared.signOut()
@@ -67,16 +88,5 @@ final class SettingsViewModel: ObservableObject {
         }
         
         try await db.collection("users").document(userId).delete()
-    }
-    
-    func applyInterfaceStyle() {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first else { return }
-        window.overrideUserInterfaceStyle = isDarkMode ? .dark : .light
-    }
-    
-    func toggleDarkMode() {
-        isDarkMode.toggle()
-        applyInterfaceStyle()
     }
 }

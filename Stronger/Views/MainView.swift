@@ -72,6 +72,7 @@ struct MainView: View {
         }
         .onAppear {
             authViewModel.checkAuthenticationStatus()
+            SettingsViewModel.applySavedTheme()
         }
         .onChange(of: authViewModel.isUserLoggedIn) {
             if authViewModel.isUserLoggedIn {
@@ -83,4 +84,5 @@ struct MainView: View {
 
 #Preview {
     MainView()
+        .environmentObject(AuthViewModel())
 }
