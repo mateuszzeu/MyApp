@@ -54,7 +54,7 @@ Features
 
 8 Options
 
-![resized_8R](https://github.com/user-attachments/assets/ecd671b1-003d-45ce-9883-8ed3fd17c077)   ![resized_8 2R](https://github.com/user-attachments/assets/e241c052-d74a-4724-b432-760d2295b067)
+![resized_8R](https://github.com/user-attachments/assets/ecd671b1-003d-45ce-9883-8ed3fd17c077)   ![82](https://github.com/user-attachments/assets/a9cb6add-1163-4003-97e6-247cd485ef5a)
 
 
 
