@@ -29,7 +29,7 @@ Features
 
 2 MainView
 
-![2](https://github.com/user-attachments/assets/0f507d8b-14a2-4eb2-ac10-860d3e1ad263)   ![2](https://github.com/user-attachments/assets/b4a80c04-46ff-4566-bc13-30915ab178e2)
+![2](https://github.com/user-attachments/assets/0f507d8b-14a2-4eb2-ac10-860d3e1ad263)   ![22](https://github.com/user-attachments/assets/400e4900-c3cd-4b1d-b744-b3c879f12abb)
 
 
 
