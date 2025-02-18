@@ -1,6 +1,15 @@
+//
+//  SignUpEmailView.swift
+//  Stronger
+//
+//  Created by Mateusz Żełudziewicz on 25/10/2024.
+//
+
 import SwiftUI
 
 struct SignUpEmailView: View {
+    
+    @EnvironmentObject var authViewModel: AuthViewModel
     
     @StateObject private var viewModel = SignUpEmailViewModel()
     @Binding var showSignInView: Bool
@@ -63,7 +72,8 @@ struct SignUpEmailView: View {
             }
         }
         .navigationDestination(isPresented: $isNavigatedToSignInView) {
-            AuthenticationView(showSignInView: $showSignInView)
+            AuthenticationView()
+                .environmentObject(authViewModel)
                 .navigationBarBackButtonHidden(true)
         }
         .navigationTitle("Register")
@@ -75,5 +85,6 @@ struct SignUpEmailView: View {
 #Preview {
     NavigationStack {
         SignUpEmailView(showSignInView: .constant(false))
+            .environmentObject(AuthViewModel())
     }
 }

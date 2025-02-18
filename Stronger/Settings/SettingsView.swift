@@ -4,13 +4,15 @@
 //
 //  Created by Mateusz Żełudziewicz on 22/10/2024.
 //
+
 import SwiftUI
 import Firebase
 
 struct SettingsView: View {
-    
+    @EnvironmentObject private var authViewModel: AuthViewModel
+
     @StateObject private var viewModel = SettingsViewModel()
-    @Binding var showSignInView: Bool
+    
     @State private var showDeleteAccountAlert = false
     @State private var isTransitioning = false
     
@@ -43,7 +45,7 @@ struct SettingsView: View {
                 Task {
                     do {
                         try viewModel.signOut()
-                        showSignInView = true
+                        authViewModel.isUserLoggedIn = false
                     } catch {
                         print(error)
                     }
@@ -57,7 +59,7 @@ struct SettingsView: View {
                 Task {
                     do {
                         try await viewModel.deleteAccount()
-                        showSignInView = true
+                        authViewModel.isUserLoggedIn = false
                     } catch {
                         print(error)
                     }
@@ -109,5 +111,6 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(showSignInView: .constant(false))
+    SettingsView()
+        .environmentObject(AuthViewModel())
 }

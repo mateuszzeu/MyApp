@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct AuthenticationView: View {
-    @Binding var showSignInView: Bool
+    @EnvironmentObject var authViewModel: AuthViewModel
     @State private var showContent = false
     @StateObject private var viewModel = SignInEmailViewModel()
     
@@ -45,13 +45,9 @@ struct AuthenticationView: View {
                                 viewModel.errorMessage = ""
                                 
                                 do {
-                                    try await viewModel.signInUser()
-                                    
-                                    if !viewModel.showErrorMessage {
-                                        showSignInView = false
-                                    }
+                                    let userData = try await viewModel.signInUser()
+                                    authViewModel.isUserLoggedIn = true
                                 } catch {
-                                    print("Login error: \(error.localizedDescription)")
                                     viewModel.errorMessage = "Invalid login credentials"
                                     viewModel.showErrorMessage = true
                                 }
@@ -102,7 +98,8 @@ struct AuthenticationView: View {
                     .padding(.horizontal)
                     
                     NavigationLink {
-                        SignUpEmailView(showSignInView: $showSignInView)
+                        SignUpEmailView(showSignInView: $authViewModel.isUserLoggedIn)
+                            .environmentObject(authViewModel)
                     } label: {
                         Text("Register")
                             .font(.headline)
@@ -125,6 +122,7 @@ struct AuthenticationView: View {
 
 #Preview {
     NavigationStack {
-        AuthenticationView(showSignInView: .constant(false))
+        AuthenticationView()
+            .environmentObject(AuthViewModel())
     }
 }

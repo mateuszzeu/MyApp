@@ -17,6 +17,7 @@ struct StrongerApp: App {
         WindowGroup {
             NavigationStack {
                 MainView()
+                    .environmentObject(AuthViewModel())
             }
         }
     }

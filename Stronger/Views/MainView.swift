@@ -9,6 +9,8 @@ import SwiftUI
 import FirebaseAuth
 
 struct MainView: View {
+    @EnvironmentObject private var authViewModel: AuthViewModel
+    
     @ObservedObject var viewModel = WorkoutViewModel()
     @ObservedObject var infoViewModel = InfoViewModel()
     
@@ -16,7 +18,6 @@ struct MainView: View {
     @StateObject private var macrosViewModel = MacrosViewModel()
     @StateObject private var bodyMeasurementsViewModel = BodyMeasurementsViewModel()
     
-    @State private var showSignInView: Bool = Auth.auth().currentUser == nil
     @State private var selectedTab: TabItem = TabItem(icon: "figure.strengthtraining.traditional", title: "Workouts")
     
     private let tabItems: [TabItem] = [
@@ -44,7 +45,7 @@ struct MainView: View {
                     case "Add Measurements":
                         AddMeasurementsView(weightViewModel: weightViewModel, macrosViewModel: macrosViewModel, bodyMeasurementsViewModel: bodyMeasurementsViewModel)
                     case "Settings":
-                        SettingsView(showSignInView: $showSignInView)
+                        SettingsView()
                     default:
                         WorkoutView(viewModel: viewModel, infoViewModel: infoViewModel)
                     }
@@ -60,20 +61,23 @@ struct MainView: View {
         }
         .background(Color.clear.ignoresSafeArea())
         .ignoresSafeArea(.keyboard, edges: .bottom)
-        .fullScreenCover(isPresented: $showSignInView) {
+        .fullScreenCover(isPresented: Binding(
+            get: { !authViewModel.isUserLoggedIn },
+            set: { authViewModel.isUserLoggedIn = !$0 }
+        )) {
             NavigationStack {
-                AuthenticationView(showSignInView: $showSignInView)
+                AuthenticationView()
+                    .environmentObject(authViewModel)
             }
         }
         .onAppear {
-            showSignInView = !UserDefaults.standard.bool(forKey: "isUserLoggedIn")
+            authViewModel.checkAuthenticationStatus()
         }
-        .onChange(of: Auth.auth().currentUser) { _, _ in
-            updateSignInStatus()
+        .onChange(of: authViewModel.isUserLoggedIn) {
+            if authViewModel.isUserLoggedIn {
+                selectedTab = TabItem(icon: "figure.strengthtraining.traditional", title: "Workouts")
+            }
         }
-    }
-    private func updateSignInStatus() {
-        showSignInView = Auth.auth().currentUser == nil
     }
 }
 
