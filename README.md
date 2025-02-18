@@ -31,11 +31,12 @@ Features
 
 ![2](https://github.com/user-attachments/assets/0f507d8b-14a2-4eb2-ac10-860d3e1ad263)   ![22](https://github.com/user-attachments/assets/400e4900-c3cd-4b1d-b744-b3c879f12abb)
 
-
-
 3 InfoView 
 
-[Light screen] + gif dark
+![3](https://github.com/user-attachments/assets/8bb63623-0c41-4470-a4f7-e87c7330c51f)   ![3](https://github.com/user-attachments/assets/f4b83434-9d44-4b96-8eb4-a1eaace06dda)
+
+
+
 
 4 AddExercise
 
