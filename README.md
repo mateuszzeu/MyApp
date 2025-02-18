@@ -22,16 +22,41 @@ Features
 
     VISUALISATION
 
-![Fitally_1](https://github.com/user-attachments/assets/064f4aa3-f020-4c0e-a75d-fc8b87a12212) ![Fitally_2](https://github.com/user-attachments/assets/758ce23f-715f-405c-98e3-7ae38746a858) ![Fitally_32](https://github.com/user-attachments/assets/1d9e3d86-24b3-4b9a-be0e-784bb1bea0db) ![Fitally_3](https://github.com/user-attachments/assets/adfc5fa1-cda4-494b-8c38-80f06fd3de0a) ![Fitally_4](https://github.com/user-attachments/assets/e5ce89e1-e186-4104-a9de-f94ce77599c6) ![Fitally_5](https://github.com/user-attachments/assets/74cdf056-9b64-46e5-9ba0-8cc709480d32) ![Fitally_6](https://github.com/user-attachments/assets/e29c27c4-eee5-4c61-8906-45b2243e2fbd) ![Fitally_7](https://github.com/user-attachments/assets/9e70c5dc-3414-4822-be45-eb92f73898c6) ![Fitally_8](https://github.com/user-attachments/assets/b5819f0e-c097-42e4-b37e-938d7ecfb424) ![Fitally_9](https://github.com/user-attachments/assets/aa5f962c-551a-45c3-a51a-29fc5d549d98) ![Fitally_10](https://github.com/user-attachments/assets/a7f1fef0-b8a7-4672-9d54-3b5c0e75970a) ![Fitally_11](https://github.com/user-attachments/assets/417ce831-1a49-4411-85cc-b28b77299f16) ![Fitally_12](https://github.com/user-attachments/assets/df4591c0-819a-4b58-a0d1-fedaf26bfc0e) ![Fitally_132](https://github.com/user-attachments/assets/bcdadb8a-fd27-4716-a038-0c1b7e8ed362) ![Fitally_14](https://github.com/user-attachments/assets/3505aba8-3a1e-4ace-9f0a-d73b7be4b283)
+1 Welcome View and registration 
 
-January Update:
+![1](https://github.com/user-attachments/assets/2488b91d-2333-45e3-a268-bd7fbfd8815f) ![1MD](https://github.com/user-attachments/assets/62d77e65-f9cf-4963-942e-33d4b9b2bd05)
 
-![111](https://github.com/user-attachments/assets/413ef856-3111-4692-82c8-62ef847920d0) ![11](https://github.com/user-attachments/assets/819aa0b5-a2ed-467b-bd6b-445cdc1909d4)
 
-![22](https://github.com/user-attachments/assets/fd508c18-5b59-465b-ac85-23e31805f62a) ![222](https://github.com/user-attachments/assets/bce4eb35-9d96-464e-921d-0ae608abc622)
 
-![333333](https://github.com/user-attachments/assets/9a7e8000-dff9-4730-af69-21aa66e3cfef)
+[Light screen] + gif dark regist
 
+2 MainView
+
+[Light screen] + gif dark
+
+3 InfoView 
+
+[Light screen] + gif dark
+
+4 AddExercise
+
+[Light screen] + [Dark screen]
+
+5 HydrationView
+
+[Light screen] + dark gif
+
+6 StatsView
+
+[Ligh screen gora] + [Dark screen all + wejscie w completed workout]
+
+7 AddMeasurments
+
+[Light screen gora] + [Dark screen dol]
+
+8 Options
+
+[Light screen] + [Dark screen]
 
 Getting Started
 
