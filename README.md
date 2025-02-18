@@ -27,18 +27,11 @@ Features
 
 ![resized_to_gif_dimensions](https://github.com/user-attachments/assets/ebd6df90-895d-4eda-a695-53c7aa21c789)   ![rrrrrrr](https://github.com/user-attachments/assets/4b05d1bc-0077-40e3-a8ef-3494533e7037)
 
-
-
-
-
-
-
-
-[Light screen] + gif dark regist
-
 2 MainView
 
-[Light screen] + gif dark
+![2](https://github.com/user-attachments/assets/0f507d8b-14a2-4eb2-ac10-860d3e1ad263)   ![2](https://github.com/user-attachments/assets/b4a80c04-46ff-4566-bc13-30915ab178e2)
+
+
 
 3 InfoView 
 
