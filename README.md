@@ -42,36 +42,21 @@ Features
 
 5 HydrationView
 
-[Light screen] + dark gif
+![resized_5R](https://github.com/user-attachments/assets/11869271-bec1-436b-9262-ec360bec5a88)   ![5](https://github.com/user-attachments/assets/6a2d4945-1d00-479e-8bc9-fb6397beb51a)
 
 6 StatsView
 
-[Ligh screen gora] + [Dark screen all + wejscie w completed workout]
+![resized_6R](https://github.com/user-attachments/assets/c6c362be-13bb-4748-931c-3271c1b49538)  ![6](https://github.com/user-attachments/assets/6ad574b1-42de-4ff5-afe2-e50b98562896)
 
 7 AddMeasurments
 
-[Light screen gora] + [Dark screen dol]
+![resized_7R](https://github.com/user-attachments/assets/9a2af116-fb1b-4af8-9d9e-d49e31b09de7)   ![resized_7 2R](https://github.com/user-attachments/assets/36a0f5a6-6ae9-463f-b609-380a2d409d11)
 
 8 Options
 
-[Light screen] + [Dark screen]
+![resized_8R](https://github.com/user-attachments/assets/ecd671b1-003d-45ce-9883-8ed3fd17c077)   ![resized_8 2R](https://github.com/user-attachments/assets/e241c052-d74a-4724-b432-760d2295b067)
 
-Getting Started
 
-1. Clone the repository
-
-2. Set up Firebase:
-
-- Log in to the Firebase Console and create a new project.
-- Enable the following services:
-  Authentication → Select "Email and Password".
-  Cloud Firestore → Create a database in test mode.
-- Download the GoogleService-Info.plist file:
-  Go to Project Settings → General → iOS app → Download the configuration file.
-  
-- Drag and drop the GoogleService-Info.plist file into the project in Xcode (place it in the main app folder).
-
-3. Open the project in Xcode and run the app.
 
 
 
