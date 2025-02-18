@@ -24,7 +24,8 @@ Features
 
 1 Welcome View and registration 
 
-![1](https://github.com/user-attachments/assets/2488b91d-2333-45e3-a268-bd7fbfd8815f) ![1MD](https://github.com/user-attachments/assets/62d77e65-f9cf-4963-942e-33d4b9b2bd05)
+![resized_1](https://github.com/user-attachments/assets/fc9faf37-fcb4-4336-9d14-d422685a9eae) ![1MD2](https://github.com/user-attachments/assets/93df5829-09ee-4aa4-83a0-91f54dcb7f5b)
+
 
 
 
