@@ -39,6 +39,12 @@ It helps users **plan workouts, track progress, and stay motivated** with a **cl
   <img src="https://github.com/user-attachments/assets/400e4900-c3cd-4b1d-b744-b3c879f12abb" width="40%">
 </p>
 
+📍 **InfoView**
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/8bb63623-0c41-4470-a4f7-e87c7330c51f" width="40%">
+  <img src="https://github.com/user-attachments/assets/f4b83434-9d44-4b96-8eb4-a1eaace06dda" width="40%">
+</p>
+
 📍 **Exercise Details & Customization**
 <p align="center">
   <img src="https://github.com/user-attachments/assets/cd6240fe-6e64-4ea1-9399-74fb16e8fd29" width="40%">
