@@ -1,7 +1,25 @@
-Fitally
+Fitally is an all-in-one fitness application that makes goal tracking effortless. From scheduling workouts and checking off daily macro targets, to analyzing personal records, Stronger is built to empower anyone looking to improve their health and performance.
 
-Fitally is a fitness app that I am currently developing in my free time with SwiftUI, inspired by the personal need for a streamlined workout planner for myself and my close friends.
-The app helps users create, manage, and track workout routines while seamlessly storing data in the cloud using Firebase.
+                                                                                Core Features:
+Comprehensive Workout Planner – Quickly organize exercise days, swap their positions, or add new moves with ease.
+
+Body Metrics & Macros – Keep track of daily weight, measurements, and calorie intake, all synced and securely stored.
+
+In-App Hydration Visualization – A customizable water droplet view for adding/removing glasses, complete with progress animation.
+
+Photo Uploads – Attach images to workouts (technique photos, progress pics), stored in Firebase for easy retrieval.
+
+Advanced Auth & Settings – Perform sign-ups, password updates, and account deletions all from within a user-centric UI.
+
+                                                                      Innovative Technologies & Architecture:
+SwiftUI & MVVM – Applies modern state management, ensuring clarity and maintainability.
+
+Firebase Firestore + Storage – Enables real-time data streaming, secure file handling, and minimal overhead.
+
+Async/Await – Streamlines asynchronous flows, making networking calls cleaner and more scalable.
+
+Snapshot Listeners – Guarantees instantaneous UI updates whenever the database changes.
+
 
 1 Welcome View and registration 
 
