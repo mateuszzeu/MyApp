@@ -1,6 +1,6 @@
 Fitally is an all-in-one fitness application that makes goal tracking effortless. From scheduling workouts and checking off daily macro targets, to analyzing personal records, Stronger is built to empower anyone looking to improve their health and performance.
 
-                                                                                Core Features:
+                                               Core Features:
 Comprehensive Workout Planner – Quickly organize exercise days, swap their positions, or add new moves with ease.
 
 Body Metrics & Macros – Keep track of daily weight, measurements, and calorie intake, all synced and securely stored.
@@ -11,7 +11,7 @@ Photo Uploads – Attach images to workouts (technique photos, progress pics), s
 
 Advanced Auth & Settings – Perform sign-ups, password updates, and account deletions all from within a user-centric UI.
 
-                                                                      Innovative Technologies & Architecture:
+                                          Innovative Technologies & Architecture:
 SwiftUI & MVVM – Applies modern state management, ensuring clarity and maintainability.
 
 Firebase Firestore + Storage – Enables real-time data streaming, secure file handling, and minimal overhead.
