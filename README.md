@@ -1,4 +1,5 @@
-Fitally is an all-in-one fitness application that makes goal tracking effortless. From scheduling workouts and checking off daily macro targets, to analyzing personal records, Stronger is built to empower anyone looking to improve their health and performance.
+Fitally is a comprehensive fitness companion designed to track daily workouts, hydration, body measurements, and macros—all in one place. 
+Whether someone is exploring their first structured fitness program or has years of training under their belt, Fitally helps them stay organized and monitor progress through clean, user-friendly interfaces.
 
                                                Core Features
 Comprehensive Workout Planner – Quickly organize exercise days, swap their positions, or add new moves with ease.
@@ -56,7 +57,33 @@ Snapshot Listeners – Guarantees instantaneous UI updates whenever the database
 ![resized_8R](https://github.com/user-attachments/assets/ecd671b1-003d-45ce-9883-8ed3fd17c077)   ![82](https://github.com/user-attachments/assets/a9cb6add-1163-4003-97e6-247cd485ef5a)
 
 
+## 🚀 Fitally – The Ultimate Fitness Tracker
+Fitally is an all-in-one fitness application that makes goal tracking effortless. From scheduling workouts and checking off daily macro targets to analyzing personal records, Fitally is built to empower anyone looking to improve their health and performance.
 
 
+## 🎯 Core Features
+✅ **Comprehensive Workout Planner** – Quickly organize exercise days, swap positions, or add new moves with ease.  
+✅ **📊 Body Metrics & Macros** – Track weight, measurements, and calorie intake, securely stored in Firebase.  
+✅ **💧 Hydration Tracker** – A dynamic, animated water droplet view for easy water intake tracking.  
+✅ **📷 Photo Uploads** – Attach images to workouts for technique analysis and progress tracking.  
+✅ **🔑 Advanced Authentication** – Secure sign-ups, password updates, and account deletions within a user-friendly UI.  
 
 
+## 🏗️ Technologies & Architecture
+
+| Technology        | Purpose                                      |
+|------------------|----------------------------------------------|
+| **SwiftUI**      | Modern UI framework for smooth animations  |
+| **MVVM**         | Clean architecture for better maintainability |
+| **Firebase Firestore** | Real-time database for instant syncing |
+| **Async/Await**  | Efficient async operations for networking  |
+| **Snapshot Listeners** | Live UI updates when database changes |
+
+
+## 📸 Screenshots
+
+### 🏠 Welcome & Registration
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ebd6df90-895d-4eda-a695-53c7aa21c789" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/4b05d1bc-0077-40e3-a8ef-3494533e7037" width="45%"/>
+</p>
