@@ -158,3 +158,24 @@ It helps users **plan workouts, track progress, and stay motivated** with a **cl
 ## ⭐ **Contribute & Support**
 If you love **Fitally**, **give it a ⭐ on GitHub!**  
 Have ideas or feedback? **Open an issue or contribute** 🚀 
+
+
+<!-- Fitally Logo #2: Gradient circle emblem with stylized "F" -->
+<svg version="1.1" width="200px" height="200px" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Subtle gradient background within the circle -->
+  <defs>
+    <linearGradient id="grad1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0FA3B1"/>
+      <stop offset="100%" stop-color="#FF6A00"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Circular shape -->
+  <circle cx="100" cy="100" r="80" fill="url(#grad1)"/>
+  
+  <!-- Stylized "F" in white -->
+  <path d="M70 60 h30 v10 h-20 v20 h20 v10 h-20 v40 h-10 z" fill="#fff"/>
+
+  <!-- Text label (optional) -->
+  <text x="55" y="185" font-family="Arial" font-size="18" fill="#333">Fitally</text>
+</svg>
