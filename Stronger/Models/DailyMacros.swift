@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Model
 struct DailyMacros: Identifiable {
     let id: UUID
     let date: Date
@@ -32,7 +33,10 @@ struct DailyMacros: Identifiable {
     }
 }
 
+// MARK: - Dictionary Conversion
 extension DailyMacros {
+    
+    // Converts a dictionary into a DailyMacros instance
     init?(dictionary: [String: Any]) {
         guard
             let idString = dictionary["id"] as? String,
@@ -41,27 +45,27 @@ extension DailyMacros {
         else {
             return nil
         }
-        
-        let dateValue = Date(timeIntervalSince1970: dateTimestamp)
-        
+
         self.id = uuid
-        self.date = dateValue
+        self.date = Date(timeIntervalSince1970: dateTimestamp)
         self.protein = dictionary["protein"] as? Double
         self.carbs = dictionary["carbs"] as? Double
         self.fat = dictionary["fat"] as? Double
         self.calories = dictionary["calories"] as? Double
     }
     
+    // Converts the DailyMacros instance into a dictionary
     var dictionary: [String: Any] {
         var result: [String: Any] = [
             "id": id.uuidString,
             "date": date.timeIntervalSince1970
         ]
         
-        if let protein = protein { result["protein"] = protein }
-        if let carbs = carbs { result["carbs"] = carbs }
-        if let fat = fat { result["fat"] = fat }
-        if let calories = calories { result["calories"] = calories }
+        // Add optional values only if they are not nil
+        if let protein { result["protein"] = protein }
+        if let carbs { result["carbs"] = carbs }
+        if let fat { result["fat"] = fat }
+        if let calories { result["calories"] = calories }
         
         return result
     }

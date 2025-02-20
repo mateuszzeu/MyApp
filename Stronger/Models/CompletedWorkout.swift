@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Model
 struct CompletedWorkout: Identifiable {
     let id: UUID
     let date: Date
@@ -27,42 +28,40 @@ struct CompletedWorkout: Identifiable {
         self.exercises = exercises
         self.notes = notes
     }
+}
+
+// MARK: - Dictionary Conversion
+extension CompletedWorkout {
     
+    // Converts a dictionary into a CompletedWorkout instance
     init?(dictionary: [String: Any]) {
-        guard let dateTimestamp = dictionary["date"] as? Double else { return nil }
-        let dateValue = Date(timeIntervalSince1970: dateTimestamp)
-        
-        guard let dayName = dictionary["workoutDayName"] as? String else { return nil }
-        
-        guard let exercisesArray = dictionary["exercises"] as? [[String: Any]] else { return nil }
-        var parsedExercises: [Exercise] = []
-        for exerciseDict in exercisesArray {
-            if let ex = Exercise(dictionary: exerciseDict) {
-                parsedExercises.append(ex)
-            }
+        guard
+            let idString = dictionary["id"] as? String,
+            let uuid = UUID(uuidString: idString),
+            let dateTimestamp = dictionary["date"] as? Double,
+            let dayName = dictionary["workoutDayName"] as? String,
+            let exercisesArray = dictionary["exercises"] as? [[String: Any]]
+        else {
+            return nil
         }
-        
-        guard let idString = dictionary["id"] as? String,
-              let uuid = UUID(uuidString: idString)
-        else { return nil }
-        
-        let notes = dictionary["notes"] as? String
-        
+
         self.id = uuid
-        self.date = dateValue
+        self.date = Date(timeIntervalSince1970: dateTimestamp)
         self.workoutDayName = dayName
-        self.exercises = parsedExercises
-        self.notes = notes
+
+        // Convert exercise dictionaries into Exercise objects
+        self.exercises = exercisesArray.compactMap { Exercise(dictionary: $0) }
+        
+        self.notes = dictionary["notes"] as? String
     }
     
+    // Converts the CompletedWorkout instance into a dictionary
     var dictionary: [String: Any] {
-        let exercisesDictArray = exercises.map { $0.dictionary }
-        
         return [
             "id": id.uuidString,
             "date": date.timeIntervalSince1970,
             "workoutDayName": workoutDayName,
-            "exercises": exercisesDictArray,
+            "exercises": exercises.map { $0.dictionary },
             "notes": notes ?? ""
         ]
     }

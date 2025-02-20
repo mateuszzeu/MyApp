@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Model
 struct DailyWeight: Identifiable {
     let id: UUID
     let date: Date
@@ -23,7 +24,10 @@ struct DailyWeight: Identifiable {
     }
 }
 
+// MARK: - Dictionary Conversion
 extension DailyWeight {
+    
+    // Converts a dictionary into a DailyWeight instance
     init?(dictionary: [String: Any]) {
         guard
             let idString = dictionary["id"] as? String,
@@ -33,23 +37,20 @@ extension DailyWeight {
             return nil
         }
         
-        let dateValue = Date(timeIntervalSince1970: dateTimestamp)
-        let weightValue = dictionary["weight"] as? Double
-        
         self.id = uuid
-        self.date = dateValue
-        self.weight = weightValue
+        self.date = Date(timeIntervalSince1970: dateTimestamp)
+        self.weight = dictionary["weight"] as? Double
     }
     
+    // Converts the DailyWeight instance into a dictionary
     var dictionary: [String: Any] {
         var result: [String: Any] = [
             "id": id.uuidString,
             "date": date.timeIntervalSince1970
         ]
         
-        if let weight = weight {
-            result["weight"] = weight
-        }
+        // Add weight only if it exists
+        if let weight { result["weight"] = weight }
         
         return result
     }

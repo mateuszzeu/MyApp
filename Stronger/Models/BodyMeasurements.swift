@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Model
 struct BodyMeasurements: Identifiable {
     let id: UUID
     let date: Date
@@ -32,7 +33,10 @@ struct BodyMeasurements: Identifiable {
     }
 }
 
+// MARK: - Dictionary Conversion
 extension BodyMeasurements {
+    
+    // Convert dictionary to BodyMeasurements instance
     init?(dictionary: [String: Any]) {
         guard
             let idString = dictionary["id"] as? String,
@@ -42,16 +46,15 @@ extension BodyMeasurements {
             return nil
         }
         
-        let dateValue = Date(timeIntervalSince1970: dateTimestamp)
-        
         self.id = uuid
-        self.date = dateValue
+        self.date = Date(timeIntervalSince1970: dateTimestamp)
         self.chest = dictionary["chest"] as? Double
         self.shoulders = dictionary["shoulders"] as? Double
         self.waist = dictionary["waist"] as? Double
         self.hips = dictionary["hips"] as? Double
     }
     
+    // Convert BodyMeasurements instance to dictionary
     var dictionary: [String: Any] {
         var result: [String: Any] = [
             "id": id.uuidString,

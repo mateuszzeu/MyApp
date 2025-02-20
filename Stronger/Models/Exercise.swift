@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Model
 struct Exercise: Identifiable, Equatable {
     var id: UUID
     var name: String
@@ -35,8 +36,10 @@ struct Exercise: Identifiable, Equatable {
     }
 }
 
+// MARK: - Dictionary Conversion
 extension Exercise {
     
+    // Convert dictionary to Exercise instance
     init?(dictionary: [String: Any]) {
         guard
             let idString = dictionary["id"] as? String,
@@ -59,18 +62,21 @@ extension Exercise {
         self.imageURLs = dictionary["imageURLs"] as? [String]
     }
     
+    // Convert Exercise instance to dictionary
     var dictionary: [String: Any] {
-            var dict: [String: Any] = [
-                "id": id.uuidString,
-                "name": name,
-                "sets": sets,
-                "reps": reps,
-                "weight": weight,
-                "info": info
-            ]
-            if let imageURLs = imageURLs {
-                dict["imageURLs"] = imageURLs
-            }
-            return dict
+        var result: [String: Any] = [
+            "id": id.uuidString,
+            "name": name,
+            "sets": sets,
+            "reps": reps,
+            "weight": weight,
+            "info": info
+        ]
+        
+        if let imageURLs = imageURLs {
+            result["imageURLs"] = imageURLs
         }
+        
+        return result
+    }
 }
