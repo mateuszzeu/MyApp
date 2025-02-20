@@ -63,16 +63,16 @@
 			membershipExceptions = (
 				Lottie/Animations/Success.json,
 				Lottie/LottieView.swift,
-				ViewModels/BodyMeasurementsViewModel.swift,
-				ViewModels/InfoViewModel.swift,
-				Views/LogoAnimationView.swift,
-				Views/StatsView/AddMeasurementsView.swift,
-				Views/StatsView/BodyMeasurementsHistoryView.swift,
-				Views/StatsView/ImagePicker.swift,
-				Views/StatsView/MacrosHistoryView.swift,
-				Views/StatsView/StatsView.swift,
-				Views/StatsView/WeightHistoryView.swift,
-				Views/SuccessSheetView.swift,
+				ViewModels/Measurements/BodyMeasurementsViewModel.swift,
+				ViewModels/Workouts/InfoViewModel.swift,
+				Views/Components/ImagePicker.swift,
+				Views/Main/AddMeasurementsView.swift,
+				Views/Shared/LogoAnimationView.swift,
+				Views/Shared/SuccessSheetView.swift,
+				Views/Stats/BodyMeasurementsHistoryView.swift,
+				Views/Stats/MacrosHistoryView.swift,
+				Views/Stats/StatsView.swift,
+				Views/Stats/WeightHistoryView.swift,
 			);
 			target = 6E3D4A4E2D268BD400259C04 /* StrongerTests */;
 		};
