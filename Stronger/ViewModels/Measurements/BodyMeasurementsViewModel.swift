@@ -12,6 +12,7 @@ import FirebaseAuth
 @MainActor
 class BodyMeasurementsViewModel: ObservableObject {
     
+    // MARK: - Published Properties
     @Published var measurements: [BodyMeasurements] = []
     @Published var chest: String = ""
     @Published var shoulders: String = ""
@@ -21,8 +22,13 @@ class BodyMeasurementsViewModel: ObservableObject {
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     
+    // MARK: - Firestore Methods
+    
     func fetchMeasurements() {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
+        guard let userId = Auth.auth().currentUser?.uid else {
+            ErrorHandler.shared.handle(AppError.authenticationError)
+            return
+        }
         
         db.collection("users")
             .document(userId)
@@ -30,8 +36,9 @@ class BodyMeasurementsViewModel: ObservableObject {
             .order(by: "date", descending: true)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self else { return }
+                
                 if let error = error {
-                    print("Error fetching body measurements: \(error.localizedDescription)")
+                    ErrorHandler.shared.handle(error)
                     return
                 }
                 
@@ -39,7 +46,6 @@ class BodyMeasurementsViewModel: ObservableObject {
                 
                 self.measurements = documents.compactMap { document in
                     let data = document.data()
-                    
                     
                     if data["chest"] == nil && data["shoulders"] == nil && data["waist"] == nil && data["hips"] == nil {
                         return nil
@@ -50,9 +56,12 @@ class BodyMeasurementsViewModel: ObservableObject {
             }
     }
     
+
     func saveMeasurements(completion: @escaping (Result<Void, Error>) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
-            completion(.failure(NSError(domain: "No user", code: 0, userInfo: [NSLocalizedDescriptionKey: "User not logged in"])))
+            let error = AppError.authenticationError
+            ErrorHandler.shared.handle(error)
+            completion(.failure(error))
             return
         }
         
@@ -60,7 +69,9 @@ class BodyMeasurementsViewModel: ObservableObject {
               let shouldersVal = Double(shoulders),
               let waistVal = Double(waist),
               let hipsVal = Double(hips) else {
-            completion(.failure(NSError(domain: "Invalid input", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid numeric values"])))
+            let error = AppError.invalidInput(fieldName: "Body Measurements")
+            ErrorHandler.shared.handle(error)
+            completion(.failure(error))
             return
         }
         
@@ -85,12 +96,15 @@ class BodyMeasurementsViewModel: ObservableObject {
         
         docRef.setData(newMeasurements.dictionary, merge: true) { error in
             if let error = error {
+                ErrorHandler.shared.handle(error)
                 completion(.failure(error))
             } else {
                 completion(.success(()))
             }
         }
     }
+    
+    // MARK: - Helpers
     
     func clearMeasurementsFields() {
         chest = ""

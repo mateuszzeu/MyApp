@@ -10,11 +10,13 @@ import Firebase
 
 struct SettingsView: View {
     @EnvironmentObject private var authViewModel: AuthViewModel
-
+    
     @StateObject private var viewModel = SettingsViewModel()
     
     @State private var showDeleteAccountAlert = false
     @State private var isTransitioning = false
+    @State private var newEmail = ""
+    @State private var newPassword = ""
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -47,7 +49,7 @@ struct SettingsView: View {
                         try viewModel.signOut()
                         authViewModel.isUserLoggedIn = false
                     } catch {
-                        print(error)
+                        ErrorHandler.shared.handle(error)
                     }
                 }
             }
@@ -61,7 +63,7 @@ struct SettingsView: View {
                         try await viewModel.deleteAccount()
                         authViewModel.isUserLoggedIn = false
                     } catch {
-                        print(error)
+                        ErrorHandler.shared.handle(error)
                     }
                 }
             }
@@ -76,7 +78,7 @@ struct SettingsView: View {
                         do {
                             try await viewModel.resetPassword()
                         } catch {
-                            print(error)
+                            ErrorHandler.shared.handle(error)
                         }
                     }
                 }
@@ -84,9 +86,9 @@ struct SettingsView: View {
                 TransparentButton(title: "Update password") {
                     Task {
                         do {
-                            try await viewModel.updatePassword()
+                            try await viewModel.updatePassword(newPassword: newPassword)
                         } catch {
-                            print(error)
+                            ErrorHandler.shared.handle(error)
                         }
                     }
                 }
@@ -94,9 +96,9 @@ struct SettingsView: View {
                 TransparentButton(title: "Update email") {
                     Task {
                         do {
-                            try await viewModel.updateEmail()
+                            try await viewModel.updateEmail(newEmail: newEmail)
                         } catch {
-                            print(error)
+                            ErrorHandler.shared.handle(error)
                         }
                     }
                 }
@@ -107,6 +109,11 @@ struct SettingsView: View {
         .padding()
         .padding(.top, 66)
         .applyGradientBackground()
+        .overlay(
+            ErrorBannerView()
+                .padding(.top, 50),
+            alignment: .top
+        )
     }
 }
 

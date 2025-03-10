@@ -30,26 +30,13 @@ struct SignUpEmailView: View {
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
             
-            if viewModel.showErrorMessage {
-                Text(viewModel.errorMessage)
-                    .foregroundColor(Color.theme.accent)
-                    .font(.footnote)
-                    .padding(.top, 10)
-            }
-            
             Button {
                 Task {
                     do {
-                        guard viewModel.isValidData() else {
-                            viewModel.showErrorMessage = true
-                            return
-                        }
                         try await viewModel.signUp()
                         showSuccessMessage = true
                     } catch {
-                        print("Sign up error: \(error.localizedDescription)")
-                        viewModel.errorMessage = "Error creating user"
-                        viewModel.showErrorMessage = true
+                        ErrorHandler.shared.handle(error)
                     }
                 }
             } label: {
@@ -79,6 +66,11 @@ struct SignUpEmailView: View {
         .navigationTitle("Register")
         .navigationBarTitleDisplayMode(.inline)
         .applyGradientBackground()
+        .overlay(
+            ErrorBannerView()
+                .padding(.top, 50),
+            alignment: .top
+        )
     }
 }
 

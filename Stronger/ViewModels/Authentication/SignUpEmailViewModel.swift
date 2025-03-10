@@ -13,29 +13,39 @@ final class SignUpEmailViewModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""
     @Published var confirmPassword = ""
-    @Published var errorMessage = ""
-    @Published var showErrorMessage = false
-    
-    func isValidData() -> Bool {
-        guard ValidationHelper.isValidEmail(email) else {
-            errorMessage = "Invalid email format"
-            return false
+
+    func signUp() async throws {
+        guard !email.isEmpty else {
+            ErrorHandler.shared.handle(AppError.emptyField(fieldName: "Email"))
+            throw AppError.emptyField(fieldName: "Email")
         }
         
-        guard password == confirmPassword else {
-            errorMessage = "Passwords do not match"
-            return false
+        guard ValidationHelper.isValidEmail(email) else {
+            ErrorHandler.shared.handle(AppError.invalidEmail)
+            throw AppError.invalidEmail
+        }
+        
+        guard !password.isEmpty else {
+            ErrorHandler.shared.handle(AppError.emptyField(fieldName: "Password"))
+            throw AppError.emptyField(fieldName: "Password")
         }
         
         guard password.count >= 6 else {
-            errorMessage = "Password must be at least 6 characters"
-            return false
+            ErrorHandler.shared.handle(AppError.passwordTooShort)
+            throw AppError.passwordTooShort
         }
         
-        return true
-    }
-    
-    func signUp() async throws {
-        try await AuthenticationManager.shared.createUser(email: email, password: password)
+        guard password == confirmPassword else {
+            ErrorHandler.shared.handle(AppError.passwordsDoNotMatch)
+            throw AppError.passwordsDoNotMatch
+        }
+        
+        do {
+            try await AuthenticationManager.shared.createUser(email: email, password: password)
+        } catch {
+            ErrorHandler.shared.handle(AppError.authenticationError)
+            throw AppError.authenticationError
+        }
     }
 }
+

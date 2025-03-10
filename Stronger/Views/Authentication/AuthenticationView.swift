@@ -1,9 +1,3 @@
-//
-//  AuthenticationView.swift
-//  Stronger
-//
-//  Created by Mateusz Żełudziewicz on 22/10/2024.
-//
 import SwiftUI
 
 struct AuthenticationView: View {
@@ -29,27 +23,15 @@ struct AuthenticationView: View {
                     
                     VStack(spacing: 15) {
                         CustomTextField(placeholder: "Email...", text: $viewModel.email)
-                        
                         CustomTextField(placeholder: "Password...", text: $viewModel.password, isSecure: true)
-                        
-                        if viewModel.showErrorMessage {
-                            Text(viewModel.errorMessage)
-                                .foregroundColor(Color.theme.accent)
-                                .font(.footnote)
-                                .padding(.top, 10)
-                        }
                         
                         Button {
                             Task {
-                                viewModel.showErrorMessage = false
-                                viewModel.errorMessage = ""
-                                
                                 do {
-                                    let userData = try await viewModel.signInUser()
+                                    try await viewModel.signInUser()
                                     authViewModel.isUserLoggedIn = true
                                 } catch {
-                                    viewModel.errorMessage = "Invalid login credentials"
-                                    viewModel.showErrorMessage = true
+                                    ErrorHandler.shared.handle(error)
                                 }
                             }
                         } label: {
@@ -117,6 +99,11 @@ struct AuthenticationView: View {
             }
         }
         .applyGradientBackground()
+        .overlay(
+            ErrorBannerView()
+                .padding(.top, 50),
+            alignment: .top
+        )
     }
 }
 

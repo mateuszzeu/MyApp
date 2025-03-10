@@ -16,16 +16,18 @@ final class SettingsViewModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""
     
-    func toggleDarkMode() {
-        isDarkMode.toggle()
-    }
-    
+    // MARK: - Dark Mode Handling
     @AppStorage("isDarkMode") var isDarkMode: Bool = false {
         didSet {
             SettingsViewModel.applyInterfaceStyle(isDarkMode)
         }
     }
     
+    func toggleDarkMode() {
+        isDarkMode.toggle()
+    }
+    
+    // Applies the selected interface style (light/dark mode) globally
     static func applyInterfaceStyle(_ isDarkMode: Bool) {
         DispatchQueue.main.async {
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -34,33 +36,48 @@ final class SettingsViewModel: ObservableObject {
         }
     }
     
+    // Loads and applies the previously saved dark mode preference
     static func applySavedTheme() {
         let savedTheme = UserDefaults.standard.bool(forKey: "isDarkMode")
         applyInterfaceStyle(savedTheme)
     }
     
+    // MARK: - Authentication Handling
+    
     func signOut() throws {
-        try AuthenticationManager.shared.signOut()
+        do {
+            try AuthenticationManager.shared.signOut()
+        } catch {
+            throw AppError.authenticationError
+        }
     }
     
     func resetPassword() async throws {
-        let authUser = try await AuthenticationManager.shared.getAuthenticatedUser()
-        
-        guard let email = authUser.email else {
-            throw URLError(.fileDoesNotExist)
+        do {
+            let authUser = try await AuthenticationManager.shared.getAuthenticatedUser()
+            guard let email = authUser.email else {
+                throw AppError.emptyField(fieldName: "Email")
+            }
+            try await AuthenticationManager.shared.resetPassword(email: email)
+        } catch {
+            throw AppError.authenticationError
         }
-        
-        try await AuthenticationManager.shared.resetPassword(email: email)
     }
     
-    func updateEmail() async throws {
-        let email = "Testing@example.com"
-        try await AuthenticationManager.shared.updateEmail(email: email)
+    func updateEmail(newEmail: String) async throws {
+        do {
+            try await AuthenticationManager.shared.updateEmail(email: newEmail)
+        } catch {
+            throw AppError.authenticationError
+        }
     }
     
-    func updatePassword() async throws {
-        let password = "H@sl01234567"
-        try await AuthenticationManager.shared.updatePassword(password: password)
+    func updatePassword(newPassword: String) async throws {
+        do {
+            try await AuthenticationManager.shared.updatePassword(password: newPassword)
+        } catch {
+            throw AppError.authenticationError
+        }
     }
     
     func deleteAccount() async throws {
@@ -68,14 +85,15 @@ final class SettingsViewModel: ObservableObject {
             try await deleteUserData()
             try await AuthenticationManager.shared.delete()
         } catch {
-            print("Błąd podczas usuwania danych lub konta: \(error.localizedDescription)")
-            throw error
+            throw AppError.databaseError
         }
     }
     
+    // MARK: - Firestore Handling
+    
     private func deleteUserData() async throws {
         guard let userId = Auth.auth().currentUser?.uid else {
-            throw URLError(.badServerResponse)
+            throw AppError.authenticationError
         }
         
         let db = Firestore.firestore()

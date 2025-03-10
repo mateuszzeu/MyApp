@@ -16,8 +16,13 @@ class StatsViewModel: ObservableObject {
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     
+    // MARK: - Firestore Methods
+    
     func fetchCompletedWorkouts() {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
+        guard let userId = Auth.auth().currentUser?.uid else {
+            ErrorHandler.shared.handle(AppError.authenticationError)
+            return
+        }
         
         let ref = db.collection("users")
             .document(userId)
@@ -26,31 +31,25 @@ class StatsViewModel: ObservableObject {
         
         listener = ref.addSnapshotListener { [weak self] snapshot, error in
             guard let self = self else { return }
+            
             if let error = error {
+                ErrorHandler.shared.handle(AppError.databaseError)
                 print("Error fetching completed workouts: \(error.localizedDescription)")
                 return
             }
             
             guard let documents = snapshot?.documents else { return }
             
-            var fetched: [CompletedWorkout] = []
-            for doc in documents {
-                let data = doc.data()
-                if let cw = CompletedWorkout(dictionary: data) {
-                    fetched.append(cw)
-                }
+            self.completedWorkouts = documents.compactMap { doc in
+                CompletedWorkout(dictionary: doc.data())
             }
-            
-            self.completedWorkouts = fetched
         }
     }
     
-    func stopListening() {
-        listener?.remove()
-    }
-    
     func saveDayToHistory(day: WorkoutDay) async throws {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
+        guard let userId = Auth.auth().currentUser?.uid else {
+            throw AppError.authenticationError
+        }
         
         let newCompleted = CompletedWorkout(
             date: Date(),
@@ -60,10 +59,18 @@ class StatsViewModel: ObservableObject {
         )
         
         let docRef = db.collection("users")
-                       .document(userId)
-                       .collection("completedWorkouts")
-                       .document(newCompleted.id.uuidString)
+            .document(userId)
+            .collection("completedWorkouts")
+            .document(newCompleted.id.uuidString)
         
-        try await docRef.setData(newCompleted.dictionary)
+        do {
+            try await docRef.setData(newCompleted.dictionary)
+        } catch {
+            throw AppError.databaseError
+        }
+    }
+    
+    func stopListening() {
+        listener?.remove()
     }
 }

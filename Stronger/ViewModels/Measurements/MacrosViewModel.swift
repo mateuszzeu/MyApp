@@ -12,6 +12,7 @@ import FirebaseAuth
 @MainActor
 class MacrosViewModel: ObservableObject {
     
+    // MARK: - Published Properties
     @Published var dailyMacros: [DailyMacros] = []
     @Published var protein: String = ""
     @Published var carbs: String = ""
@@ -21,8 +22,13 @@ class MacrosViewModel: ObservableObject {
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     
+    // MARK: - Firestore Methods
+    
     func fetchDailyMacros() {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
+        guard let userId = Auth.auth().currentUser?.uid else {
+            ErrorHandler.shared.handle(AppError.authenticationError)
+            return
+        }
         
         db.collection("users")
             .document(userId)
@@ -30,8 +36,9 @@ class MacrosViewModel: ObservableObject {
             .order(by: "date", descending: true)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self else { return }
+                
                 if let error = error {
-                    print("Error fetching macros records: \(error.localizedDescription)")
+                    ErrorHandler.shared.handle(error)
                     return
                 }
                 
@@ -49,10 +56,11 @@ class MacrosViewModel: ObservableObject {
             }
     }
     
-    
     func saveMacros(completion: @escaping (Result<Void, Error>) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
-            completion(.failure(NSError(domain: "No user", code: 0, userInfo: [NSLocalizedDescriptionKey: "User not logged in"])))
+            let error = AppError.authenticationError
+            ErrorHandler.shared.handle(error)
+            completion(.failure(error))
             return
         }
         
@@ -60,7 +68,9 @@ class MacrosViewModel: ObservableObject {
               let carbsVal = Double(carbs),
               let fatVal = Double(fat),
               let caloriesVal = Double(calories) else {
-            completion(.failure(NSError(domain: "Invalid input", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid numeric values"])))
+            let error = AppError.invalidInput(fieldName: "Macros")
+            ErrorHandler.shared.handle(error)
+            completion(.failure(error))
             return
         }
         
@@ -85,12 +95,15 @@ class MacrosViewModel: ObservableObject {
         
         docRef.setData(newMacrosEntry.dictionary, merge: true) { error in
             if let error = error {
+                ErrorHandler.shared.handle(error)
                 completion(.failure(error))
             } else {
                 completion(.success(()))
             }
         }
     }
+    
+    // MARK: - Helpers
     
     func clearMacrosFields() {
         protein = ""

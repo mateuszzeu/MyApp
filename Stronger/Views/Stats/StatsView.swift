@@ -56,13 +56,13 @@ struct StatsView: View {
                     }
                     
                     Divider().padding(.vertical, 10)
-
+                    
                     WeightHistoryView(weightViewModel: weightViewModel)
                     Divider().padding(.vertical, 10)
-
+                    
                     MacrosHistoryView(macrosViewModel: macrosViewModel)
                     Divider().padding(.vertical, 10)
-
+                    
                     BodyMeasurementsHistoryView(bodyMeasurementsViewModel: bodyMeasurementsViewModel)
                 }
                 .padding(.horizontal, 16)
@@ -74,10 +74,12 @@ struct StatsView: View {
         }
         .applyGradientBackground()
         .onAppear {
-            viewModel.fetchCompletedWorkouts()
-            weightViewModel.fetchDailyWeights()
-            macrosViewModel.fetchDailyMacros()
-            bodyMeasurementsViewModel.fetchMeasurements()
+            Task {
+                viewModel.fetchCompletedWorkouts()
+                weightViewModel.fetchDailyWeights()
+                macrosViewModel.fetchDailyMacros()
+                bodyMeasurementsViewModel.fetchMeasurements()
+            }
         }
         .onDisappear {
             viewModel.stopListening()
@@ -93,27 +95,27 @@ struct StatsView: View {
     let weightViewModel = WeightViewModel()
     let macrosViewModel = MacrosViewModel()
     let bodyMeasurementsViewModel = BodyMeasurementsViewModel()
-
+    
     statsViewModel.completedWorkouts = [
         CompletedWorkout(date: Date(), workoutDayName: "Push Day", exercises: [], notes: "Great session today!"),
         CompletedWorkout(date: Date().addingTimeInterval(-86400), workoutDayName: "Leg Day", exercises: [], notes: "Tough but worth it.")
     ]
-
+    
     weightViewModel.dailyWeights = [
         DailyWeight(date: Date(), weight: 70.5),
         DailyWeight(date: Date().addingTimeInterval(-86400), weight: 71.0)
     ]
-
+    
     macrosViewModel.dailyMacros = [
         DailyMacros(date: Date(), protein: 150, carbs: 200, fat: 50, calories: 2500),
         DailyMacros(date: Date().addingTimeInterval(-86400), protein: 140, carbs: 210, fat: 55, calories: 2600)
     ]
-
+    
     bodyMeasurementsViewModel.measurements = [
         BodyMeasurements(date: Date(), chest: 105, shoulders: 120, waist: 90, hips: 95),
         BodyMeasurements(date: Date().addingTimeInterval(-86400), chest: 106, shoulders: 121, waist: 91, hips: 96)
     ]
-
+    
     return StatsView(
         weightViewModel: weightViewModel,
         macrosViewModel: macrosViewModel,

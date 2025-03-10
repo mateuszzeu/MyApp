@@ -12,14 +12,20 @@ import FirebaseAuth
 @MainActor
 class WeightViewModel: ObservableObject {
     
+    // MARK: - Published Properties
     @Published var dailyWeights: [DailyWeight] = []
     @Published var weight: String = ""
     
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     
+    // MARK: - Firestore Methods
+    
     func fetchDailyWeights() {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
+        guard let userId = Auth.auth().currentUser?.uid else {
+            ErrorHandler.shared.handle(AppError.authenticationError)
+            return
+        }
         
         db.collection("users")
             .document(userId)
@@ -27,25 +33,29 @@ class WeightViewModel: ObservableObject {
             .order(by: "date", descending: true)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self else { return }
+                
                 if let error = error {
+                    ErrorHandler.shared.handle(error)
                     return
                 }
                 
                 guard let documents = snapshot?.documents else { return }
-                self.dailyWeights = documents.compactMap {
-                    DailyWeight(dictionary: $0.data())
-                }
+                self.dailyWeights = documents.compactMap { DailyWeight(dictionary: $0.data()) }
             }
     }
     
     func saveWeight(completion: @escaping (Result<Void, Error>) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
-            completion(.failure(NSError(domain: "No user", code: 0, userInfo: [NSLocalizedDescriptionKey: "User not logged in"])))
+            let error = AppError.authenticationError
+            ErrorHandler.shared.handle(error)
+            completion(.failure(error))
             return
         }
 
         guard let weightVal = Double(weight) else {
-            completion(.failure(NSError(domain: "Invalid input", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid numeric value for weight"])))
+            let error = AppError.invalidInput(fieldName: "Weight")
+            ErrorHandler.shared.handle(error)
+            completion(.failure(error))
             return
         }
 
@@ -67,12 +77,15 @@ class WeightViewModel: ObservableObject {
 
         docRef.setData(newWeightEntry.dictionary, merge: true) { error in
             if let error = error {
+                ErrorHandler.shared.handle(error)
                 completion(.failure(error))
             } else {
                 completion(.success(()))
             }
         }
     }
+    
+    // MARK: - Helpers
     
     func clearWeightField() {
         weight = ""

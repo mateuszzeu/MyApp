@@ -12,30 +12,28 @@ final class SignInEmailViewModel: ObservableObject {
     
     @Published var email = ""
     @Published var password = ""
-    @Published var errorMessage = ""
-    @Published var showErrorMessage = false
-    
-    func signInUser() async throws -> AuthDataResultModel {
+
+    func signInUser() async throws {
+        guard !email.isEmpty else {
+            ErrorHandler.shared.handle(AppError.emptyField(fieldName: "Email"))
+            throw AppError.emptyField(fieldName: "Email")
+        }
+        
         guard ValidationHelper.isValidEmail(email) else {
-            errorMessage = "Invalid email format"
-            showErrorMessage = true
-            throw NSError(domain: "InvalidEmail", code: 1, userInfo: nil)
+            ErrorHandler.shared.handle(AppError.invalidEmail)
+            throw AppError.invalidEmail
         }
         
         guard !password.isEmpty else {
-            errorMessage = "Password cannot be empty"
-            showErrorMessage = true
-            throw NSError(domain: "EmptyPassword", code: 2, userInfo: nil)
+            ErrorHandler.shared.handle(AppError.emptyField(fieldName: "Hasło"))
+            throw AppError.emptyField(fieldName: "Hasło")
         }
         
         do {
-            let userData = try await AuthenticationManager.shared.signInUser(email: email, password: password)
-            return userData
+            _ = try await AuthenticationManager.shared.signInUser(email: email, password: password)
         } catch {
-            print("Login error: \(error.localizedDescription)")
-            errorMessage = "Invalid login credentials"
-            showErrorMessage = true
-            throw error
+            ErrorHandler.shared.handle(AppError.authenticationError)
+            throw AppError.authenticationError
         }
     }
 }
