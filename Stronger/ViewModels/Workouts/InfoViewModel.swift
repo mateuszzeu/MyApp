@@ -16,44 +16,58 @@ class InfoViewModel: ObservableObject {
     private var db = Firestore.firestore()
 
     func uploadExerciseImage(dayName: String, exerciseId: UUID, imageData: Data?, workoutViewModel: WorkoutViewModel, completion: @escaping (Result<String, Error>) -> Void) {
-        guard let userId = Auth.auth().currentUser?.uid else {
-            completion(.failure(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "User not found."])))
-            return
-        }
-        guard let imageData = imageData, !imageData.isEmpty else {
-            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Image data is empty."])))
-            return
-        }
-
-        let storageRef = Storage.storage().reference()
-        let imageRef = storageRef.child("exerciseImages/\(userId)/\(UUID().uuidString).jpg")
-
-        let metadata = StorageMetadata()
-        metadata.contentType = "image/jpeg"
-
-        imageRef.putData(imageData, metadata: metadata) { _, error in
-            if let error = error {
-                print("❌ Error uploading image: \(error.localizedDescription)")
+            guard let userId = Auth.auth().currentUser?.uid else {
+                let error = AppError.authenticationError
+                ErrorHandler.shared.handle(error)
                 completion(.failure(error))
-            } else {
+                return
+            }
+            guard let imageData = imageData, !imageData.isEmpty else {
+                let error = AppError.invalidInput(fieldName: "Image data")
+                ErrorHandler.shared.handle(error)
+                completion(.failure(error))
+                return
+            }
+
+            let storageRef = Storage.storage().reference()
+            let imageRef = storageRef.child("exerciseImages/\(userId)/\(UUID().uuidString).jpg")
+
+            let metadata = StorageMetadata()
+            metadata.contentType = "image/jpeg"
+
+            imageRef.putData(imageData, metadata: metadata) { _, error in
+                if let error = error {
+                    ErrorHandler.shared.handle(error)
+                    completion(.failure(error))
+                    return
+                }
+                
                 imageRef.downloadURL { url, error in
                     if let error = error {
-                        print("❌ Error getting image URL: \(error.localizedDescription)")
+                        ErrorHandler.shared.handle(error)
                         completion(.failure(error))
-                    } else if let url = url {
-                        print("✅ Image uploaded successfully: \(url.absoluteString)")
-                        workoutViewModel.updateExerciseImage(dayName: dayName, exerciseId: exerciseId, imageURL: url.absoluteString)
-                        completion(.success(url.absoluteString))
+                        return
                     }
+                    
+                    guard let url = url else {
+                        let error = AppError.databaseError
+                        ErrorHandler.shared.handle(error)
+                        completion(.failure(error))
+                        return
+                    }
+                    
+                    workoutViewModel.updateExerciseImage(dayName: dayName, exerciseId: exerciseId, imageURL: url.absoluteString)
+                    completion(.success(url.absoluteString))
                 }
             }
         }
-    }
 
 
     func deleteExerciseImages(dayName: String?, exerciseId: UUID?, imageURLs: [String], completion: @escaping (Result<Void, Error>) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
-            completion(.failure(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "User not found."])))
+            let error = AppError.authenticationError
+            ErrorHandler.shared.handle(error)
+            completion(.failure(error))
             return
         }
 
@@ -65,14 +79,11 @@ class InfoViewModel: ObservableObject {
 
         let storageRef = Storage.storage().reference()
         let dispatchGroup = DispatchGroup()
-        var errors: [String: Error] = [:]
+        var errors: [Error] = []
         var successfullyDeletedImages: [String] = []
 
         for imageURL in imageURLs {
-            guard let url = URL(string: imageURL) else {
-                print("❌ Skipping invalid image URL: \(imageURL)")
-                continue
-            }
+            guard let url = URL(string: imageURL) else { continue }
 
             let lastPathComponent = url.lastPathComponent
             let imageRef = storageRef.child("exerciseImages/\(userId)/\(lastPathComponent)")
@@ -80,7 +91,8 @@ class InfoViewModel: ObservableObject {
             dispatchGroup.enter()
             imageRef.delete { error in
                 if let error = error {
-                    errors[imageURL] = error
+                    errors.append(error)
+                    ErrorHandler.shared.handle(error)
                 } else {
                     successfullyDeletedImages.append(imageURL)
                 }
@@ -94,7 +106,13 @@ class InfoViewModel: ObservableObject {
                     completion(result)
                 }
             } else {
-                completion(errors.isEmpty ? .success(()) : .failure(NSError(domain: "", code: -4, userInfo: [NSLocalizedDescriptionKey: "Some images could not be deleted."])))
+                let finalError = errors.isEmpty ? nil : AppError.databaseError
+                if let finalError = finalError {
+                    ErrorHandler.shared.handle(finalError)
+                    completion(.failure(finalError))
+                } else {
+                    completion(.success(()))
+                }
             }
         }
     }
@@ -102,7 +120,9 @@ class InfoViewModel: ObservableObject {
 
     private func removeImageURLsFromFirestore(dayName: String, exerciseId: UUID, imageURLs: [String], completion: @escaping (Result<Void, Error>) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
-            completion(.failure(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "User not authenticated."])))
+            let error = AppError.authenticationError
+            ErrorHandler.shared.handle(error)
+            completion(.failure(error))
             return
         }
 
@@ -110,6 +130,7 @@ class InfoViewModel: ObservableObject {
 
         exerciseRef.getDocument { document, error in
             if let error = error {
+                ErrorHandler.shared.handle(error)
                 completion(.failure(error))
                 return
             }
@@ -117,8 +138,11 @@ class InfoViewModel: ObservableObject {
                 completion(.success(()))
                 return
             }
+            
             guard var exercises = document.data()?["exercises"] as? [[String: Any]] else {
-                completion(.failure(NSError(domain: "", code: -3, userInfo: [NSLocalizedDescriptionKey: "Invalid exercises data structure."])))
+                let error = AppError.databaseError
+                ErrorHandler.shared.handle(error)
+                completion(.failure(error))
                 return
             }
 
@@ -134,6 +158,7 @@ class InfoViewModel: ObservableObject {
 
                 exerciseRef.updateData(["exercises": exercises]) { error in
                     if let error = error {
+                        ErrorHandler.shared.handle(error)
                         completion(.failure(error))
                     } else {
                         completion(.success(()))
@@ -153,8 +178,13 @@ class InfoViewModel: ObservableObject {
         }
     }
 
-    func deleteSelectedImages(dayName: String, exerciseId: UUID, workoutViewModel: WorkoutViewModel, completion: @escaping ([String]) -> Void) {
-        guard !selectedImagesForDeletion.isEmpty else { return }
+    func deleteSelectedImages(dayName: String, exerciseId: UUID, workoutViewModel: WorkoutViewModel, completion: @escaping (Result<[String], Error>) -> Void) {
+        guard !selectedImagesForDeletion.isEmpty else {
+            let error = AppError.invalidInput(fieldName: "No images selected for deletion")
+            ErrorHandler.shared.handle(error)
+            completion(.failure(error))
+            return
+        }
 
         let imagesToDelete = Array(selectedImagesForDeletion)
 
@@ -163,13 +193,12 @@ class InfoViewModel: ObservableObject {
                 switch result {
                 case .success:
                     self.selectedImagesForDeletion.removeAll()
-                    
-                    completion(imagesToDelete)
-
+                    completion(.success(imagesToDelete))
                     workoutViewModel.objectWillChange.send()
-                    
+
                 case .failure(let error):
-                    print("❌ Error deleting images: \(error.localizedDescription)")
+                    ErrorHandler.shared.handle(error)
+                    completion(.failure(error))
                 }
             }
         }
